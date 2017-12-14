@@ -194,7 +194,7 @@ res.locals.error = req.app.get('env') === 'development' ? err : {}
 
 // render the error page
 res.status(err.status || 500)
-res.render('error')
+console.log(error.status)
 })
 
 module.exports = app.listen(port, function (err) {
