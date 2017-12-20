@@ -25,8 +25,29 @@ export default new VueRouter({
   scrollBehavior: () => ({ y: 0 }),
 
   routes: [
-    { path: '/', component: load('Index') },
-    { path: '/auth/callback', component: load('Callback') },
+    { path: '/',
+      component: load('Index'),
+      children: [
+        {
+          path: 'team',
+          component: load('team')
+        },
+        {
+          path: 'league',
+          component: load('league')
+        },
+        {
+          path: 'draft',
+          component: load('draft')
+        },
+        {
+          path: 'players',
+          component: load('players')
+        }
+      ]
+    },
+    { path: '/callback', component: load('Callback') },
+    { path: '/login', component: load('login') },
     // Always leave this last one
     { path: '*', component: load('Error404') } // Not found
   ]
