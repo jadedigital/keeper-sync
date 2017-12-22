@@ -1,7 +1,7 @@
 <template>
-  <q-layout ref="layout" view="hhh lPr fff" class="bg-indigo">
+  <q-layout ref="layout" view="hhh lPr fff" class="bg-primary">
     <div>
-      <q-btn @click="loginDialog" outline color="white" big rounded class="bg-indigo-8 fixed-center">Login</q-btn>
+      <q-btn @click="loginDialog" outline color="white" big rounded class="bg-tertiary fixed-center">Login</q-btn>
     </div>
   </q-layout>
 </template>
@@ -136,6 +136,28 @@ export default {
             TYPE: 'topOwns',
             JSON: 1
           }
+          var nflScheduleParams = {
+            cookie: leagueData[leagueId].cookie,
+            host: leagueData[leagueId].host,
+            TYPE: 'nflSchedule',
+            W: 'ALL',
+            JSON: 1
+          }
+          var liveScoringParams = {
+            cookie: leagueData[leagueId].cookie,
+            host: leagueData[leagueId].host,
+            TYPE: 'liveScoring',
+            L: leagueId,
+            DETAILS: 1,
+            JSON: 1
+          }
+          var pointsAllowedParams = {
+            cookie: leagueData[leagueId].cookie,
+            host: leagueData[leagueId].host,
+            TYPE: 'pointsAllowed',
+            L: leagueId,
+            JSON: 1
+          }
           this.fetchData(rosterParams)
           this.fetchData(playerParams)
           this.fetchData(leagueParams)
@@ -144,8 +166,11 @@ export default {
           this.fetchData(projectedScoresParams)
           this.fetchData(topAddsParams)
           this.fetchData(topOwnsParams)
+          this.fetchData(nflScheduleParams)
+          this.fetchData(liveScoringParams)
+          this.fetchData(pointsAllowedParams)
           Loading.hide()
-          this.$router.push('/team')
+          this.$router.push('team')
         })
         .catch((error) => {
           if (error) {

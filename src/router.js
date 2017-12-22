@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import LocalStorage from 'quasar'
 
 Vue.use(VueRouter)
 
@@ -26,23 +27,46 @@ export default new VueRouter({
 
   routes: [
     { path: '/',
-      component: load('Index'),
+      component: load('index'),
+      meta: { requiresAuth: true },
+      beforeEach: (to, from, next) => {
+        if (to.matched.some(record => record.meta.requiresAuth)) {
+          // this route requires auth, check if logged in
+          // if not, redirect to login page.
+          if (LocalStorage.has('leagueData')) {
+            next({
+              path: '/login',
+              query: { redirect: to.fullPath }
+            })
+          }
+          else {
+            next()
+          }
+        }
+        else {
+          next() // make sure to always call next()!
+        }
+      },
       children: [
         {
           path: 'team',
-          component: load('team')
+          component: load('team'),
+          meta: { requiresAuth: true }
         },
         {
           path: 'league',
-          component: load('league')
+          component: load('league'),
+          meta: { requiresAuth: true }
         },
         {
           path: 'draft',
-          component: load('draft')
+          component: load('draft'),
+          meta: { requiresAuth: true }
         },
         {
           path: 'players',
-          component: load('players')
+          component: load('players'),
+          meta: { requiresAuth: true }
         }
       ]
     },

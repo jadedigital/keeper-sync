@@ -1,19 +1,57 @@
 <template>
-  <div>
-    <q-list highlight>
-      <q-list-header>Roster</q-list-header>
-      <q-item v-for="(player, key) in rosterLookup[myTeam].player" :key="player.id">
-        <q-item-side v-if="playerLookup[player.id].position !== 'Def'" :avatar="'https://sports.cbsimg.net/images/football/nfl/players/100x100/' + playerLookup[player.id].cbs_id + '.jpg'" />
-        <q-item-side v-if="playerLookup[player.id].position === 'Def'" :avatar="'https://sports.cbsimg.net/images/nfl/logos/100x100/' + playerLookup[player.id].team + '.png'" />
-        <q-item-main :label="playerLookup[player.id].name" :sublabel="playerLookup[player.id].team + ' - ' + playerLookup[player.id].position + ' - ' + playerLookup[player.id].cbs_id" />
-        <q-item-side right icon="swap_vert" />
-      </q-item>
-      <q-item-separator />
-      <q-list-header>Taxi Squad</q-list-header>
-    </q-list>
-  </div>
+  <q-pull-to-refresh :handler="refresher">
+    <div class="layout-padding">
+      <q-list v-if="dataLoaded" highlight class="bg-white">
+        <q-list-header>Roster</q-list-header>
+        <q-item v-for="(player, key) in startersSorted" :key="player.id" v-if="player.status === 'starter'">
+          <q-btn @click="showAS(playerLookup[player.id].name)" round small outline color="primary" style="font-size: 14px; font-weight:400" class="q-item-avatar">{{ playerLookup[player.id].position }}</q-btn>
+          <q-item-side v-if="playerLookup[player.id].position !== 'Def'" :avatar="'https://sports.cbsimg.net/images/football/nfl/players/100x100/' + playerLookup[player.id].cbs_id + '.jpg'" />
+          <q-item-side v-if="playerLookup[player.id].position === 'Def'" :avatar="'https://sports.cbsimg.net/images/nfl/logos/100x100/' + playerLookup[player.id].team + '.png'" />
+          <div class="q-item-main q-item-section team-players">
+            <div class="q-item-label" style="overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical;">{{playerLookup[player.id].name.split(', ').slice(1).join(' ').charAt(0)}} . {{playerLookup[player.id].name.split(', ').slice(0, -1).join(' ')}}<small> {{playerLookup[player.id].team}}  -  {{playerLookup[player.id].position}}</small></div>
+            <div class="q-item-sublabel" style="overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical;">{{matchupLookup[playerLookup[player.id].team].day}} {{matchupLookup[playerLookup[player.id].team].time}} - <span :class="matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rank < 11 ? 'text-positive' : matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rank < 21 ? 'text-warning' : 'text-negative'">{{matchupLookup[playerLookup[player.id].team].location}} {{matchupLookup[playerLookup[player.id].team].vs}} ({{matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rankPretty}})</span></div>
+          </div>
+          <q-item-side right> {{ projectedLookup[player.id].score }}</q-item-side>
+        </q-item>
+        <q-list-header>Bench</q-list-header>
+        <q-item v-for="(player, key) in startersSorted" :key="player.id" v-if="player.status === 'nonstarter'">
+          <q-btn round small outline color="primary" style="font-size: 14px; font-weight:400" class="q-item-avatar">BN</q-btn>
+          <q-item-side v-if="playerLookup[player.id].position !== 'Def'" :avatar="'https://sports.cbsimg.net/images/football/nfl/players/100x100/' + playerLookup[player.id].cbs_id + '.jpg'" />
+          <q-item-side v-if="playerLookup[player.id].position === 'Def'" :avatar="'https://sports.cbsimg.net/images/nfl/logos/100x100/' + playerLookup[player.id].team + '.png'" />
+          <div class="q-item-main q-item-section team-players">
+            <div class="q-item-label" style="overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical;">{{playerLookup[player.id].name.split(', ').slice(1).join(' ').charAt(0)}} . {{playerLookup[player.id].name.split(', ').slice(0, -1).join(' ')}}<small> {{playerLookup[player.id].team}}  -  {{playerLookup[player.id].position}}</small></div>
+            <div class="q-item-sublabel" style="overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical;">{{matchupLookup[playerLookup[player.id].team].day}} {{matchupLookup[playerLookup[player.id].team].time}} - <span :class="matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rank < 11 ? 'text-positive' : matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rank < 21 ? 'text-warning' : 'text-negative'">{{matchupLookup[playerLookup[player.id].team].location}} {{matchupLookup[playerLookup[player.id].team].vs}} ({{matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rankPretty}})</span></div>
+          </div>
+          <q-item-side right> {{ projectedLookup[player.id].score }}</q-item-side>
+        </q-item>
+        <q-item-separator />
+        <q-list-header>Injured Reserve</q-list-header>
+        <q-item v-for="(player, key) in rosterLookup[myTeam].player" :key="player.id" v-if="player.status === 'INJURED_RESERVE'">
+          <q-btn round small outline color="primary" style="font-size: 14px; font-weight:400" class="q-item-avatar">IR</q-btn>
+          <q-item-side v-if="playerLookup[player.id].position !== 'Def'" :avatar="'https://sports.cbsimg.net/images/football/nfl/players/100x100/' + playerLookup[player.id].cbs_id + '.jpg'" />
+          <q-item-side v-if="playerLookup[player.id].position === 'Def'" :avatar="'https://sports.cbsimg.net/images/nfl/logos/100x100/' + playerLookup[player.id].team + '.png'" />
+          <div class="q-item-main q-item-section team-players">
+            <div class="q-item-label" style="overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical;">{{playerLookup[player.id].name.split(', ').slice(1).join(' ').charAt(0)}} . {{playerLookup[player.id].name.split(', ').slice(0, -1).join(' ')}}<small> {{playerLookup[player.id].team}}  -  {{playerLookup[player.id].position}}</small></div>
+            <div class="q-item-sublabel" style="overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical;">{{matchupLookup[playerLookup[player.id].team].day}} {{matchupLookup[playerLookup[player.id].team].time}} - <span :class="matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rank < 11 ? 'text-positive' : matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rank < 21 ? 'text-warning' : 'text-negative'">{{matchupLookup[playerLookup[player.id].team].location}} {{matchupLookup[playerLookup[player.id].team].vs}} ({{matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rankPretty}})</span></div>
+          </div>
+          <q-item-side right>-</q-item-side>
+        </q-item>
+        <q-item-separator />
+        <q-list-header>Taxi Squad</q-list-header>
+        <q-item v-for="(player, key) in rosterLookup[myTeam].player" :key="player.id" v-if="player.status === 'TAXI_SQUAD'">
+          <q-btn round small outline color="primary" style="font-size: 14px; font-weight:400" class="q-item-avatar">TS</q-btn>
+          <q-item-side v-if="playerLookup[player.id].position !== 'Def'" :avatar="'https://sports.cbsimg.net/images/football/nfl/players/100x100/' + playerLookup[player.id].cbs_id + '.jpg'" />
+          <q-item-side v-if="playerLookup[player.id].position === 'Def'" :avatar="'https://sports.cbsimg.net/images/nfl/logos/100x100/' + playerLookup[player.id].team + '.png'" />
+          <div class="q-item-main q-item-section team-players">
+            <div class="q-item-label" style="overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical;">{{playerLookup[player.id].name.split(', ').slice(1).join(' ').charAt(0)}} . {{playerLookup[player.id].name.split(', ').slice(0, -1).join(' ')}}<small> {{playerLookup[player.id].team}}  -  {{playerLookup[player.id].position}}</small></div>
+            <div class="q-item-sublabel" style="overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical;">{{matchupLookup[playerLookup[player.id].team].day}} {{matchupLookup[playerLookup[player.id].team].time}} - <span :class="matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rank < 11 ? 'text-positive' : matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rank < 21 ? 'text-warning' : 'text-negative'">{{matchupLookup[playerLookup[player.id].team].location}} {{matchupLookup[playerLookup[player.id].team].vs}} ({{matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rankPretty}})</span></div>
+          </div>
+          <q-item-side right> {{ projectedLookup[player.id].score }}</q-item-side>
+        </q-item>
+      </q-list>
+    </div>
+  </q-pull-to-refresh>
 </template>
-
 
 <script>
 import {
@@ -26,7 +64,12 @@ import {
   QItemMain,
   QItemSeparator,
   QRouteTab,
-  QTabPane
+  QTabPane,
+  ActionSheet,
+  Toast,
+  LocalStorage,
+  QPullToRefresh,
+  Loading
 } from 'quasar'
 import { mapGetters } from 'vuex'
 
@@ -41,11 +84,13 @@ export default {
     QItemMain,
     QItemSeparator,
     QRouteTab,
-    QTabPane
+    QTabPane,
+    QPullToRefresh
   },
   data () {
     return {
-      response: null
+      response: null,
+      dataLoaded: false
     }
   },
   computed: {
@@ -53,7 +98,12 @@ export default {
       activeLeague: 'activeLeague',
       leagueData: 'leagueData',
       rosters: 'rosters',
-      players: 'players'
+      players: 'players',
+      league: 'league',
+      liveScoring: 'liveScoring',
+      projectedScores: 'projectedScores',
+      nflSchedule: 'nflSchedule',
+      pointsAllowed: 'pointsAllowed'
     }),
     myTeam () {
       var team = this.leagueData[this.activeLeague].teamId
@@ -61,21 +111,129 @@ export default {
     },
     rosterLookup () {
       var array = this.rosters.franchise
-      return this.lookup(array)
+      return this.lookup(array, 'id')
     },
     playerLookup () {
       var array = this.players.player
-      return this.lookup(array)
+      return this.lookup(array, 'id')
     },
-    activeTeamIcon () {
-      var icon = ''
-      var this_ = this
-      this.teams.forEach(function (el) {
-        if (el.team_key === this_.activeTeam) {
-          icon = el.team_logos[0].url.replace('/', '')
+    projectedLookup () {
+      var array = this.projectedScores.playerScore
+      return this.lookup(array, 'id')
+    },
+    matchupLookup () {
+      var days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat']
+      var obj = {}
+      this.nflSchedule.matchup.forEach((el, i) => {
+        var date = new Date(el.kickoff * 1000)
+        obj[el.team[0].id] = {
+          vs: el.team[1].id,
+          day: days[date.getDay()],
+          time: ((date.getHours() === 0) ? '00' : date.getHours()) + ':' + ((date.getMinutes() === 0) ? '00' : date.getMinutes()),
+          location: ((el.team[0].isHome === '0') ? '@' : 'vs')
+        }
+        obj[el.team[1].id] = {
+          vs: el.team[0].id,
+          day: days[date.getDay()],
+          time: ((date.getHours() === 0) ? '00' : date.getHours()) + ':' + ((date.getMinutes() === 0) ? '00' : date.getMinutes()),
+          location: ((el.team[1].isHome === '0') ? '@' : 'vs')
         }
       })
-      return icon
+      return obj
+    },
+    matchupPoints () {
+      var object = {
+        QB: this.matchupPointsUtil('QB'),
+        RB: this.matchupPointsUtil('RB'),
+        WR: this.matchupPointsUtil('WR'),
+        TE: this.matchupPointsUtil('TE'),
+        Def: this.matchupPointsUtil('Def')
+      }
+      return object
+    },
+    myScoring () {
+      var array = []
+      this.liveScoring.matchup.forEach((el) => {
+        el.franchise.forEach((el2) => {
+          if (el2.id === this.myTeam) {
+            array.push(el2)
+          }
+        })
+      })
+      return array
+    },
+    startersSorted () {
+      var array = []
+      var positions = this.positionsBasic
+      this.myScoring[0].players.player.forEach((el) => {
+        var obj = {
+          id: el.id,
+          pos: this.playerLookup[el.id].position,
+          status: el.status,
+          score: el.score
+        }
+        array.push(obj)
+      })
+      array.sort(function (a, b) {
+        return positions.indexOf(a.pos) - positions.indexOf(b.pos)
+      })
+      return array
+    },
+    startersOld () {
+      var n = 0
+      var starters = {}
+      var players = this.myScoring[0].players.player
+      this.positions.forEach((elarray) => {
+        elarray.forEach((el) => {
+          players.slice(n, n + 1).forEach((pos) => {
+            if (this.playerLookup[pos.id].position === el) {
+              starters[pos.id] = el
+              n++
+            }
+          })
+        })
+      })
+      return starters
+    },
+    positionsBasic () {
+      var pos = []
+      this.league.starters.position.forEach((el) => {
+        pos.push(el.name)
+      })
+      return pos
+    },
+    positions () {
+      var pos = []
+      var flex = []
+      var n = 0
+      var m = 0
+      this.league.starters.position.forEach((el) => {
+        var min = ''
+        var max = ''
+        if (el.limit.indexOf('-')) {
+          min = el.limit.split('-')[0]
+          max = el.limit.split('-')[1]
+        }
+        else {
+          min = el.limit
+          max = el.limit
+        }
+        for (var i = 0, len = min; i < len; i++) {
+          pos[n] = new Array(0)
+          pos[n].push(el.name)
+          n++
+        }
+        for (var j = 0, len2 = (max - min); j < len2; j++) {
+          if (!flex[m]) {
+            flex[m] = new Array(0)
+          }
+          flex[m].push(el.name)
+          m++
+        }
+        m = 0
+      })
+      var positions = pos.concat(flex)
+      return positions
     }
   },
   methods: {
@@ -83,13 +241,186 @@ export default {
       close()
       openURL(url, '_self')
     },
-    lookup (array) {
+    lookup (array, key) {
       var lookup = {}
       for (var i = 0, len = array.length; i < len; i++) {
-        lookup[array[i].id] = array[i]
+        lookup[array[i][key]] = array[i]
       }
       return lookup
+    },
+    matchupPointsUtil (pos) {
+      var array = []
+      var object = {}
+      this.pointsAllowed.team.forEach(el => {
+        var lookup = this.lookup(el.position, 'name')
+        var obj = {
+          team: el.id,
+          points: lookup[pos].points
+        }
+        array.push(obj)
+        object[el.id] = {
+          points: lookup[pos].points
+        }
+      })
+      array.sort(function (a, b) {
+        if (a.points > b.points) return -1
+        if (a.points < b.points) return 1
+        return 0
+      })
+      array.forEach(el => {
+        object[el.team].rank = array.findIndex(x => x.team === el.team) + 1
+        object[el.team].rankPretty = this.pluralize(array.findIndex(x => x.team === el.team) + 1)
+      })
+      return object
+    },
+    pluralize: function (value) {
+      value = value.toString()
+      if (value.endsWith('1')) {
+        value = value.toString() + 'st'
+      }
+      else if (value.endsWith('2')) {
+        value = value.toString() + 'nd'
+      }
+      else if (value.endsWith('3')) {
+        value = value.toString() + 'rd'
+      }
+      else {
+        value = value.toString() + 'th'
+      }
+      return value
+    },
+    showAS (name) {
+      var actions = []
+      this.startersSorted.forEach((el) => {
+        var action = {
+          label: this.playerLookup[el.id].name,
+          avatar: 'https://sports.cbsimg.net/images/football/nfl/players/100x100/' + this.playerLookup[el.id].cbs_id + '.jpg',
+          handler () {
+            Toast.create('API call to submit lineup')
+          }
+        }
+        actions.push(action)
+      })
+      ActionSheet.create({
+        title: 'Move ' + name.split(', ').reverse().join(' '),
+        actions: actions,
+        dismiss: {
+          label: 'Cancel',
+          handler () {
+            Toast.create('Cancelled...')
+          }
+        }
+      })
+    },
+    refresher (done) {
+      this.fetchData()
+      let data = LocalStorage.get.item('leagueData')
+      var leagueId = Object.keys(data)[0]
+      var playerParams = {
+        cookie: data[leagueId].cookie,
+        host: data[leagueId].host,
+        TYPE: 'players',
+        DETAILS: 1,
+        JSON: 1
+      }
+      this.callApi(playerParams, false)
+      done()
+    },
+    fetchData () {
+      Loading.show({
+        delay: 0
+      })
+      let data = LocalStorage.get.item('leagueData')
+      var leagueId = Object.keys(data)[0]
+      this.$store.commit('SET_LEAGUE_DATA', data)
+      this.$store.commit('CHANGE_ACTIVE_LEAGUE', leagueId)
+      var rosterParams = {
+        cookie: data[leagueId].cookie,
+        host: data[leagueId].host,
+        TYPE: 'rosters',
+        L: leagueId,
+        JSON: 1
+      }
+      var projectedScoresParams = {
+        cookie: data[leagueId].cookie,
+        host: data[leagueId].host,
+        TYPE: 'projectedScores',
+        L: leagueId,
+        COUNT: 3000,
+        JSON: 1
+      }
+      var nflScheduleParams = {
+        cookie: data[leagueId].cookie,
+        host: data[leagueId].host,
+        TYPE: 'nflSchedule',
+        W: 16,
+        JSON: 1
+      }
+      var liveScoringParams = {
+        cookie: data[leagueId].cookie,
+        host: data[leagueId].host,
+        TYPE: 'liveScoring',
+        L: leagueId,
+        DETAILS: 1,
+        JSON: 1
+      }
+      var pointsAllowedParams = {
+        cookie: data[leagueId].cookie,
+        host: data[leagueId].host,
+        TYPE: 'pointsAllowed',
+        L: leagueId,
+        JSON: 1
+      }
+      this.callApi(rosterParams, false)
+      this.callApi(projectedScoresParams, false)
+      this.callApi(nflScheduleParams, false)
+      this.callApi(liveScoringParams, false)
+      this.callApi(pointsAllowedParams, true)
+    },
+    callApi (requestParams, lastCall) {
+      var url = 'https://keepersync.com/mfl/export'
+      this.axios.get(url, {
+        params: requestParams
+      })
+        .then((response) => {
+          var responseData = JSON.parse(response.data)
+          LocalStorage.set(requestParams.TYPE, responseData[requestParams.TYPE])
+          this.$store.commit('SET_DATA', {type: requestParams.TYPE, data: responseData[requestParams.TYPE]})
+          if (lastCall) {
+            Loading.hide()
+            this.dataLoaded = true
+          }
+        })
+        .catch((error) => {
+          if (error) {
+            Loading.hide()
+            Toast.create("Can't fetch " + requestParams.TYPE + ' data')
+          }
+        })
+    }
+  },
+  created () {
+    if (this.rosters === null) {
+      this.fetchData()
+    }
+    else {
+      this.dataLoaded = true
     }
   }
 }
 </script>
+
+<style lang="stylus">
+.layout-padding
+  padding-bottom 86px
+.team-players
+  font-weight 500
+.team-players small
+  color #555
+  font-size 13px
+  font-weight 300
+.team-players .q-item-sublabel
+  color #555
+  font-size 13px
+  font-weight 300
+</style>

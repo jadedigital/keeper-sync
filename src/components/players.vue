@@ -116,7 +116,7 @@ export default {
         // [REQUIRED] Column width
         width: '52px',
         // (optional) Column CSS style
-        filter: true
+        filter: false
       },
       {
         // [REQUIRED] Column name

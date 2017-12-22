@@ -20,7 +20,10 @@ export default new Vuex.Store({
     freeAgents: '',
     projectedScores: '',
     topAdds: '',
-    topOwns: ''
+    topOwns: '',
+    liveScoring: '',
+    nflSchedule: '',
+    pointsAllowed: ''
 
   },
   mutations: {
