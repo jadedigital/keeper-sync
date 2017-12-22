@@ -174,7 +174,7 @@ export default {
         cookie: data[leagueId].cookie,
         host: data[leagueId].host,
         TYPE: 'nflSchedule',
-        W: 'ALL',
+        W: 16,
         JSON: 1
       }
       var liveScoringParams = {

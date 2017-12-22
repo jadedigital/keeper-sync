@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import LocalStorage from 'quasar'
 
 Vue.use(VueRouter)
 
@@ -9,7 +8,7 @@ function load (component) {
   return () => import(`@/${component}.vue`)
 }
 
-export default new VueRouter({
+const router = new VueRouter({
   /*
    * NOTE! VueRouter "history" mode DOESN'T works for Cordova builds,
    * it is only to be used only for websites.
@@ -29,24 +28,6 @@ export default new VueRouter({
     { path: '/',
       component: load('index'),
       meta: { requiresAuth: true },
-      beforeEach: (to, from, next) => {
-        if (to.matched.some(record => record.meta.requiresAuth)) {
-          // this route requires auth, check if logged in
-          // if not, redirect to login page.
-          if (LocalStorage.has('leagueData')) {
-            next({
-              path: '/login',
-              query: { redirect: to.fullPath }
-            })
-          }
-          else {
-            next()
-          }
-        }
-        else {
-          next() // make sure to always call next()!
-        }
-      },
       children: [
         {
           path: 'team',
@@ -76,3 +57,24 @@ export default new VueRouter({
     { path: '*', component: load('Error404') } // Not found
   ]
 })
+
+router.beforeEach((to, from, next) => {
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    // this route requires auth, check if logged in
+    // if not, redirect to login page.
+    if (localStorage.getItem('leagueData') === null) {
+      next({
+        path: '/login',
+        query: { redirect: to.fullPath }
+      })
+    }
+    else {
+      next()
+    }
+  }
+  else {
+    next() // make sure to always call next()!
+  }
+})
+
+export default router

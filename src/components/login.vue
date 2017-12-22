@@ -31,8 +31,34 @@ export default {
   computed: {
     ...mapGetters({
       leagueData: 'leagueData',
-      activeLeague: 'activeLeague'
-    })
+      activeLeague: 'activeLeague',
+      rosters: 'rosters',
+      players: 'players',
+      league: 'league',
+      leagueStandings: 'leagueStandings',
+      freeAgents: 'freeAgents',
+      projectedScores: 'projectedScores',
+      topAdds: 'topAdds',
+      topOwns: 'topOwns',
+      nflSchedule: 'nflSchedule',
+      liveScoring: 'liveScoring',
+      pointsAllowed: 'pointsAllowed'
+    }),
+    dataLoaded () {
+      var loaded = false
+      if (this.leagueData && this.rosters && this.players && this.league && this.leagueStandings && this.freeAgents && this.projectedScores && this.topAdds && this.topOwns && this.nflSchedule && this.liveScoring && this.pointsAllowed) {
+        loaded = true
+      }
+      return loaded
+    }
+  },
+  watch: {
+    dataLoaded: function () {
+      if (this.dataLoaded) {
+        Loading.hide()
+        this.$router.push('team')
+      }
+    }
   },
   methods: {
     loginDialog () {
@@ -72,7 +98,6 @@ export default {
         params: userParams
       })
         .then((response) => {
-          console.log(response)
           var str = response.data.leagues.league.url
           var host = str.substring(str.lastIndexOf('//') + 2, str.indexOf('.'))
           var leagueId = str.substring(str.lastIndexOf('/') + 1)
@@ -140,7 +165,7 @@ export default {
             cookie: leagueData[leagueId].cookie,
             host: leagueData[leagueId].host,
             TYPE: 'nflSchedule',
-            W: 'ALL',
+            W: 16,
             JSON: 1
           }
           var liveScoringParams = {
@@ -169,8 +194,6 @@ export default {
           this.fetchData(nflScheduleParams)
           this.fetchData(liveScoringParams)
           this.fetchData(pointsAllowedParams)
-          Loading.hide()
-          this.$router.push('team')
         })
         .catch((error) => {
           if (error) {
