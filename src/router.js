@@ -31,6 +31,7 @@ const router = new VueRouter({
       children: [
         {
           path: 'team',
+          name: 'My Team',
           component: load('team'),
           meta: { requiresAuth: true }
         },

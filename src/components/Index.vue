@@ -2,15 +2,17 @@
   <q-layout ref="layout" view="hHh Lpr lFf" :left-class="{'bg-grey-2': true}">
     <q-toolbar slot="header">
       <q-btn class="desktop-only" flat @click="$refs.layout.toggleLeft()">
-        <q-icon name="menu" />
+        <q-icon name="search" />
       </q-btn>
 
       <q-toolbar-title>
-        KeeperSync
-        <div slot="subtitle">Running on Quasar v{{$q.version}}</div>
+        {{this.teamLookup[myTeam].name}}
+        <span slot="subtitle">
+          {{this.league.name}}
+        </span>
       </q-toolbar-title>
       <q-btn flat>
-        <q-icon name="settings" />
+        <q-icon name="search" />
       </q-btn>
     </q-toolbar>
     <!--
@@ -185,6 +187,13 @@ export default {
         DETAILS: 1,
         JSON: 1
       }
+      var pointsAllowedParams = {
+        cookie: data[leagueId].cookie,
+        host: data[leagueId].host,
+        TYPE: 'pointsAllowed',
+        L: leagueId,
+        JSON: 1
+      }
       this.callApi(rosterParams)
       this.callApi(playerParams)
       this.callApi(leagueParams)
@@ -195,6 +204,7 @@ export default {
       this.callApi(topOwnsParams)
       this.callApi(nflScheduleParams)
       this.callApi(liveScoringParams)
+      this.callApi(pointsAllowedParams)
     },
     callApi (requestParams) {
       if (LocalStorage.has(requestParams.TYPE)) {
@@ -248,4 +258,6 @@ export default {
   color #555
 .q-tab.active
   color #00BCD4
+.q-toolbar
+ background linear-gradient(141deg, #00BCD4 0%, #03a9f4 100%)
 </style>
