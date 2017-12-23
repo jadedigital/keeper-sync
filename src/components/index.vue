@@ -11,10 +11,16 @@
           {{this.league.name}}
         </span>
       </q-toolbar-title>
-      <q-btn flat>
+      <q-btn flat @click="toggleModal">
         <q-icon name="search" />
       </q-btn>
     </q-toolbar>
+    <q-modal v-model="modal">
+      <q-search color="primary" v-model="playerSearch" placeholder="Search" stack-label="Search All Players" ref="search">
+      </q-search>
+      <div v-if="!playerSearch"class="row flex-center"><i class="info">Start typing to search</i></div>
+      <q-btn outline color="primary" @click="toggleModal">Cancel</q-btn>
+    </q-modal>
     <!--
       Replace following <div> with
       <router-view /> component
@@ -52,6 +58,9 @@ import {
   QTab,
   QRouteTab,
   QTabPane,
+  QModal,
+  QAutocomplete,
+  QSearch,
   LocalStorage
 } from 'quasar'
 import { mapGetters } from 'vuex'
@@ -73,12 +82,17 @@ export default {
     QTabs,
     QTab,
     QRouteTab,
-    QTabPane
+    QTabPane,
+    QAutocomplete,
+    QSearch,
+    QModal
   },
   data () {
     return {
       response: null,
-      activeTab: ''
+      activeTab: '',
+      modal: false,
+      playerSearch: ''
     }
   },
   computed: {
@@ -104,6 +118,10 @@ export default {
     changeTab (route) {
       this.activeTab = route
       this.$router.push('/' + route)
+    },
+    toggleModal () {
+      this.modal = !this.modal
+      this.$refs.search.focus()
     },
     lookup (array) {
       var lookup = {}
@@ -257,7 +275,14 @@ export default {
 .q-tabs-inverted .q-tabs-scroller
   color #555
 .q-tab.active
-  color #00BCD4
+  color #3f51b5
 .q-toolbar
- background linear-gradient(141deg, #00BCD4 0%, #03a9f4 100%)
+  background linear-gradient(141deg, #3f51b5 15%, #03a9f4 100%)
+.modal .info
+  font-size 120%
+  font-weight 300
+  margin 20px
+.modal .q-btn
+  margin 20px
+  width 90%
 </style>
