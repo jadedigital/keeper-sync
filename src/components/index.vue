@@ -15,7 +15,7 @@
         <q-icon name="search" />
       </q-btn>
     </q-toolbar>
-    <q-modal v-model="modal">
+    <q-modal @open="$refs.search.focus()" v-model="modal">
       <q-search color="primary" v-model="playerSearch" placeholder="Search" stack-label="Search All Players" ref="search">
       </q-search>
       <div v-if="!playerSearch"class="row flex-center"><i class="info">Start typing to search</i></div>
@@ -30,9 +30,9 @@
 
     <q-tabs slot="footer" inverted class="bg-white">
       <!-- Tabs - notice slot="title" -->
-      <div slot="title" class="q-tab column flex-center relative-position active icon-and-label"><img :src="teamLookup[myTeam].icon" class="q-item-avatar"></div>
       <q-tab @click="changeTab('team')" :class="((activeTab === 'team') ? 'active' : '')" default slot="title" name="tab-1" icon="list" label="My Team" />
       <q-tab @click="changeTab('league')" :class="((activeTab === 'league') ? 'active' : '')" slot="title" name="tab-2" icon="star" label="League" />
+      <div slot="title" class="q-tab column flex-center relative-position active icon-and-label"><img :src="teamLookup[myTeam].icon" class="q-item-avatar"></div>
       <q-tab @click="changeTab('draft')" :class="((activeTab === 'draft') ? 'active' : '')" slot="title" name="tab-3" icon="view_comfy" label="Draft"/>
       <q-tab @click="changeTab('players')" :class="((activeTab === 'players') ? 'active' : '')" slot="title" name="tab-4" icon="person" label="Players" />
     </q-tabs>
@@ -121,7 +121,6 @@ export default {
     },
     toggleModal () {
       this.modal = !this.modal
-      this.$refs.search.focus()
     },
     lookup (array) {
       var lookup = {}

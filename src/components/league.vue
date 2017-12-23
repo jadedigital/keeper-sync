@@ -40,7 +40,7 @@
                     <td nowrap class="text-center">{{team.streak_type}}{{team.streak_len}}</td>
                     <td nowrap class="text-center">{{team.pf}}</td>
                     <td nowrap class="text-center">{{team.pa}}</td>
-                    <td nowrap class="text-center">{{team.streak_type}}</td>
+                    <td nowrap class="text-center">{{teamLookup[team.id].bbidAvailableBalance}}</td>
                     <td nowrap class="text-center">{{team.streak_type}}{{team.streak_len}}</td>
                   </tr>
                 </tbody>

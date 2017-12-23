@@ -77,7 +77,7 @@ export default {
         // should be displayed
         columnPicker: false,
         // (optional) How many columns from the left are sticky
-        leftStickyColumns: 1,
+        leftStickyColumns: 0,
         // (optional) How many columns from the right are sticky
         rightStickyColumns: 0,
         // (optional) By default, Data Table is responsive,
