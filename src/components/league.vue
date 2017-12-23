@@ -6,23 +6,57 @@
       <q-tab slot="title" name="tab-2" label="Transactions"/>
       <q-tab slot="title" name="tab-3" label="Messages"/>
       <!-- Targets -->
-      <q-tab-pane class="no-pad no-border" name="tab-1">
-        <q-list highlight class="bg-grey-2 no-border">
-          <div v-for="(division, key) in league.divisions.division" :key="division.id" >
-            <q-card class="bg-white">
-              <q-list-header>{{division.name}}</q-list-header>
-              <q-item v-for="(team, key) in leagueStandings.franchise" :key="team.id" v-if="teamLookup[team.id].division === division.id">
-                <q-item-side v-if="teamLookup[team.id].icon" :avatar="teamLookup[team.id].icon"/>
-                <q-item-side v-else :avatar="'./statics/avatar.jpg'"/>
-                <q-item-main :label="teamLookup[team.id].name" :sublabel="teamLookup[team.id].owner_name + ' | ' + team.h2hw + '-' + team.h2hl" />
-                <q-item-side right icon="swap_vert" />
-              </q-item>
-            </q-card>
-          </div>
-        </q-list>
-      </q-tab-pane>
-      <q-tab-pane name="tab-2">Transactions</q-tab-pane>
-      <q-tab-pane name="tab-3">Message Board</q-tab-pane>
+      <div class="contain-main bg-grey-2">
+        <q-tab-pane class="no-pad no-border" name="tab-1">
+          <q-card class="bg-white compact-card" v-for="(division, key) in league.divisions.division" :key="division.id" >
+            <q-card-title>
+              {{division.name}}
+            </q-card-title>
+            <q-card-separator />
+            <div class="card-main">
+              <table class="q-table">
+                <thead>
+                  <tr>
+                    <th nowrap class="text-center">W-L-T</th>
+                    <th nowrap class="text-center">Streak</th>
+                    <th nowrap class="text-center">PF</th>
+                    <th nowrap class="text-center">PA</th>
+                    <th nowrap class="text-center">Budget</th>
+                    <th nowrap class="text-center">Moves</th>
+                  </tr>
+                </thead>
+                <tbody v-for="(team, index) in leagueStandings.franchise" v-if="teamLookup[team.id].division === division.id">
+                  <tr>
+                    <td colspan="6" class="text-left col-pad">
+                      <q-item>
+                        <q-item-side v-if="teamLookup[team.id].icon" :avatar="teamLookup[team.id].icon"/>
+                        <q-item-side v-else :avatar="'./statics/avatar.jpg'"/>
+                        <q-item-main :label="teamLookup[team.id].name" :sublabel="teamLookup[team.id].owner_name" />
+                      </q-item>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td nowrap class="text-center">{{team.h2hw}} - {{team.h2hl}} - {{team.h2ht}}</td>
+                    <td nowrap class="text-center">{{team.streak_type}}{{team.streak_len}}</td>
+                    <td nowrap class="text-center">{{team.pf}}</td>
+                    <td nowrap class="text-center">{{team.pa}}</td>
+                    <td nowrap class="text-center">{{team.streak_type}}</td>
+                    <td nowrap class="text-center">{{team.streak_type}}{{team.streak_len}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </q-card>
+        </q-tab-pane>
+        <q-tab-pane name="tab-2">Transactions</q-tab-pane>
+        <q-tab-pane name="tab-3">Message Board
+          <q-fixed-position corner="bottom-right" :offset="[18, 18]">
+            <q-btn round color="primary">
+              <q-icon name="message" />
+            </q-btn>
+          </q-fixed-position>
+        </q-tab-pane>
+      </div>
     </q-tabs>
   </q-pull-to-refresh >
 </template>
@@ -43,7 +77,11 @@ import {
   QPullToRefresh,
   QCard,
   QTabs,
-  QTab
+  QTab,
+  QFixedPosition,
+  QIcon,
+  QCardTitle,
+  QCardSeparator
 } from 'quasar'
 import { mapGetters } from 'vuex'
 
@@ -62,7 +100,11 @@ export default {
     QPullToRefresh,
     QCard,
     QTabs,
-    QTab
+    QTab,
+    QFixedPosition,
+    QIcon,
+    QCardTitle,
+    QCardSeparator
   },
   data () {
     return {
@@ -110,3 +152,29 @@ export default {
   }
 }
 </script>
+
+<style lang="stylus">
+.q-table .q-item
+  padding 0
+.q-table .q-item-label
+  font-weight 500
+  font-size 14px
+.q-table .q-item-sublabel
+  font-weight 300
+  font-size 12px
+.compact-card .q-card-title
+  text-align center
+.compact-card .q-card-primary
+  padding 6px
+.card-main
+  overflow auto
+.q-table
+  font-size 12px
+  width 100%
+.q-table th,td
+  padding-left 0!important
+  padding-right 0!important
+.col-pad
+  padding-left 12px!important
+  padding-right 12px!important
+</style>

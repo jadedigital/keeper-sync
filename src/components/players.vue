@@ -77,7 +77,7 @@ export default {
         // should be displayed
         columnPicker: false,
         // (optional) How many columns from the left are sticky
-        leftStickyColumns: 0,
+        leftStickyColumns: 1,
         // (optional) How many columns from the right are sticky
         rightStickyColumns: 0,
         // (optional) By default, Data Table is responsive,
@@ -100,7 +100,7 @@ export default {
       },
       columns: [{
         // [REQUIRED] Column name
-        label: '',
+        label: '-',
         // [REQUIRED] Row property name
         field: 'add',
         // [REQUIRED] Column width
@@ -110,7 +110,7 @@ export default {
       },
       {
         // [REQUIRED] Column name
-        label: '',
+        label: '-',
         // [REQUIRED] Row property name
         field: 'pic',
         // [REQUIRED] Column width

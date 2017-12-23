@@ -1,6 +1,6 @@
 <template>
   <q-layout ref="layout" view="hHh Lpr lFf" :left-class="{'bg-grey-2': true}">
-    <q-toolbar slot="header">
+    <q-toolbar class="bg-gradient" slot="header">
       <q-btn class="desktop-only" flat @click="$refs.layout.toggleLeft()">
         <q-icon name="search" />
       </q-btn>
@@ -276,7 +276,7 @@ export default {
   color #555
 .q-tab.active
   color #3f51b5
-.q-toolbar
+.bg-gradient
   background linear-gradient(141deg, #3f51b5 15%, #03a9f4 100%)
 .modal .info
   font-size 120%

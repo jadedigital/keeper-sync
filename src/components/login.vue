@@ -1,7 +1,7 @@
 <template>
-  <q-layout ref="layout" view="hhh lPr fff" class="bg-primary">
+  <q-layout ref="layout" view="hhh lPr fff" class="bg-gradient">
     <div>
-      <q-btn @click="loginDialog" outline color="white" big rounded class="bg-tertiary fixed-center">Login</q-btn>
+      <q-btn @click="loginDialog" big class="bg-secondary text-white fixed-center">Login</q-btn>
     </div>
   </q-layout>
 </template>
