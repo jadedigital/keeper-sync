@@ -32,7 +32,7 @@
       <!-- Tabs - notice slot="title" -->
       <q-tab @click="changeTab('team')" :class="((activeTab === 'team') ? 'active' : '')" default slot="title" name="tab-1" icon="list" label="My Team" />
       <q-tab @click="changeTab('league')" :class="((activeTab === 'league') ? 'active' : '')" slot="title" name="tab-2" icon="star" label="League" />
-      <div slot="title" class="q-tab column flex-center relative-position active icon-and-label"><img :src="teamLookup[myTeam].icon" class="q-item-avatar"></div>
+      <div slot="title" class="main-avatar q-tab column flex-center relative-position active icon-and-label"><img :src="teamLookup[myTeam].icon" class="q-item-avatar"></div>
       <q-tab @click="changeTab('draft')" :class="((activeTab === 'draft') ? 'active' : '')" slot="title" name="tab-3" icon="view_comfy" label="Draft"/>
       <q-tab @click="changeTab('players')" :class="((activeTab === 'players') ? 'active' : '')" slot="title" name="tab-4" icon="person" label="Players" />
     </q-tabs>
@@ -286,4 +286,7 @@ export default {
   width 90%
 .modal.fullscreen
   top 50px
+.main-avatar
+  height 46px
+  width 46px
 </style>

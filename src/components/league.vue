@@ -164,6 +164,7 @@ export default {
   font-size 12px
 .compact-card .q-card-title
   text-align center
+  font-size 14px
 .compact-card .q-card-primary
   padding 6px
 .card-main
