@@ -284,4 +284,6 @@ export default {
 .modal .q-btn
   margin 20px
   width 90%
+.modal.fullscreen
+  top 50px
 </style>
