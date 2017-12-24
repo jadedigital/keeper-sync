@@ -8,13 +8,13 @@
       <!-- Targets -->
       <div class="contain-main bg-grey-2">
         <q-tab-pane class="no-pad no-border" name="tab-1">
-          <q-card class="bg-white compact-card" v-for="(division, key) in league.divisions.division" :key="division.id" >
+          <q-card class="bg-blue-grey-1 compact-card" v-for="(division, key) in league.divisions.division" :key="division.id" >
             <q-card-title>
               {{division.name}}
             </q-card-title>
             <q-card-separator />
-            <div class="card-main">
-              <table class="q-table">
+            <div class="card-main bg-white">
+              <table class="q-table horizontal-separator">
                 <thead>
                   <tr>
                     <th nowrap class="text-center">W-L-T</th>
@@ -28,7 +28,7 @@
                 <tbody v-for="(team, index) in leagueStandings.franchise" v-if="teamLookup[team.id].division === division.id">
                   <tr>
                     <td colspan="6" class="text-left col-pad">
-                      <q-item>
+                      <q-item separator>
                         <q-item-side v-if="teamLookup[team.id].icon" :avatar="teamLookup[team.id].icon"/>
                         <q-item-side v-else :avatar="'./statics/avatar.jpg'"/>
                         <q-item-main :label="teamLookup[team.id].name" :sublabel="teamLookup[team.id].owner_name" />
@@ -50,15 +50,10 @@
         </q-tab-pane>
         <q-tab-pane name="tab-2">Transactions</q-tab-pane>
         <q-tab-pane name="tab-3">Message Board
-          <q-fixed-position corner="bottom-right" :offset="[18, 18]">
-            <q-btn round color="primary">
-              <q-icon name="message" />
-            </q-btn>
-          </q-fixed-position>
         </q-tab-pane>
       </div>
     </q-tabs>
-  </q-pull-to-refresh >
+  </q-pull-to-refresh>
 </template>
 
 
@@ -165,8 +160,9 @@ export default {
 .compact-card .q-card-title
   text-align center
   font-size 14px
+  font-weight 500
 .compact-card .q-card-primary
-  padding 6px
+  padding 4px
 .card-main
   overflow auto
 .q-table

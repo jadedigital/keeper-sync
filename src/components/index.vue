@@ -16,7 +16,7 @@
       </q-btn>
     </q-toolbar>
     <q-modal @open="$refs.search.focus()" v-model="modal">
-      <q-search color="primary" v-model="playerSearch" placeholder="Search" stack-label="Search All Players" ref="search">
+      <q-search :debounce="0" color="primary" v-model="playerSearch" placeholder="Search" stack-label="Search All Players" ref="search">
       </q-search>
       <div v-if="!playerSearch"class="row flex-center"><i class="info">Start typing to search</i></div>
       <q-btn outline color="primary" @click="toggleModal">Cancel</q-btn>
@@ -36,6 +36,11 @@
       <q-tab @click="changeTab('draft')" :class="((activeTab === 'draft') ? 'active' : '')" slot="title" name="tab-3" icon="view_comfy" label="Draft"/>
       <q-tab @click="changeTab('players')" :class="((activeTab === 'players') ? 'active' : '')" slot="title" name="tab-4" icon="person" label="Players" />
     </q-tabs>
+    <q-fixed-position corner="bottom-right" :offset="[18, 18]">
+      <q-btn round color="primary">
+        <q-icon name="message" />
+      </q-btn>
+    </q-fixed-position>
   </q-layout>
 </template>
 
@@ -61,6 +66,7 @@ import {
   QModal,
   QAutocomplete,
   QSearch,
+  QFixedPosition,
   LocalStorage
 } from 'quasar'
 import { mapGetters } from 'vuex'
@@ -85,6 +91,7 @@ export default {
     QTabPane,
     QAutocomplete,
     QSearch,
+    QFixedPosition,
     QModal
   },
   data () {
@@ -99,7 +106,8 @@ export default {
     ...mapGetters({
       activeLeague: 'activeLeague',
       leagueData: 'leagueData',
-      league: 'league'
+      league: 'league',
+      players: 'players'
     }),
     myTeam () {
       var team = this.leagueData[this.activeLeague].teamId
@@ -107,7 +115,17 @@ export default {
     },
     teamLookup () {
       var array = this.league.franchises.franchise
-      return this.lookup(array)
+      return this.lookup(array, 'id')
+    },
+    playerLookup () {
+      var array = []
+      var player = this.playerSearch
+      this.players.player.forEach(el => {
+        if (el.name.includes(player)) {
+          array.push(el.name)
+        }
+      })
+      return array
     }
   },
   methods: {
@@ -120,12 +138,13 @@ export default {
       this.$router.push('/' + route)
     },
     toggleModal () {
+      this.$refs.search.clear()
       this.modal = !this.modal
     },
-    lookup (array) {
+    lookup (array, id) {
       var lookup = {}
       for (var i = 0, len = array.length; i < len; i++) {
-        lookup[array[i].id] = array[i]
+        lookup[array[i][id]] = array[i]
       }
       return lookup
     },

@@ -18,7 +18,10 @@
                   <div class="q-item-label" style="overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical;">{{playerLookup[player.id].name.split(', ').slice(1).join(' ').charAt(0)}} . {{playerLookup[player.id].name.split(', ').slice(0, -1).join(' ')}}<small> {{playerLookup[player.id].team}}  -  {{playerLookup[player.id].position}}</small></div>
                   <div class="q-item-sublabel" style="overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical;">{{matchupLookup[playerLookup[player.id].team].day}} {{matchupLookup[playerLookup[player.id].team].time}} - <span :class="matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rank < 11 ? 'text-positive' : matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rank < 21 ? 'text-warning' : 'text-negative'">{{matchupLookup[playerLookup[player.id].team].location}} {{matchupLookup[playerLookup[player.id].team].vs}} ({{matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rankPretty}})</span></div>
                 </div>
-                <q-item-side right> {{ projectedLookup[player.id].score }}</q-item-side>
+                <div class="q-item-side q-item-side-right q-item-section">
+                  <div class="q-item-label" style="overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical;">{{scoringLookup[player.id].score}}</div>
+                  <div class="q-item-sublabel" style="overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical;"><small>{{ updatedProjection[player.id].projection }}</small></span></div>
+                </div>
               </q-item>
             </q-card>
             <q-card class="bg-white">
@@ -142,6 +145,34 @@ export default {
       var array = this.projectedScores.playerScore
       return this.lookup(array, 'id')
     },
+    updatedProjection () {
+      var obj = {}
+      this.myScoring[0].players.player.forEach(el => {
+        var score = ''
+        var factor = ''
+        var average = ''
+        if (this.scoringLookup[el.id].score) {
+          score = this.scoringLookup[el.id].score
+        }
+        else {
+          score = 0
+        }
+        if (this.scoringLookup[el.id].gameSecondsRemaining === '3600') {
+          average = this.projectedLookup[el.id].score
+        }
+        else if (this.scoringLookup[el.id].gameSecondsRemaining === '0') {
+          average = this.scoringLookup[el.id].score
+        }
+        else {
+          factor = 3600 / (3600 - parseInt(this.scoringLookup[el.id].gameSecondsRemaining))
+          var extrapolate = parseInt(score) * factor
+          var projection = parseInt(this.projectedLookup[el.id].score)
+          average = ((extrapolate + projection) / 2).toFixed(2)
+        }
+        obj[el.id] = {projection: average}
+      })
+      return obj
+    },
     matchupLookup () {
       var days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat']
       var obj = {}
@@ -182,6 +213,10 @@ export default {
         })
       })
       return array
+    },
+    scoringLookup () {
+      var array = this.myScoring[0].players.player
+      return this.lookup(array, 'id')
     },
     startersSorted () {
       var array = []
