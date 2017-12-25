@@ -8,27 +8,28 @@
       <!-- Targets -->
       <div class="contain-main bg-grey-2">
         <q-tab-pane class="no-pad no-border" name="tab-1">
-          <q-card class="bg-blue-grey-1 compact-card" v-for="(division, key) in league.divisions.division" :key="division.id" >
+          <q-card class="bg-grey-1 compact-card" v-for="(division, key) in standings" :key="key">
             <q-card-title>
-              {{division.name}}
+              {{divisionLookup[key].name}}
             </q-card-title>
             <q-card-separator />
             <div class="card-main bg-white">
               <table class="q-table horizontal-separator">
                 <thead>
                   <tr>
-                    <th nowrap class="text-center">W-L-T</th>
-                    <th nowrap class="text-center">Streak</th>
-                    <th nowrap class="text-center">PF</th>
-                    <th nowrap class="text-center">PA</th>
-                    <th nowrap class="text-center">Budget</th>
-                    <th nowrap class="text-center">Moves</th>
+                    <th @click="sort(key, 'rank', -1)" nowrap class="text-center" :class="{'text-red': colSortKeys[key] === 'rank'}">W-L-T</th>
+                    <th @click="sort(key, 'streakSort', 1)" nowrap class="text-center" :class="{'text-red': colSortKeys[key] === 'streakSort'}">Streak</th>
+                    <th @click="sort(key, 'pf', 1)" nowrap class="text-center" :class="{'text-red': colSortKeys[key] === 'pf'}">PF</th>
+                    <th @click="sort(key, 'pa', 1)" nowrap class="text-center" :class="{'text-red': colSortKeys[key] === 'pa'}">PA</th>
+                    <th @click="sort(key, 'budget', 1)" nowrap class="text-center" :class="{'text-red': colSortKeys[key] === 'budget'}">Budget</th>
+                    <th @click="sort(key, 'divw', 1)" nowrap class="text-center" :class="{'text-red': colSortKeys[key] === 'divw'}">Division</th>
                   </tr>
                 </thead>
-                <tbody v-for="(team, index) in leagueStandings.franchise" v-if="teamLookup[team.id].division === division.id">
+                <tbody v-for="team in division" :key="team.id">
                   <tr>
-                    <td colspan="6" class="text-left col-pad">
+                    <td colspan="6" class="text-left col-pad team-name-main">
                       <q-item separator>
+                        <div class="rank">{{team.rank}}</div>
                         <q-item-side v-if="teamLookup[team.id].icon" :avatar="teamLookup[team.id].icon"/>
                         <q-item-side v-else :avatar="'./statics/avatar.jpg'"/>
                         <q-item-main :label="teamLookup[team.id].name" :sublabel="teamLookup[team.id].owner_name" />
@@ -36,12 +37,12 @@
                     </td>
                   </tr>
                   <tr>
-                    <td nowrap class="text-center">{{team.h2hw}} - {{team.h2hl}} - {{team.h2ht}}</td>
-                    <td nowrap class="text-center">{{team.streak_type}}{{team.streak_len}}</td>
-                    <td nowrap class="text-center">{{team.pf}}</td>
-                    <td nowrap class="text-center">{{team.pa}}</td>
-                    <td nowrap class="text-center">{{teamLookup[team.id].bbidAvailableBalance}}</td>
-                    <td nowrap class="text-center">{{team.streak_type}}{{team.streak_len}}</td>
+                    <td nowrap class="text-center" :class="{'text-red': colSortKeys[key] === 'rank'}">{{team.h2hw}}-{{team.h2hl}}-{{team.h2ht}}</td>
+                    <td nowrap class="text-center" :class="{'text-red': colSortKeys[key] === 'streakSort'}">{{team.streak_type}}{{team.streak_len}}</td>
+                    <td nowrap class="text-center" :class="{'text-red': colSortKeys[key] === 'pf'}">{{team.pf}}</td>
+                    <td nowrap class="text-center" :class="{'text-red': colSortKeys[key] === 'pa'}">{{team.pa}}</td>
+                    <td nowrap class="text-center" :class="{'text-red': colSortKeys[key] === 'budget'}">{{teamLookup[team.id].bbidAvailableBalance}}</td>
+                    <td nowrap class="text-center" :class="{'text-red': colSortKeys[key] === 'divw'}">{{team.divw}}-{{team.divl}}-{{team.divt}}</td>
                   </tr>
                 </tbody>
               </table>
@@ -103,7 +104,9 @@ export default {
   },
   data () {
     return {
-      response: null
+      response: null,
+      colSortKeys: {},
+      colSortOrders: {}
     }
   },
   computed: {
@@ -115,9 +118,39 @@ export default {
       leagueStandings: 'leagueStandings',
       league: 'league'
     }),
+    standings () {
+      var obj = {}
+      var array = []
+      var index = ''
+      this.league.divisions.division.forEach(el => {
+        index = 1
+        this.leagueStandings.franchise.forEach(el2 => {
+          if (this.teamLookup[el2.id].division === el.id) {
+            el2['rank'] = index
+            el2['budget'] = this.teamLookup[el2.id].bbidAvailableBalance
+            if (el2.streak_type === 'L') {
+              el2['streakSort'] = el2.streak_len * -1
+            }
+            else {
+              el2['streakSort'] = el2.streak_len
+            }
+            array.push(el2)
+            index += 1
+          }
+        })
+        array = this.order(array, this.colSortKeys[el.id], this.colSortOrders[el.id])
+        obj[el.id] = array
+        array = []
+      })
+      return obj
+    },
     teamLookup () {
-      var array = this.league.franchises.franchise
-      return this.lookup(array)
+      var obj = this.league.franchises.franchise
+      return this.lookup(obj)
+    },
+    divisionLookup () {
+      var obj = this.league.divisions.division
+      return this.lookup(obj)
     }
   },
   watch: {
@@ -129,6 +162,16 @@ export default {
     launch (url) {
       close()
       openURL(url, '_self')
+    },
+    order (list, key, order) {
+      return list.sort((a, b) => {
+        var x = a[key]; var y = b[key]
+        return ((x < y) ? 1 : ((x > y) ? -1 : 0)) * order
+      })
+    },
+    sort (id, key, order) {
+      this.colSortKeys[id] = key
+      this.colSortOrders[id] = order
     },
     refresher (done) {
       this.fetchStandings()
@@ -144,6 +187,12 @@ export default {
     fetchStandings () {
       // refresh
     }
+  },
+  mounted () {
+    this.league.divisions.division.forEach(el => {
+      this.$set(this.colSortKeys, el.id, 'rank')
+      this.$set(this.colSortOrders, el.id, -1)
+    })
   }
 }
 </script>
@@ -162,7 +211,7 @@ export default {
   font-size 14px
   font-weight 500
 .compact-card .q-card-primary
-  padding 4px
+  padding 0
 .card-main
   overflow auto
 .q-table
@@ -174,4 +223,10 @@ export default {
 .col-pad
   padding-left 12px!important
   padding-right 12px!important
+.team-name-main
+  border-bottom none!important
+  padding-bottom 0!important
+tr .rank
+  padding-right 12px
+  font-weight 500
 </style>
