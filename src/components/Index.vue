@@ -26,7 +26,9 @@
       <router-view /> component
       if using subRoutes
     -->
-    <router-view />
+    <keep-alive>
+      <router-view class="child-view"></router-view>
+    </keep-alive>
 
     <q-tabs slot="footer" inverted class="bg-white">
       <!-- Tabs - notice slot="title" -->
@@ -97,12 +99,26 @@ export default {
       playerSearch: ''
     }
   },
+  beforeRouteUpdate (to, from, next) {
+    console.log('this works')
+    var totalSeconds = ''
+    this.nflSchedule.matchup.forEach(el => {
+      totalSeconds = totalSeconds + el.gameSecondsRemaining
+    })
+    if (totalSeconds === 0) {
+      var week = this.nflSchedule.week + 1
+      this.fetchData(week)
+    }
+    next()
+  },
   computed: {
     ...mapGetters({
       activeLeague: 'activeLeague',
       leagueData: 'leagueData',
       league: 'league',
-      players: 'players'
+      players: 'players',
+      currentWeek: 'currentWeek',
+      nflSchedule: 'nflSchedule'
     }),
     myTeam () {
       var team = this.leagueData[this.activeLeague].teamId
@@ -143,7 +159,7 @@ export default {
       }
       return lookup
     },
-    fetchData () {
+    fetchData (week) {
       let data = LocalStorage.get.item('leagueData')
       var leagueId = Object.keys(data)[0]
       this.$store.commit('SET_LEAGUE_DATA', data)
@@ -203,13 +219,25 @@ export default {
         TYPE: 'topOwns',
         JSON: 1
       }
-      var nflScheduleParams = {
-        cookie: data[leagueId].cookie,
-        host: data[leagueId].host,
-        TYPE: 'nflSchedule',
-        W: 16,
-        JSON: 1
+      var nflScheduleParams = {}
+      if (week) {
+        nflScheduleParams = {
+          cookie: data[leagueId].cookie,
+          host: data[leagueId].host,
+          TYPE: 'nflSchedule',
+          W: week,
+          JSON: 1
+        }
       }
+      else {
+        nflScheduleParams = {
+          cookie: data[leagueId].cookie,
+          host: data[leagueId].host,
+          TYPE: 'nflSchedule',
+          JSON: 1
+        }
+      }
+
       var liveScoringParams = {
         cookie: data[leagueId].cookie,
         host: data[leagueId].host,
@@ -303,4 +331,23 @@ export default {
 .main-avatar
   height 46px
   width 46px
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .5s ease;
+}
+.fade-enter, .fade-leave-active {
+  opacity: 0
+}
+.child-view {
+  transition: all .5s cubic-bezier(.55,0,.1,1);
+}
+.slide-left-enter, .slide-right-leave-active {
+  opacity: 0;
+  -webkit-transform: translate(30px, 0);
+  transform: translate(30px, 0);
+}
+.slide-left-leave-active, .slide-right-enter {
+  opacity: 0;
+  -webkit-transform: translate(-30px, 0);
+  transform: translate(-30px, 0);
+}
 </style>

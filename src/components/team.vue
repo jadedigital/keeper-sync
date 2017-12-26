@@ -141,7 +141,8 @@ export default {
   data () {
     return {
       response: null,
-      dataLoaded: false
+      dataLoaded: true,
+      newWeek: ''
     }
   },
   computed: {
@@ -154,7 +155,8 @@ export default {
       liveScoring: 'liveScoring',
       projectedScores: 'projectedScores',
       nflSchedule: 'nflSchedule',
-      pointsAllowed: 'pointsAllowed'
+      pointsAllowed: 'pointsAllowed',
+      currentWeek: 'currentWeek'
     }),
     myTeam () {
       var team = this.leagueData[this.activeLeague].teamId
@@ -384,7 +386,7 @@ export default {
       })
     },
     refresher (done) {
-      this.fetchData()
+      this.fetchData(this.currentWeek)
       let data = LocalStorage.get.item('leagueData')
       var leagueId = Object.keys(data)[0]
       var playerParams = {
@@ -397,7 +399,35 @@ export default {
       this.callApi(playerParams, false)
       done()
     },
-    fetchData () {
+    getWeek () {
+      let data = LocalStorage.get.item('leagueData')
+      var leagueId = Object.keys(data)[0]
+      this.$store.commit('SET_LEAGUE_DATA', data)
+      this.$store.commit('CHANGE_ACTIVE_LEAGUE', leagueId)
+      var projectedScoresParams = {
+        cookie: data[leagueId].cookie,
+        host: data[leagueId].host,
+        TYPE: 'projectedScores',
+        L: leagueId,
+        COUNT: 3000,
+        JSON: 1
+      }
+      var url = 'https://keepersync.com/mfl/export'
+      return this.axios.get(url, {
+        params: projectedScoresParams
+      })
+        .then((response) => {
+          var responseData = JSON.parse(response.data)
+          return responseData.week
+        })
+        .catch((error) => {
+          if (error) {
+            Loading.hide()
+            Toast.create("Can't fetch " + projectedScoresParams.TYPE + ' data')
+          }
+        })
+    },
+    fetchData (week) {
       Loading.show({
         delay: 0
       })
@@ -412,19 +442,19 @@ export default {
         L: leagueId,
         JSON: 1
       }
+      var nflScheduleParams = {
+        cookie: data[leagueId].cookie,
+        host: data[leagueId].host,
+        TYPE: 'nflSchedule',
+        W: week,
+        JSON: 1
+      }
       var projectedScoresParams = {
         cookie: data[leagueId].cookie,
         host: data[leagueId].host,
         TYPE: 'projectedScores',
         L: leagueId,
         COUNT: 3000,
-        JSON: 1
-      }
-      var nflScheduleParams = {
-        cookie: data[leagueId].cookie,
-        host: data[leagueId].host,
-        TYPE: 'nflSchedule',
-        W: 16,
         JSON: 1
       }
       var liveScoringParams = {
@@ -443,9 +473,9 @@ export default {
         JSON: 1
       }
       this.callApi(rosterParams, false)
-      this.callApi(projectedScoresParams, false)
       this.callApi(nflScheduleParams, false)
       this.callApi(liveScoringParams, false)
+      this.callApi(projectedScoresParams, false)
       this.callApi(pointsAllowedParams, true)
     },
     callApi (requestParams, lastCall) {
@@ -468,14 +498,6 @@ export default {
             Toast.create("Can't fetch " + requestParams.TYPE + ' data')
           }
         })
-    }
-  },
-  created () {
-    if (this.rosters === null) {
-      this.fetchData()
-    }
-    else {
-      this.dataLoaded = true
     }
   }
 }

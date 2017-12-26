@@ -6,14 +6,13 @@
       float-label="Search free agents"
     />
     <q-select
+      multiple
+      chips
       v-model="positionFilter"
       :options="selectOptions"
-      multiple
-      toggle
-      chips
-      float-label="Position"
       title="Positions"
-    />
+    >
+    </q-select>
     <q-card class="compact-card">
       <q-card-title>
         Free Agents
@@ -194,7 +193,7 @@ export default {
       }
       return obj
     },
-    playersSorted () {
+    playersDetails () {
       var list = []
       this.freeAgents.leagueUnit.player.forEach(el => {
         el['projected'] = (this.projectedLookup[el.id].score !== '' ? parseFloat(this.projectedLookup[el.id].score) : 0)
@@ -205,6 +204,10 @@ export default {
         el['position'] = this.playerLookup[el.id].position
         list.push(el)
       })
+      return list
+    },
+    playersSorted () {
+      var list = this.playersDetails
       if (this.query) {
         list = this.findBy(list, this.query, this.queryColumn)
       }
