@@ -7,8 +7,8 @@
       <!-- Targets -->
       <div class="contain-main">
         <q-tab-pane class="no-pad no-border" name="tab-1">
-          <q-list v-if="dataLoaded" highlight class="no-border bg-grey-3">
-            <q-card class="bg-grey-1 compact-card">
+          <q-list v-if="dataLoaded" highlight class="no-border no-pad bg-grey-1">
+            <q-card class="compact-card bg-white">
               <q-card-title>
                 Roster
               </q-card-title>
@@ -29,7 +29,7 @@
                 </q-item>
               </div>
             </q-card>
-            <q-card class="bg-grey-1 compact-card">
+            <q-card class="compact-card bg-white">
               <q-card-title>
                 Bench
               </q-card-title>
@@ -50,7 +50,7 @@
                 </q-item>
               </div>
             </q-card>
-            <q-card class="bg-grey-1 compact-card">
+            <q-card class="compact-card bg-white">
               <q-card-title>
                 Injured Reserve
               </q-card-title>
@@ -68,7 +68,7 @@
                 </q-item>
               </div>
             </q-card>
-            <q-card class="bg-grey-1 compact-card">
+            <q-card class="compact-card bg-white">
               <q-card-title>
                 Taxi Squad
               </q-card-title>
@@ -512,8 +512,17 @@ export default {
   height 100%
   padding-bottom 62px
 .q-tabs-panes
-  background #f5f5f5
+  background #fafafa
 .q-item-side-right .q-item-label
   color #0c0c0c
   font-weight 500
+.compact-card .q-card-title
+  text-align center
+  font-size 14px
+  font-weight 500
+.compact-card .q-card-primary
+  padding 0
+.q-card
+  border-radius 10px
+  margin 10px
 </style>

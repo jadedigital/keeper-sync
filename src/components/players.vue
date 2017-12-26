@@ -1,31 +1,63 @@
 <template>
-  <div>
-    <q-data-table :data="data" :config="config" :columns="columns">
-      <!-- Custom renderer for "message" column -->
-      <template slot="col-add" slot-scope="cell">
-        <q-btn round small outline color="primary" style="font-size: 26px; font-weight:300">+</q-btn>
-      </template>
-      <template slot="col-pic" slot-scope="cell">
-        <div v-if="playerLookup[cell.data].position !== 'Def'"><img :src="'https://sports.cbsimg.net/images/football/nfl/players/100x100/' + playerLookup[cell.data].cbs_id + '.jpg'" onerror="this.src='./statics/avatar.jpg'" class="q-item-avatar"></div>
-        <div v-if="playerLookup[cell.data].position === 'Def'"><img :src="'https://sports.cbsimg.net/images/nfl/logos/100x100/' + playerLookup[cell.data].team + '.png'" onerror="this.src='./statics/avatar.jpg'" class="q-item-avatar"></div>
-      </template>
-      <template slot="col-name" slot-scope="cell">
-        <span class="light-paragraph">{{ playerLookup[cell.data].name.split(', ').slice(-1).join('').charAt(0) }}. {{ playerLookup[cell.data].name.split(', ').slice(0, -1).join(' ') }}
-        <br> {{ playerLookup[cell.data].team }} - {{ playerLookup[cell.data].position }}</span>
-      </template>
-      <!-- Custom renderer for "action" column with button for custom action -->
-      <template slot="col-projected" slot-scope="cell">
-        <span class="light-paragraph">{{cell.data}}</span>
-      </template>
-      <!-- Custom renderer for "source" column -->
-      <template slot="col-added" slot-scope="cell">
-        <span class="light-paragraph">{{cell.data}}%</span>
-      </template>
-      <!-- Custom renderer for "source" column -->
-      <template slot="col-owned" slot-scope="cell">
-        <span class="light-paragraph">{{cell.data}}%</span>
-      </template>
-    </q-data-table>
+  <div class="contain-main">
+    <q-search
+      v-model="query"
+      icon="search"
+      float-label="Search free agents"
+    />
+    <q-dialog-select
+      v-model="positionFilter"
+      :options="selectOptions"
+      multiple
+      chips
+      float-label="Position"
+      title="Positions"
+    />
+    <q-card class="compact-card">
+      <q-card-title>
+        Free Agents
+      </q-card-title>
+      <q-card-separator />
+      <div class="card-main bg-white relative-position no-overflow">
+        <table class="q-table horizontal-separator">
+          <thead>
+            <tr>
+              <th @click="sort('projected')"  nowrap class="text-center" :class="{'text-red': colSortKey === 'projected'}">Proj</th>
+              <th @click="sort('added')" nowrap class="text-center" :class="{'text-red': colSortKey === 'added'}">% Added</th>
+              <th @click="sort('owned')" nowrap class="text-center" :class="{'text-red': colSortKey === 'owned'}">% Owned</th>
+            </tr>
+          </thead>
+          <tbody v-for="player in playersSorted" :key="player.id">
+            <tr>
+              <td colspan="3" class="text-left col-pad team-name-main">
+                <q-item separator>
+                  <q-btn round small outline color="primary" style="font-size: 14px; font-weight:400" class="q-item-avatar">+</q-btn>
+                  <q-item-side v-if="playerLookup[player.id].position !== 'Def'" :avatar="'https://sports.cbsimg.net/images/football/nfl/players/100x100/' + playerLookup[player.id].cbs_id + '.jpg'" />
+                  <q-item-side v-if="playerLookup[player.id].position === 'Def'" :avatar="'https://sports.cbsimg.net/images/nfl/logos/100x100/' + playerLookup[player.id].team + '.png'" />
+                  <div class="q-item-main q-item-section team-players">
+                    <div class="q-item-label" style="overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical;">{{playerLookup[player.id].name.split(', ').slice(1).join(' ').charAt(0)}} . {{playerLookup[player.id].name.split(', ').slice(0, -1).join(' ')}}<small> {{playerLookup[player.id].team}}  -  {{playerLookup[player.id].position}}</small></div>
+                    <div v-if="playerLookup[player.id].team !== 'FA*'" class="q-item-sublabel" style="overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical;">{{matchupLookup[playerLookup[player.id].team].day}} {{matchupLookup[playerLookup[player.id].team].time}} - <span :class="matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rank < 11 ? 'text-positive' : matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rank < 21 ? 'text-warning' : 'text-negative'">{{matchupLookup[playerLookup[player.id].team].location}} {{matchupLookup[playerLookup[player.id].team].vs}} ({{matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rankPretty}})</span></div>
+                  </div>
+                </q-item>
+              </td>
+            </tr>
+            <tr>
+              <td nowrap class="text-center" :class="{'text-red': colSortKey === 'projected'}">{{player.projected}}</td>
+              <td nowrap class="text-center" :class="{'text-red': colSortKey === 'added'}">{{player.added}}</td>
+              <td nowrap class="text-center" :class="{'text-red': colSortKey === 'owned'}">{{player.owned}}</td>
+            </tr>
+          </tbody>
+          <tfoot class="fa-table-footer">
+            <tr>
+              <td colspan="3" class="text-center">
+                <i>Load more</i>
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+        <q-btn @click="loadMore" class="load-more" round small color="primary" icon="keyboard_arrow_down"></q-btn>
+      </div>
+    </q-card>
   </div>
 </template>
 
@@ -42,7 +74,12 @@ import {
   QItemMain,
   QItemSeparator,
   QRouteTab,
-  QTabPane
+  QTabPane,
+  QCard,
+  QCardTitle,
+  QCardSeparator,
+  QSearch,
+  QDialogSelect
 } from 'quasar'
 import { mapGetters } from 'vuex'
 
@@ -58,109 +95,43 @@ export default {
     QItemMain,
     QItemSeparator,
     QRouteTab,
-    QTabPane
+    QTabPane,
+    QCard,
+    QCardTitle,
+    QCardSeparator,
+    QSearch,
+    QDialogSelect
   },
   data () {
     return {
       response: null,
-      config: {
-        // [REQUIRED] Set the row height
-        rowHeight: '50px',
-        // (optional) Title to display
-        title: 'Players',
-        // (optional) No columns header
-        noHeader: false,
-        // (optional) Display refresh button
-        refresh: false,
-        // (optional)
-        // User will be able to choose which columns
-        // should be displayed
-        columnPicker: false,
-        // (optional) How many columns from the left are sticky
-        leftStickyColumns: 0,
-        // (optional) How many columns from the right are sticky
-        rightStickyColumns: 0,
-        // (optional) By default, Data Table is responsive,
-        // but you can disable this by setting the property to "false"
-        responsive: false,
-        // (optional) Use pagination. Set how many rows per page
-        // and also specify an additional optional parameter ("options")
-        // which forces user to make a selection of how many rows per
-        // page he wants from a specific list
-        pagination: {
-          rowsPerPage: 15,
-          options: [5, 10, 15, 30, 50, 500]
+      colSortKey: 'projected',
+      limit: 10,
+      query: '',
+      queryColumn: 'name',
+      positionFilter: [],
+      selectOptions: [
+        {
+          label: 'QB',
+          value: 'qb'
         },
-        // (optional) Override default messages when no data is available
-        // or the user filtering returned no results.
-        messages: {
-          noData: '<i>warning</i> No data available to show.',
-          noDataAfterFiltering: '<i>warning</i> No results. Please refine your search terms.'
+        {
+          label: 'RB',
+          value: 'rb'
+        },
+        {
+          label: 'WR',
+          value: 'wr'
+        },
+        {
+          label: 'TE',
+          value: 'te'
+        },
+        {
+          label: 'Def',
+          value: 'def'
         }
-      },
-      columns: [{
-        // [REQUIRED] Column name
-        label: '-',
-        // [REQUIRED] Row property name
-        field: 'add',
-        // [REQUIRED] Column width
-        width: '52px',
-        // (optional) Column CSS style
-        filter: false
-      },
-      {
-        // [REQUIRED] Column name
-        label: '-',
-        // [REQUIRED] Row property name
-        field: 'pic',
-        // [REQUIRED] Column width
-        width: '52px',
-        // (optional) Column CSS style
-        filter: false
-      },
-      {
-        // [REQUIRED] Column name
-        label: 'Player',
-        // [REQUIRED] Row property name
-        field: 'name',
-        // [REQUIRED] Column width
-        width: '150px',
-        // (optional) Column CSS style
-        filter: true
-      },
-      {
-        label: 'Proj',
-        field: 'projected',
-        width: '80px',
-        style: 'text-align: center;',
-        filter: false,
-        sort (a, b) {
-          return (b - a)
-        },
-        type: 'number'
-      },
-      {
-        label: '%Add',
-        field: 'added',
-        width: '80px',
-        style: 'text-align: center;',
-        filter: false,
-        sort (a, b) {
-          return (b - a)
-        },
-        type: 'number'
-      },
-      {
-        label: '%Own',
-        field: 'owned',
-        width: '80px',
-        style: 'text-align: center;',
-        filter: false,
-        sort (a, b) {
-          return (b - a)
-        },
-        type: 'number'
-      }]
+      ]
     }
   },
   computed: {
@@ -172,27 +143,13 @@ export default {
       freeAgents: 'freeAgents',
       projectedScores: 'projectedScores',
       topAdds: 'topAdds',
-      topOwns: 'topOwns'
+      topOwns: 'topOwns',
+      nflSchedule: 'nflSchedule',
+      pointsAllowed: 'pointsAllowed'
     }),
     myTeam () {
       var team = this.leagueData[this.activeLeague].teamId
       return team
-    },
-    data () {
-      var data = []
-      var row = {}
-      this.freeAgents.leagueUnit.player.forEach((el) => {
-        row = {
-          add: el.id,
-          pic: el.id,
-          name: el.id,
-          projected: ((this.projectedLookup[el.id].score !== '') ? this.projectedLookup[el.id].score : '0'),
-          added: ((this.addedLookup[el.id]) ? this.addedLookup[el.id].percent : '0'),
-          owned: ((this.ownedLookup[el.id]) ? this.ownedLookup[el.id].percent : '0')
-        }
-        data.push(row)
-      })
-      return data
     },
     playerLookup () {
       var array = this.players.player
@@ -209,6 +166,65 @@ export default {
     ownedLookup () {
       var array = this.topOwns.player
       return this.lookup(array)
+    },
+    matchupLookup () {
+      var days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat']
+      var obj = {}
+      this.nflSchedule.matchup.forEach((el, i) => {
+        var date = new Date(el.kickoff * 1000)
+        obj[el.team[0].id] = {
+          vs: el.team[1].id,
+          day: days[date.getDay()],
+          time: ((date.getHours() === 0) ? '00' : date.getHours()) + ':' + ((date.getMinutes() === 0) ? '00' : date.getMinutes()),
+          location: ((el.team[0].isHome === '0') ? '@' : 'vs')
+        }
+        obj[el.team[1].id] = {
+          vs: el.team[0].id,
+          day: days[date.getDay()],
+          time: ((date.getHours() === 0) ? '00' : date.getHours()) + ':' + ((date.getMinutes() === 0) ? '00' : date.getMinutes()),
+          location: ((el.team[1].isHome === '0') ? '@' : 'vs')
+        }
+      })
+      obj['FA*'] = {
+        vs: 'FA*',
+        day: '',
+        time: '',
+        location: ''
+      }
+      return obj
+    },
+    playersSorted () {
+      var list = []
+      this.freeAgents.leagueUnit.player.forEach(el => {
+        el['projected'] = (this.projectedLookup[el.id].score !== '' ? parseFloat(this.projectedLookup[el.id].score) : 0)
+        el['added'] = (this.addedLookup[el.id] ? parseFloat(this.addedLookup[el.id].percent) : 0)
+        el['owned'] = (this.ownedLookup[el.id] ? parseFloat(this.ownedLookup[el.id].percent) : 0)
+        el['name'] = this.playerLookup[el.id].name
+        el['team'] = this.playerLookup[el.id].team
+        el['position'] = this.playerLookup[el.id].position
+        list.push(el)
+      })
+      if (this.query) {
+        list = this.findBy(list, this.query, this.queryColumn)
+      }
+      if (this.colSortKey) {
+        list = this.order(list, this.colSortKey)
+      }
+      if (this.positionFilter[0]) {
+        list = this.filter(list, this.positionFilter)
+      }
+      list = list.slice(0, this.limit)
+      return list
+    },
+    matchupPoints () {
+      var object = {
+        QB: this.matchupPointsUtil('QB'),
+        RB: this.matchupPointsUtil('RB'),
+        WR: this.matchupPointsUtil('WR'),
+        TE: this.matchupPointsUtil('TE'),
+        Def: this.matchupPointsUtil('Def')
+      }
+      return object
     }
   },
   methods: {
@@ -216,24 +232,103 @@ export default {
       close()
       openURL(url, '_self')
     },
-    lookup (array) {
+    lookup (array, key) {
+      if (!key) {
+        key = 'id'
+      }
       var lookup = {}
       for (var i = 0, len = array.length; i < len; i++) {
-        lookup[array[i].id] = array[i]
+        lookup[array[i][key]] = array[i]
       }
       return lookup
+    },
+    findBy (list, value, key) {
+      return list.filter(function (el) {
+        return String(el[key]).toLowerCase().includes(value.toLowerCase())
+      })
+    },
+    order (list, key) {
+      return list.sort((a, b) => {
+        var x = a[key]; var y = b[key]
+        return ((x < y) ? 1 : ((x > y) ? -1 : 0))
+      })
+    },
+    filter (list, pos) {
+      return list.filter(el => {
+        return pos.indexOf(el['position'].toLowerCase()) !== -1
+      })
+    },
+    sort (key) {
+      this.colSortKey = key
+    },
+    loadMore () {
+      this.limit += 10
+    },
+    matchupPointsUtil (pos) {
+      var array = []
+      var object = {}
+      this.pointsAllowed.team.forEach(el => {
+        var lookup = this.lookup(el.position, 'name')
+        var obj = {
+          team: el.id,
+          points: lookup[pos].points
+        }
+        array.push(obj)
+        object[el.id] = {
+          points: lookup[pos].points
+        }
+      })
+      array.sort(function (a, b) {
+        if (a.points > b.points) return -1
+        if (a.points < b.points) return 1
+        return 0
+      })
+      array.forEach(el => {
+        object[el.team].rank = array.findIndex(x => x.team === el.team) + 1
+        object[el.team].rankPretty = this.pluralize(array.findIndex(x => x.team === el.team) + 1)
+      })
+      object['FA*'] = {
+        points: '',
+        rank: '',
+        rankPretty: ''
+      }
+      return object
+    },
+    pluralize: function (value) {
+      value = value.toString()
+      if (value.endsWith('1')) {
+        value = value.toString() + 'st'
+      }
+      else if (value.endsWith('2')) {
+        value = value.toString() + 'nd'
+      }
+      else if (value.endsWith('3')) {
+        value = value.toString() + 'rd'
+      }
+      else {
+        value = value.toString() + 'th'
+      }
+      return value
     }
   }
 }
 </script>
 
 <style lang="stylus">
-
 .sortable span
   font-size 10px
 th.sortable
   text-align center
 .q-data-table-toolbar.upper-toolbar .q-select
   display none
+.load-more
+  position absolute
+  margin-left calc(50% - 20px)
+  margin-top 10px
+.card-main.no-overflow
+  overflow initial
+.fa-table-footer
+  font-weight 300
+.fa-table-footer
+  width 100%
 </style>
-cursor-pointer

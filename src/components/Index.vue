@@ -15,7 +15,7 @@
         <q-icon name="search" />
       </q-btn>
     </q-toolbar>
-    <q-modal @open="$refs.search.focus()" v-model="modal">
+    <q-modal class="search-modal" @open="$refs.search.focus()" v-model="modal">
       <q-search :debounce="0" color="primary" v-model="playerSearch" placeholder="Search" stack-label="Search All Players" ref="search">
       </q-search>
       <div v-if="!playerSearch"class="row flex-center"><i class="info">Start typing to search</i></div>
@@ -36,11 +36,6 @@
       <q-tab @click="changeTab('draft')" :class="((activeTab === 'draft') ? 'active' : '')" slot="title" name="tab-3" icon="view_comfy" label="Draft"/>
       <q-tab @click="changeTab('players')" :class="((activeTab === 'players') ? 'active' : '')" slot="title" name="tab-4" icon="person" label="Players" />
     </q-tabs>
-    <q-fixed-position corner="bottom-right" :offset="[18, 18]">
-      <q-btn round color="primary">
-        <q-icon name="message" />
-      </q-btn>
-    </q-fixed-position>
   </q-layout>
 </template>
 
@@ -296,14 +291,14 @@ export default {
   color #3f51b5
 .bg-gradient
   background linear-gradient(141deg, #3f51b5 15%, #03a9f4 100%)
-.modal .info
+.search-modal .info
   font-size 120%
   font-weight 300
   margin 20px
-.modal .q-btn
+.search-modal .q-btn
   margin 20px
   width 90%
-.modal.fullscreen
+.search-modal.fullscreen
   top 50px
 .main-avatar
   height 46px

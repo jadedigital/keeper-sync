@@ -6,9 +6,9 @@
       <q-tab slot="title" name="tab-2" label="Transactions"/>
       <q-tab slot="title" name="tab-3" label="Messages"/>
       <!-- Targets -->
-      <div class="contain-main bg-grey-2">
+      <div class="contain-main bg-grey-1">
         <q-tab-pane class="no-pad no-border" name="tab-1">
-          <q-card class="bg-grey-1 compact-card" v-for="(division, key) in standings" :key="key">
+          <q-card class="compact-card bg-white" v-for="(division, key) in standings" :key="key">
             <q-card-title>
               {{divisionLookup[key].name}}
             </q-card-title>
@@ -22,7 +22,7 @@
                     <th @click="sort(key, 'pf', 1)" nowrap class="text-center" :class="{'text-red': colSortKeys[key] === 'pf'}">PF</th>
                     <th @click="sort(key, 'pa', 1)" nowrap class="text-center" :class="{'text-red': colSortKeys[key] === 'pa'}">PA</th>
                     <th @click="sort(key, 'budget', 1)" nowrap class="text-center" :class="{'text-red': colSortKeys[key] === 'budget'}">Budget</th>
-                    <th @click="sort(key, 'divw', 1)" nowrap class="text-center" :class="{'text-red': colSortKeys[key] === 'divw'}">Division</th>
+                    <th v-if="league.divisions.count > 1" @click="sort(key, 'divw', 1)" nowrap class="text-center" :class="{'text-red': colSortKeys[key] === 'divw'}">Division</th>
                   </tr>
                 </thead>
                 <tbody v-for="team in division" :key="team.id">
@@ -42,7 +42,7 @@
                     <td nowrap class="text-center" :class="{'text-red': colSortKeys[key] === 'pf'}">{{team.pf}}</td>
                     <td nowrap class="text-center" :class="{'text-red': colSortKeys[key] === 'pa'}">{{team.pa}}</td>
                     <td nowrap class="text-center" :class="{'text-red': colSortKeys[key] === 'budget'}">{{teamLookup[team.id].bbidAvailableBalance}}</td>
-                    <td nowrap class="text-center" :class="{'text-red': colSortKeys[key] === 'divw'}">{{team.divw}}-{{team.divl}}-{{team.divt}}</td>
+                    <td v-if="league.divisions.count > 1" nowrap class="text-center" :class="{'text-red': colSortKeys[key] === 'divw'}">{{team.divw}}-{{team.divl}}-{{team.divt}}</td>
                   </tr>
                 </tbody>
               </table>
@@ -206,12 +206,6 @@ export default {
 .q-table .q-item-sublabel
   font-weight 300
   font-size 12px
-.compact-card .q-card-title
-  text-align center
-  font-size 14px
-  font-weight 500
-.compact-card .q-card-primary
-  padding 0
 .card-main
   overflow auto
 .q-table
