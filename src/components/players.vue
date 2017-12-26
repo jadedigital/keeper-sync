@@ -5,10 +5,11 @@
       icon="search"
       float-label="Search free agents"
     />
-    <q-dialog-select
+    <q-select
       v-model="positionFilter"
       :options="selectOptions"
       multiple
+      toggle
       chips
       float-label="Position"
       title="Positions"
@@ -79,7 +80,7 @@ import {
   QCardTitle,
   QCardSeparator,
   QSearch,
-  QDialogSelect
+  QSelect
 } from 'quasar'
 import { mapGetters } from 'vuex'
 
@@ -100,7 +101,7 @@ export default {
     QCardTitle,
     QCardSeparator,
     QSearch,
-    QDialogSelect
+    QSelect
   },
   data () {
     return {
