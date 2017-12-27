@@ -16,6 +16,7 @@ import {
   Loading
 } from 'quasar'
 import { mapGetters } from 'vuex'
+import { callApi } from '../data'
 
 export default {
   name: 'index',
@@ -106,94 +107,7 @@ export default {
           LocalStorage.set('leagueData', leagueData)
           this.$store.commit('SET_LEAGUE_DATA', leagueData)
           this.$store.commit('CHANGE_ACTIVE_LEAGUE', leagueId)
-          var rosterParams = {
-            cookie: leagueData[leagueId].cookie,
-            host: leagueData[leagueId].host,
-            TYPE: 'rosters',
-            L: leagueId,
-            JSON: 1
-          }
-          var playerParams = {
-            cookie: leagueData[leagueId].cookie,
-            host: leagueData[leagueId].host,
-            TYPE: 'players',
-            DETAILS: 1,
-            JSON: 1
-          }
-          var leagueParams = {
-            cookie: leagueData[leagueId].cookie,
-            host: leagueData[leagueId].host,
-            TYPE: 'league',
-            L: leagueId,
-            JSON: 1
-          }
-          var standingsParams = {
-            cookie: leagueData[leagueId].cookie,
-            host: leagueData[leagueId].host,
-            TYPE: 'leagueStandings',
-            L: leagueId,
-            JSON: 1
-          }
-          var freeAgentsParams = {
-            cookie: leagueData[leagueId].cookie,
-            host: leagueData[leagueId].host,
-            TYPE: 'freeAgents',
-            L: leagueId,
-            JSON: 1
-          }
-          var projectedScoresParams = {
-            cookie: leagueData[leagueId].cookie,
-            host: leagueData[leagueId].host,
-            TYPE: 'projectedScores',
-            L: leagueId,
-            COUNT: 3000,
-            JSON: 1
-          }
-          var topAddsParams = {
-            cookie: leagueData[leagueId].cookie,
-            host: leagueData[leagueId].host,
-            TYPE: 'topAdds',
-            JSON: 1
-          }
-          var topOwnsParams = {
-            cookie: leagueData[leagueId].cookie,
-            host: leagueData[leagueId].host,
-            TYPE: 'topOwns',
-            JSON: 1
-          }
-          var nflScheduleParams = {
-            cookie: leagueData[leagueId].cookie,
-            host: leagueData[leagueId].host,
-            TYPE: 'nflSchedule',
-            W: 16,
-            JSON: 1
-          }
-          var liveScoringParams = {
-            cookie: leagueData[leagueId].cookie,
-            host: leagueData[leagueId].host,
-            TYPE: 'liveScoring',
-            L: leagueId,
-            DETAILS: 1,
-            JSON: 1
-          }
-          var pointsAllowedParams = {
-            cookie: leagueData[leagueId].cookie,
-            host: leagueData[leagueId].host,
-            TYPE: 'pointsAllowed',
-            L: leagueId,
-            JSON: 1
-          }
-          this.fetchData(rosterParams)
-          this.fetchData(playerParams)
-          this.fetchData(leagueParams)
-          this.fetchData(standingsParams)
-          this.fetchData(freeAgentsParams)
-          this.fetchData(projectedScoresParams)
-          this.fetchData(topAddsParams)
-          this.fetchData(topOwnsParams)
-          this.fetchData(nflScheduleParams)
-          this.fetchData(liveScoringParams)
-          this.fetchData(pointsAllowedParams)
+          callApi()
         })
         .catch((error) => {
           if (error) {
@@ -201,30 +115,13 @@ export default {
             Toast.create('Invalid username or password. Please try again.')
           }
         })
-    },
-    fetchData (requestParams) {
-      if (LocalStorage.has(requestParams.TYPE)) {
-        let localData = LocalStorage.get.item(requestParams.TYPE)
-        this.$store.commit('SET_DATA', {type: requestParams.TYPE, data: localData})
-      }
-      else {
-        var url = 'https://keepersync.com/mfl/export'
-        this.axios.get(url, {
-          params: requestParams
-        })
-          .then((response) => {
-            var responseData = JSON.parse(response.data)
-            LocalStorage.set(requestParams.TYPE, responseData[requestParams.TYPE])
-            this.$store.commit('SET_DATA', {type: requestParams.TYPE, data: responseData[requestParams.TYPE]})
-          })
-          .catch((error) => {
-            if (error) {
-              Loading.hide()
-              Toast.create("Can't fetch " + requestParams.TYPE + ' data')
-            }
-          })
-      }
     }
   }
 }
 </script>
+
+<style lang="stylus">
+.bg-gradient
+  background linear-gradient(141deg, #3f51b5 15%, #03a9f4 100%)
+</style>
+

@@ -111,13 +111,12 @@ import {
   QCard,
   ActionSheet,
   Toast,
-  LocalStorage,
   QPullToRefresh,
   QCardTitle,
-  QCardSeparator,
-  Loading
+  QCardSeparator
 } from 'quasar'
 import { mapGetters } from 'vuex'
+import { callApi } from '../data'
 
 export default {
   name: 'index',
@@ -154,7 +153,7 @@ export default {
       league: 'league',
       liveScoring: 'liveScoring',
       projectedScores: 'projectedScores',
-      nflSchedule: 'nflSchedule',
+      fullNflSchedule: 'fullNflSchedule',
       pointsAllowed: 'pointsAllowed',
       currentWeek: 'currentWeek'
     }),
@@ -193,7 +192,8 @@ export default {
     matchupLookup () {
       var days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat']
       var obj = {}
-      this.nflSchedule.matchup.forEach((el, i) => {
+      var weekNumb = this.currentWeek - 1
+      this.fullNflSchedule.nflSchedule[weekNumb].matchup.forEach((el, i) => {
         var date = new Date(el.kickoff * 1000)
         obj[el.team[0].id] = {
           vs: el.team[1].id,
@@ -386,118 +386,8 @@ export default {
       })
     },
     refresher (done) {
-      this.fetchData(this.currentWeek)
-      let data = LocalStorage.get.item('leagueData')
-      var leagueId = Object.keys(data)[0]
-      var playerParams = {
-        cookie: data[leagueId].cookie,
-        host: data[leagueId].host,
-        TYPE: 'players',
-        DETAILS: 1,
-        JSON: 1
-      }
-      this.callApi(playerParams, false)
+      callApi()
       done()
-    },
-    getWeek () {
-      let data = LocalStorage.get.item('leagueData')
-      var leagueId = Object.keys(data)[0]
-      this.$store.commit('SET_LEAGUE_DATA', data)
-      this.$store.commit('CHANGE_ACTIVE_LEAGUE', leagueId)
-      var projectedScoresParams = {
-        cookie: data[leagueId].cookie,
-        host: data[leagueId].host,
-        TYPE: 'projectedScores',
-        L: leagueId,
-        COUNT: 3000,
-        JSON: 1
-      }
-      var url = 'https://keepersync.com/mfl/export'
-      return this.axios.get(url, {
-        params: projectedScoresParams
-      })
-        .then((response) => {
-          var responseData = JSON.parse(response.data)
-          return responseData.week
-        })
-        .catch((error) => {
-          if (error) {
-            Loading.hide()
-            Toast.create("Can't fetch " + projectedScoresParams.TYPE + ' data')
-          }
-        })
-    },
-    fetchData (week) {
-      Loading.show({
-        delay: 0
-      })
-      let data = LocalStorage.get.item('leagueData')
-      var leagueId = Object.keys(data)[0]
-      this.$store.commit('SET_LEAGUE_DATA', data)
-      this.$store.commit('CHANGE_ACTIVE_LEAGUE', leagueId)
-      var rosterParams = {
-        cookie: data[leagueId].cookie,
-        host: data[leagueId].host,
-        TYPE: 'rosters',
-        L: leagueId,
-        JSON: 1
-      }
-      var nflScheduleParams = {
-        cookie: data[leagueId].cookie,
-        host: data[leagueId].host,
-        TYPE: 'nflSchedule',
-        W: week,
-        JSON: 1
-      }
-      var projectedScoresParams = {
-        cookie: data[leagueId].cookie,
-        host: data[leagueId].host,
-        TYPE: 'projectedScores',
-        L: leagueId,
-        COUNT: 3000,
-        JSON: 1
-      }
-      var liveScoringParams = {
-        cookie: data[leagueId].cookie,
-        host: data[leagueId].host,
-        TYPE: 'liveScoring',
-        L: leagueId,
-        DETAILS: 1,
-        JSON: 1
-      }
-      var pointsAllowedParams = {
-        cookie: data[leagueId].cookie,
-        host: data[leagueId].host,
-        TYPE: 'pointsAllowed',
-        L: leagueId,
-        JSON: 1
-      }
-      this.callApi(rosterParams, false)
-      this.callApi(nflScheduleParams, false)
-      this.callApi(liveScoringParams, false)
-      this.callApi(projectedScoresParams, false)
-      this.callApi(pointsAllowedParams, true)
-    },
-    callApi (requestParams, lastCall) {
-      var url = 'https://keepersync.com/mfl/export'
-      this.axios.get(url, {
-        params: requestParams
-      })
-        .then((response) => {
-          var responseData = JSON.parse(response.data)
-          LocalStorage.set(requestParams.TYPE, responseData[requestParams.TYPE])
-          this.$store.commit('SET_DATA', {type: requestParams.TYPE, data: responseData[requestParams.TYPE]})
-          if (lastCall) {
-            Loading.hide()
-            this.dataLoaded = true
-          }
-        })
-        .catch((error) => {
-          if (error) {
-            Loading.hide()
-            Toast.create("Can't fetch " + requestParams.TYPE + ' data')
-          }
-        })
     }
   }
 }

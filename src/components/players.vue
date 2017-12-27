@@ -11,6 +11,7 @@
       v-model="positionFilter"
       :options="selectOptions"
       title="Positions"
+      float-label="Positions"
     >
     </q-select>
     <q-card class="compact-card">
@@ -144,8 +145,9 @@ export default {
       projectedScores: 'projectedScores',
       topAdds: 'topAdds',
       topOwns: 'topOwns',
-      nflSchedule: 'nflSchedule',
-      pointsAllowed: 'pointsAllowed'
+      fullNflSchedule: 'fullNflSchedule',
+      pointsAllowed: 'pointsAllowed',
+      currentWeek: 'currentWeek'
     }),
     myTeam () {
       var team = this.leagueData[this.activeLeague].teamId
@@ -170,7 +172,7 @@ export default {
     matchupLookup () {
       var days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat']
       var obj = {}
-      this.nflSchedule.matchup.forEach((el, i) => {
+      this.fullNflSchedule.nflSchedule[this.currentWeek - 1].matchup.forEach((el, i) => {
         var date = new Date(el.kickoff * 1000)
         obj[el.team[0].id] = {
           vs: el.team[1].id,
@@ -248,7 +250,7 @@ export default {
     },
     findBy (list, value, key) {
       return list.filter(function (el) {
-        return String(el[key]).toLowerCase().includes(value.toLowerCase())
+        return value.toLowerCase().split(' ').every(x => String(el[key]).toLowerCase().includes(x))
       })
     },
     order (list, key) {

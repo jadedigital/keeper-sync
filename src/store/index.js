@@ -22,7 +22,7 @@ export default new Vuex.Store({
     topAdds: '',
     topOwns: '',
     liveScoring: '',
-    nflSchedule: '',
+    fullNflSchedule: '',
     pointsAllowed: ''
 
   },

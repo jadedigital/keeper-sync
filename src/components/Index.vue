@@ -16,9 +16,10 @@
       </q-btn>
     </q-toolbar>
     <q-modal class="search-modal" @open="$refs.search.focus()" v-model="modal">
-      <q-search :debounce="0" color="primary" v-model="playerSearch" placeholder="Search" stack-label="Search All Players" ref="search">
+      <q-search color="primary" v-model="playerSearch" placeholder="Search" stack-label="Search All Players" ref="search">
       </q-search>
-      <div v-if="!playerSearch"class="row flex-center"><i class="info">Start typing to search</i></div>
+      <div v-if="!playerSearch" class="row flex-center"><i class="info">Start typing to search</i></div>
+      <div v-if="playerSearch" v-for="player in playerLookup" :key="player.id" class="row flex-center">{{player.name}} ({{player.team}})</div>
       <q-btn outline color="primary" @click="toggleModal">Cancel</q-btn>
     </q-modal>
     <!--
@@ -44,7 +45,6 @@
 <script>
 import {
   openURL,
-  Toast,
   QLayout,
   QToolbar,
   QToolbarTitle,
@@ -63,10 +63,10 @@ import {
   QModal,
   QAutocomplete,
   QSearch,
-  QFixedPosition,
-  LocalStorage
+  QFixedPosition
 } from 'quasar'
 import { mapGetters } from 'vuex'
+import { callApi } from '../data'
 
 export default {
   name: 'index',
@@ -99,26 +99,17 @@ export default {
       playerSearch: ''
     }
   },
-  beforeRouteUpdate (to, from, next) {
-    console.log('this works')
-    var totalSeconds = ''
-    this.nflSchedule.matchup.forEach(el => {
-      totalSeconds = totalSeconds + el.gameSecondsRemaining
+  beforeRouteEnter (to, from, next) {
+    callApi().then(() => {
+      next()
     })
-    if (totalSeconds === 0) {
-      var week = this.nflSchedule.week + 1
-      this.fetchData(week)
-    }
-    next()
   },
   computed: {
     ...mapGetters({
       activeLeague: 'activeLeague',
       leagueData: 'leagueData',
       league: 'league',
-      players: 'players',
-      currentWeek: 'currentWeek',
-      nflSchedule: 'nflSchedule'
+      players: 'players'
     }),
     myTeam () {
       var team = this.leagueData[this.activeLeague].teamId
@@ -129,14 +120,17 @@ export default {
       return this.lookup(array, 'id')
     },
     playerLookup () {
-      var array = []
-      var player = this.playerSearch
-      this.players.player.forEach(el => {
-        if (el.name.includes(player)) {
-          array.push(el.name)
-        }
+      var list = this.players.player
+      var positions = []
+      this.league.starters.position.forEach(el => {
+        positions.push(el.name)
       })
-      return array
+      list = this.positionFilter(list, positions)
+      if (this.playerSearch) {
+        list = this.findBy(list, this.playerSearch, 'name')
+      }
+      list = list.slice(0, 10)
+      return list
     }
   },
   methods: {
@@ -159,137 +153,16 @@ export default {
       }
       return lookup
     },
-    fetchData (week) {
-      let data = LocalStorage.get.item('leagueData')
-      var leagueId = Object.keys(data)[0]
-      this.$store.commit('SET_LEAGUE_DATA', data)
-      this.$store.commit('CHANGE_ACTIVE_LEAGUE', leagueId)
-      var rosterParams = {
-        cookie: data[leagueId].cookie,
-        host: data[leagueId].host,
-        TYPE: 'rosters',
-        L: leagueId,
-        JSON: 1
-      }
-      var playerParams = {
-        cookie: data[leagueId].cookie,
-        host: data[leagueId].host,
-        TYPE: 'players',
-        DETAILS: 1,
-        JSON: 1
-      }
-      var leagueParams = {
-        cookie: data[leagueId].cookie,
-        host: data[leagueId].host,
-        TYPE: 'league',
-        L: leagueId,
-        JSON: 1
-      }
-      var standingsParams = {
-        cookie: data[leagueId].cookie,
-        host: data[leagueId].host,
-        TYPE: 'leagueStandings',
-        L: leagueId,
-        JSON: 1
-      }
-      var freeAgentsParams = {
-        cookie: data[leagueId].cookie,
-        host: data[leagueId].host,
-        TYPE: 'freeAgents',
-        L: leagueId,
-        JSON: 1
-      }
-      var projectedScoresParams = {
-        cookie: data[leagueId].cookie,
-        host: data[leagueId].host,
-        TYPE: 'projectedScores',
-        L: leagueId,
-        COUNT: 3000,
-        JSON: 1
-      }
-      var topAddsParams = {
-        cookie: data[leagueId].cookie,
-        host: data[leagueId].host,
-        TYPE: 'topAdds',
-        JSON: 1
-      }
-      var topOwnsParams = {
-        cookie: data[leagueId].cookie,
-        host: data[leagueId].host,
-        TYPE: 'topOwns',
-        JSON: 1
-      }
-      var nflScheduleParams = {}
-      if (week) {
-        nflScheduleParams = {
-          cookie: data[leagueId].cookie,
-          host: data[leagueId].host,
-          TYPE: 'nflSchedule',
-          W: week,
-          JSON: 1
-        }
-      }
-      else {
-        nflScheduleParams = {
-          cookie: data[leagueId].cookie,
-          host: data[leagueId].host,
-          TYPE: 'nflSchedule',
-          JSON: 1
-        }
-      }
-
-      var liveScoringParams = {
-        cookie: data[leagueId].cookie,
-        host: data[leagueId].host,
-        TYPE: 'liveScoring',
-        L: leagueId,
-        DETAILS: 1,
-        JSON: 1
-      }
-      var pointsAllowedParams = {
-        cookie: data[leagueId].cookie,
-        host: data[leagueId].host,
-        TYPE: 'pointsAllowed',
-        L: leagueId,
-        JSON: 1
-      }
-      this.callApi(rosterParams)
-      this.callApi(playerParams)
-      this.callApi(leagueParams)
-      this.callApi(standingsParams)
-      this.callApi(freeAgentsParams)
-      this.callApi(projectedScoresParams)
-      this.callApi(topAddsParams)
-      this.callApi(topOwnsParams)
-      this.callApi(nflScheduleParams)
-      this.callApi(liveScoringParams)
-      this.callApi(pointsAllowedParams)
+    findBy (list, value, key) {
+      return list.filter(function (el) {
+        return value.toLowerCase().split(' ').every(x => String(el[key]).toLowerCase().includes(x))
+      })
     },
-    callApi (requestParams) {
-      if (LocalStorage.has(requestParams.TYPE)) {
-        let localData = LocalStorage.get.item(requestParams.TYPE)
-        this.$store.commit('SET_DATA', {type: requestParams.TYPE, data: localData})
-      }
-      else {
-        var url = 'https://keepersync.com/mfl/export'
-        this.axios.get(url, {
-          params: requestParams
-        })
-          .then((response) => {
-            var responseData = JSON.parse(response.data)
-            LocalStorage.set(requestParams.TYPE, responseData[requestParams.TYPE])
-            this.$store.commit('SET_DATA', {type: requestParams.TYPE, data: responseData[requestParams.TYPE]})
-          })
-          .catch((error) => {
-            if (error) {
-              Toast.create("Can't fetch " + requestParams.TYPE + ' data')
-            }
-          })
-      }
+    positionFilter (list, positions) {
+      return list.filter(function (el) {
+        return positions.some(x => el['position'] === x)
+      })
     }
-  },
-  created () {
-    this.fetchData()
   }
 }
 </script>

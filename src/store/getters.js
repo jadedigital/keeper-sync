@@ -11,7 +11,7 @@ export const freeAgents = state => state.freeAgents
 export const projectedScores = state => state.projectedScores
 export const topOwns = state => state.topOwns
 export const topAdds = state => state.topAdds
-export const nflSchedule = state => state.nflSchedule
+export const fullNflSchedule = state => state.fullNflSchedule
 export const liveScoring = state => state.liveScoring
 export const pointsAllowed = state => state.pointsAllowed
 export const currentWeek = state => {
