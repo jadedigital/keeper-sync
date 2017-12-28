@@ -92,26 +92,39 @@
       </div>
     </q-tabs>
     <q-modal ref="layoutModal" transition="slide-fade" :content-css="{minWidth: '80vw', minHeight: '80vh'}">
-      <q-modal-layout>
+      <q-modal-layout class="player-header">
         <q-toolbar slot="header">
           <q-btn flat @click="$refs.layoutModal.close()">
-            <q-icon name="keyboard_arrow_left" />
+            <q-icon name="arrow_back" />
           </q-btn>
           <div class="q-toolbar-title">
-            {{playerLookup[modalPlayer] ? playerLookup[modalPlayer].name : ''}}
+            {{playerLookup[modalPlayer] ? playerLookup[modalPlayer].name.split(', ').reverse().join(' ') : ''}}
+          </div>
+          <div class="q-toolbar-subtitle">
+            {{playerLookup[modalPlayer] ? playerLookup[modalPlayer].position : ''}}
           </div>
         </q-toolbar>
-        <q-toolbar slot="header">
-          <q-search inverted v-model="search" color="none" />
-        </q-toolbar>
-        <q-toolbar slot="footer">
-          <div class="q-toolbar-title">
-            Footer
+        <div v-if="modalPlayer" class="player-info bg-primary text-white row">
+          <ul class="col-6" style="list-style: none;">
+            <li>Team: {{playerLookup[modalPlayer].team}} #{{playerLookup[modalPlayer].jersey}}</li>
+            <li>HT/WT: {{parseInt(playerLookup[modalPlayer].height / 12)}}'{{playerLookup[modalPlayer].height % 12}}"/{{playerLookup[modalPlayer].weight}}lbs</li>
+            <li>Age: {{(new Date(Date.now()).getFullYear() - new Date(playerLookup[modalPlayer].birthdate * 1000).getFullYear())}}</li>
+            <li>Exp: {{new Date(Date.now()).getFullYear() - playerLookup[modalPlayer].draft_year}} <span v-if="playerLookup[modalPlayer].status === 'R'">({{playerLookup[modalPlayer].status}})</span></li>
+            <li>College: {{playerLookup[modalPlayer].college}}</li>
+          </ul>
+          <div class="col-6 self-end">
+            <div class="row justify-center">
+              <img class="float-right" :src="'https://sports.cbsimg.net/images/football/nfl/players/100x100/' + playerLookup[modalPlayer].cbs_id + '.jpg'" alt="">
+            </div>
           </div>
-        </q-toolbar>
-        <div class="layout-padding">
-          {{playerLookup[modalPlayer] ? playerLookup[modalPlayer].position : ''}}
-          <q-btn color="primary" @click="$refs.layoutModal.close()">Close</q-btn>
+        </div>
+        <div class="player-actions pull-right">
+          <q-btn round class="bg-red text-white">
+            <q-icon name="remove" />
+          </q-btn>
+          <q-btn round class="bg-blue text-white">
+            <q-icon name="import_export" />
+          </q-btn>
         </div>
       </q-modal-layout>
     </q-modal>
@@ -490,4 +503,9 @@ export default {
 {
   transform: translateX(100%);
 }
+.player-header .layout-header
+  box-shadow none
+.player-info
+  padding-top 30px
+  padding-right 10px
 </style>

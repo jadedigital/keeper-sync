@@ -1,6 +1,6 @@
 <template>
-  <q-layout ref="layout" view="hHh Lpr lff" :left-class="{'bg-grey-2': true}">
-    <q-toolbar class="bg-gradient" slot="header">
+  <q-layout ref="layout" view="hHh lpr fff">
+    <q-toolbar slot="header">
       <q-btn flat>
         <q-icon @click="goBack" name="arrow_back" />
       </q-btn>
