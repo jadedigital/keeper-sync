@@ -14,7 +14,7 @@
               </q-card-title>
               <q-card-separator />
               <div class="card-main bg-white">
-                <q-item separator v-for="(player, key) in startersSorted" :key="player.id" v-if="player.status === 'starter'">
+                <q-item separator v-for="(player, key) in startersSorted" :key="player.id" v-if="player.status === 'starter'" @click="goPlayerModal(player.id)">
                   <q-btn @click="showAS(playerLookup[player.id].name)" round small outline color="primary" style="font-size: 14px; font-weight:400" class="q-item-avatar">{{ playerLookup[player.id].position }}</q-btn>
                   <q-item-side v-if="playerLookup[player.id].position !== 'Def'" :avatar="'https://sports.cbsimg.net/images/football/nfl/players/100x100/' + playerLookup[player.id].cbs_id + '.jpg'" />
                   <q-item-side v-if="playerLookup[player.id].position === 'Def'" :avatar="'https://sports.cbsimg.net/images/nfl/logos/100x100/' + playerLookup[player.id].team + '.png'" />
@@ -60,7 +60,7 @@
                   <q-btn round small outline color="primary" style="font-size: 14px; font-weight:400" class="q-item-avatar">IR</q-btn>
                   <q-item-side v-if="playerLookup[player.id].position !== 'Def'" :avatar="'https://sports.cbsimg.net/images/football/nfl/players/100x100/' + playerLookup[player.id].cbs_id + '.jpg'" />
                   <q-item-side v-if="playerLookup[player.id].position === 'Def'" :avatar="'https://sports.cbsimg.net/images/nfl/logos/100x100/' + playerLookup[player.id].team + '.png'" />
-                  <div class="q-item-main q-item-section team-players">
+                  <div @click="goPlayer(player.id)" class="q-item-main q-item-section team-players">
                     <div class="q-item-label" style="overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical;">{{playerLookup[player.id].name.split(', ').slice(1).join(' ').charAt(0)}} . {{playerLookup[player.id].name.split(', ').slice(0, -1).join(' ')}}<small> {{playerLookup[player.id].team}}  -  {{playerLookup[player.id].position}}</small></div>
                     <div class="q-item-sublabel" style="overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical;">{{matchupLookup[playerLookup[player.id].team].day}} {{matchupLookup[playerLookup[player.id].team].time}} - <span :class="matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rank < 11 ? 'text-positive' : matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rank < 21 ? 'text-warning' : 'text-negative'">{{matchupLookup[playerLookup[player.id].team].location}} {{matchupLookup[playerLookup[player.id].team].vs}} ({{matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rankPretty}})</span></div>
                   </div>
@@ -91,6 +91,30 @@
         <q-tab-pane name="tab-2">Roster Alerts</q-tab-pane>
       </div>
     </q-tabs>
+    <q-modal ref="layoutModal" transition="slide-fade" :content-css="{minWidth: '80vw', minHeight: '80vh'}">
+      <q-modal-layout>
+        <q-toolbar slot="header">
+          <q-btn flat @click="$refs.layoutModal.close()">
+            <q-icon name="keyboard_arrow_left" />
+          </q-btn>
+          <div class="q-toolbar-title">
+            {{playerLookup[modalPlayer] ? playerLookup[modalPlayer].name : ''}}
+          </div>
+        </q-toolbar>
+        <q-toolbar slot="header">
+          <q-search inverted v-model="search" color="none" />
+        </q-toolbar>
+        <q-toolbar slot="footer">
+          <div class="q-toolbar-title">
+            Footer
+          </div>
+        </q-toolbar>
+        <div class="layout-padding">
+          {{playerLookup[modalPlayer] ? playerLookup[modalPlayer].position : ''}}
+          <q-btn color="primary" @click="$refs.layoutModal.close()">Close</q-btn>
+        </div>
+      </q-modal-layout>
+    </q-modal>
   </q-pull-to-refresh>
 </template>
 
@@ -113,7 +137,12 @@ import {
   Toast,
   QPullToRefresh,
   QCardTitle,
-  QCardSeparator
+  QCardSeparator,
+  QToolbar,
+  QSearch,
+  QIcon,
+  QModal,
+  QModalLayout
 } from 'quasar'
 import { mapGetters } from 'vuex'
 import { callApi } from '../data'
@@ -135,13 +164,20 @@ export default {
     QPullToRefresh,
     QCard,
     QCardTitle,
-    QCardSeparator
+    QCardSeparator,
+    QToolbar,
+    QSearch,
+    QIcon,
+    QModal,
+    QModalLayout
   },
   data () {
     return {
       response: null,
       dataLoaded: true,
-      newWeek: ''
+      newWeek: '',
+      modalPlayer: '',
+      search: ''
     }
   },
   computed: {
@@ -314,6 +350,13 @@ export default {
       close()
       openURL(url, '_self')
     },
+    goPlayer (id) {
+      this.$router.push('/player/' + id)
+    },
+    goPlayerModal (id) {
+      this.modalPlayer = id
+      this.$refs.layoutModal.open()
+    },
     lookup (array, key) {
       var lookup = {}
       for (var i = 0, len = array.length; i < len; i++) {
@@ -437,4 +480,14 @@ export default {
 .q-card
   border-radius 10px
   margin 10px
+.slide-fade-enter-active {
+  transition: all .2s ease;
+}
+.slide-fade-leave-active {
+  transition: all .2s ease;
+}
+.slide-fade-enter, .slide-fade-leave-to
+{
+  transform: translateX(100%);
+}
 </style>

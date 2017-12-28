@@ -52,6 +52,7 @@ const router = new VueRouter({
         }
       ]
     },
+    { path: '/player/:id', component: load('player') },
     { path: '/callback', component: load('Callback') },
     { path: '/login', component: load('login') },
     // Always leave this last one

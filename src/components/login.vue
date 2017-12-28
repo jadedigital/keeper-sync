@@ -53,14 +53,6 @@ export default {
       return loaded
     }
   },
-  watch: {
-    dataLoaded: function () {
-      if (this.dataLoaded) {
-        Loading.hide()
-        this.$router.push('team')
-      }
-    }
-  },
   methods: {
     loginDialog () {
       Dialog.create({
@@ -107,7 +99,11 @@ export default {
           LocalStorage.set('leagueData', leagueData)
           this.$store.commit('SET_LEAGUE_DATA', leagueData)
           this.$store.commit('CHANGE_ACTIVE_LEAGUE', leagueId)
-          callApi()
+          return callApi()
+        })
+        .then(() => {
+          Loading.hide()
+          this.$router.push('team')
         })
         .catch((error) => {
           if (error) {

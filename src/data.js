@@ -135,12 +135,13 @@ export function callApi () {
     }
   ]
   var url = 'https://keepersync.com/mfl/export'
+  var promises = []
   requests.forEach(el => {
     var timeCheck = Date.now()
     let lastTime = LocalStorage.get.item(el.type + '_time')
     var diff = timeCheck - lastTime
     console.log(diff)
-    axios.get(url, {
+    promises.push(axios.get(url, {
       params: el.params
     })
       .then((response) => {
@@ -151,12 +152,16 @@ export function callApi () {
         var key = el.type + '_time'
         var time = Date.now()
         LocalStorage.set(key, time)
+        return responseData
       })
       .catch((error) => {
         if (error) {
           Toast.create("Can't fetch " + el.type + ' data from MFL servers. Please try again later')
+          return error
         }
       })
+    )
   })
-  return this
+
+  return Promise.all(promises)
 }

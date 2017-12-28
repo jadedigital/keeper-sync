@@ -27,9 +27,11 @@
       <router-view /> component
       if using subRoutes
     -->
-    <keep-alive>
-      <router-view class="child-view"></router-view>
-    </keep-alive>
+    <q-transition appear duration="500" enter="fadeInLeft" leave="fadeOut" mode="out-in">
+      <keep-alive>
+        <router-view class="child-view"></router-view>
+      </keep-alive>
+    </q-transition>
 
     <q-tabs slot="footer" inverted class="bg-white">
       <!-- Tabs - notice slot="title" -->
@@ -63,10 +65,11 @@ import {
   QModal,
   QAutocomplete,
   QSearch,
-  QFixedPosition
+  QFixedPosition,
+  QTransition
 } from 'quasar'
 import { mapGetters } from 'vuex'
-import { callApi } from '../data'
+import 'quasar-extras/animate'
 
 export default {
   name: 'index',
@@ -89,7 +92,8 @@ export default {
     QAutocomplete,
     QSearch,
     QFixedPosition,
-    QModal
+    QModal,
+    QTransition
   },
   data () {
     return {
@@ -100,9 +104,7 @@ export default {
     }
   },
   beforeRouteEnter (to, from, next) {
-    callApi().then(() => {
-      next()
-    })
+    next()
   },
   computed: {
     ...mapGetters({
@@ -204,23 +206,4 @@ export default {
 .main-avatar
   height 46px
   width 46px
-.fade-enter-active, .fade-leave-active {
-  transition: opacity .5s ease;
-}
-.fade-enter, .fade-leave-active {
-  opacity: 0
-}
-.child-view {
-  transition: all .5s cubic-bezier(.55,0,.1,1);
-}
-.slide-left-enter, .slide-right-leave-active {
-  opacity: 0;
-  -webkit-transform: translate(30px, 0);
-  transform: translate(30px, 0);
-}
-.slide-left-leave-active, .slide-right-enter {
-  opacity: 0;
-  -webkit-transform: translate(-30px, 0);
-  transform: translate(-30px, 0);
-}
 </style>
