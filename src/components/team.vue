@@ -92,19 +92,13 @@
       </div>
     </q-tabs>
     <q-modal class="player-modal" ref="layoutModal" transition="slide-fade" :content-css="{minWidth: '80vw', minHeight: '80vh'}">
-      <q-modal-layout class="player-header">
+      <q-modal-layout v-if="modalPlayer" class="player-header">
         <q-toolbar class= "bg-grey-3 text-dark" slot="header">
           <q-btn flat @click="$refs.layoutModal.close()">
             <q-icon name="arrow_back" />
           </q-btn>
-          <div class="q-toolbar-title">
-            {{playerLookup[modalPlayer] ? playerLookup[modalPlayer].name.split(', ').reverse().join(' ') : ''}}
-            <div class="q-toolbar-subtitle">
-              {{playerLookup[modalPlayer] ? playerLookup[modalPlayer].position : ''}}
-            </div>
-          </div>
         </q-toolbar>
-        <div v-if="modalPlayer" class="player-info bg-grey-3 row reverse items-center">
+        <div class="player-info bg-grey-3 row reverse items-center">
           <ul class="col-6 player-info-list">
             <li>Team: <span>{{playerLookup[modalPlayer].team}} #{{playerLookup[modalPlayer].jersey}}</span></li>
             <li>HT/WT: <span>{{parseInt(playerLookup[modalPlayer].height / 12)}}'{{playerLookup[modalPlayer].height % 12}}"/{{playerLookup[modalPlayer].weight}}lbs</span></li>
