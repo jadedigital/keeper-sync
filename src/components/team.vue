@@ -553,5 +553,7 @@ export default {
  border-radius 8px
  margin 8px
 .player-modal .secondary-tabs .q-tab
-  max-height 38px
+  min-height 30px
+.player-modal .q-tabs-head
+  min-height 38px
 </style>

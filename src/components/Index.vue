@@ -27,7 +27,7 @@
       <router-view /> component
       if using subRoutes
     -->
-    <q-transition appear duration="500" enter="fadeInLeft" leave="fadeOut" mode="out-in">
+    <q-transition appear enter="fadeIn" leave="fadeOut" mode="out-in">
       <keep-alive>
         <router-view class="child-view"></router-view>
       </keep-alive>
