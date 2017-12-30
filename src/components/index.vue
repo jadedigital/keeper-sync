@@ -27,11 +27,11 @@
       <router-view /> component
       if using subRoutes
     -->
-    <q-transition appear enter="fadeIn" leave="fadeOut" mode="out-in">
+    <transition :name="transitionName">
       <keep-alive>
         <router-view class="child-view"></router-view>
       </keep-alive>
-    </q-transition>
+    </transition>
 
     <q-tabs slot="footer" inverted class="bg-white main-nav">
       <!-- Tabs - notice slot="title" -->
@@ -100,10 +100,24 @@ export default {
       response: null,
       activeTab: '',
       modal: false,
-      playerSearch: ''
+      playerSearch: '',
+      routeOrder: {
+        team: 1,
+        league: 2,
+        draft: 3,
+        players: 4
+      },
+      transitionName: 'slide-left'
     }
   },
   beforeRouteEnter (to, from, next) {
+    next()
+  },
+  beforeRouteUpdate (to, from, next) {
+    const toRoute = this.routeOrder[to.path.split('/')[1]]
+    const fromRoute = this.routeOrder[from.path.split('/')[1]]
+    console.log(to.path.split('/')[1])
+    this.transitionName = toRoute > fromRoute ? 'slide-right' : 'slide-left'
     next()
   },
   computed: {
@@ -206,4 +220,24 @@ export default {
 .main-avatar
   height 46px
   width 46px
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .5s ease;
+}
+.fade-enter, .fade-leave-active {
+  opacity: 0
+}
+.child-view {
+  width: 100%;
+  position: absolute;
+  transition: all .5s cubic-bezier(.55,0,.1,1);
+}
+.slide-left-enter {
+  transform: translate(-100%, 0);
+}
+.slide-left-leave-active, .slide-right-leave-active {
+  opacity: 0;
+}
+.slide-right-enter {
+  transform: translate(100%, 0);
+}
 </style>
