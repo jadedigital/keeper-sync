@@ -49,11 +49,19 @@ const router = new VueRouter({
           path: 'players',
           component: load('players'),
           meta: { requiresAuth: true }
+        },
+        {
+          path: 'player/:id',
+          component: load('player'),
+          meta: { requiresAuth: true }
+        },
+        {
+          path: 'teams/:id',
+          component: load('teams'),
+          meta: { requiresAuth: true }
         }
       ]
     },
-    { path: '/player/:id', component: load('player') },
-    { path: '/teams/:id', component: load('player') },
     { path: '/callback', component: load('Callback') },
     { path: '/login', component: load('login') },
     // Always leave this last one

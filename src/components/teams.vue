@@ -1,6 +1,6 @@
 <template>
   <q-pull-to-refresh :handler="refresher">
-    <q-toolbar slot="header">
+    <q-toolbar class="bg-gradient child-toolbar">
       <q-btn flat>
         <q-icon @click="goBack" name="arrow_back" />
       </q-btn>
@@ -147,6 +147,7 @@
 <script>
 import {
   openURL,
+  QLayout,
   QBtn,
   QList,
   QListHeader,
@@ -165,6 +166,7 @@ import {
   QCardTitle,
   QCardSeparator,
   QToolbar,
+  QToolbarTitle,
   QSearch,
   QIcon,
   QModal,
@@ -178,6 +180,7 @@ import { callApi } from '../data'
 export default {
   name: 'index',
   components: {
+    QLayout,
     QBtn,
     QList,
     QListHeader,
@@ -194,6 +197,7 @@ export default {
     QCardTitle,
     QCardSeparator,
     QToolbar,
+    QToolbarTitle,
     QSearch,
     QIcon,
     QModal,
@@ -224,7 +228,7 @@ export default {
       currentWeek: 'currentWeek'
     }),
     thisTeam () {
-      var team = this.$route.params.id
+      var team = this.$route.params.id ? this.$route.params.id : '0001'
       return team
     },
     teamLookup () {
@@ -298,6 +302,11 @@ export default {
             array.push(el2)
           }
         })
+      })
+      this.liveScoring.franchise.forEach((el) => {
+        if (el.id === this.thisTeam) {
+          array.push(el)
+        }
       })
       return array
     },
@@ -383,6 +392,9 @@ export default {
     launch (url) {
       close()
       openURL(url, '_self')
+    },
+    goBack () {
+      this.$router.go(-1)
     },
     goPlayer (id) {
       this.$router.push('/player/' + id)
@@ -471,6 +483,10 @@ export default {
 </script>
 
 <style lang="stylus">
+.child-toolbar
+  position fixed
+  z-index 2001
+  top 15px
 .team-players
   font-weight 500
 .team-players small

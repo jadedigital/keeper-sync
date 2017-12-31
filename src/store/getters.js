@@ -14,6 +14,7 @@ export const topAdds = state => state.topAdds
 export const fullNflSchedule = state => state.fullNflSchedule
 export const liveScoring = state => state.liveScoring
 export const pointsAllowed = state => state.pointsAllowed
+export const dummyToolbar = state => state.dummyToolbar
 export const currentWeek = state => {
   return state.projectedScores.week
 }

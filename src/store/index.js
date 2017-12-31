@@ -23,7 +23,8 @@ export default new Vuex.Store({
     topOwns: '',
     liveScoring: '',
     fullNflSchedule: '',
-    pointsAllowed: ''
+    pointsAllowed: '',
+    dummyToolbar: false
 
   },
   mutations: {

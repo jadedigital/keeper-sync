@@ -107,17 +107,23 @@ export default {
         draft: 3,
         players: 4
       },
-      transitionName: 'slide-left'
+      transitionName: ''
     }
   },
   beforeRouteEnter (to, from, next) {
     next()
   },
   beforeRouteUpdate (to, from, next) {
-    const toRoute = this.routeOrder[to.path.split('/')[1]]
-    const fromRoute = this.routeOrder[from.path.split('/')[1]]
-    console.log(to.path.split('/')[1])
-    this.transitionName = toRoute > fromRoute ? 'slide-right' : 'slide-left'
+    const toDepth = to.path.split('/').length
+    const fromDepth = from.path.split('/').length
+    if (toDepth === fromDepth) {
+      const toRoute = this.routeOrder[to.path.split('/')[1]]
+      const fromRoute = this.routeOrder[from.path.split('/')[1]]
+      this.transitionName = toRoute > fromRoute ? 'slide-right' : 'slide-left'
+    }
+    else {
+      this.transitionName = toDepth > fromDepth ? 'overlap-right' : 'overlap-left'
+    }
     next()
   },
   computed: {
@@ -125,7 +131,8 @@ export default {
       activeLeague: 'activeLeague',
       leagueData: 'leagueData',
       league: 'league',
-      players: 'players'
+      players: 'players',
+      dummyToolbar: 'dummyToolbar'
     }),
     myTeam () {
       var team = this.leagueData[this.activeLeague].teamId
@@ -231,13 +238,29 @@ export default {
   position: absolute;
   transition: all .5s cubic-bezier(.55,0,.1,1);
 }
-.slide-left-enter {
-  transform: translate(-100%, 0);
+.slide-left-enter, .slide-right-leave-active {
+  opacity: 0;
+  -webkit-transform: translate(30px, 0);
+  transform: translate(30px, 0);
 }
-.slide-left-leave-active, .slide-right-leave-active {
+.slide-left-leave-active, .slide-right-enter {
+  opacity: 0;
+  -webkit-transform: translate(-30px, 0);
+  transform: translate(-30px, 0);
+}
+.overlap-left-enter, .overlap-left-enter-active {
   opacity: 0;
 }
-.slide-right-enter {
+.overlap-left-enter-to {
+  opacity: 1;
+}
+.overlap-left-leave-active {
+  transform: translate(100%, 0);
+}
+.overlap-right-leave-active {
+  opacity: 1;
+}
+.overlap-right-enter {
   transform: translate(100%, 0);
 }
 </style>
