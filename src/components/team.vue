@@ -93,12 +93,12 @@
     </q-tabs>
     <q-modal class="player-modal" ref="layoutModal" transition="slide-fade" :content-css="{minWidth: '80vw', minHeight: '80vh'}">
       <q-modal-layout v-if="modalPlayer" class="player-header">
-        <q-toolbar class= "bg-indigo-1 text-dark" slot="header">
+        <q-toolbar class= "bg-blue-grey-9 text-white" slot="header">
           <q-btn flat @click="$refs.layoutModal.close()">
             <q-icon name="arrow_back" />
           </q-btn>
         </q-toolbar>
-        <div class="player-info bg-indigo-1 row reverse items-center">
+        <div class="player-info bg-blue-grey-9 text-white row reverse items-center">
           <ul class="col-6 player-info-list">
             <li>Team: <span>{{playerLookup[modalPlayer].team}} #{{playerLookup[modalPlayer].jersey}}</span></li>
             <li>HT/WT: <span>{{parseInt(playerLookup[modalPlayer].height / 12)}}'{{playerLookup[modalPlayer].height % 12}}"/{{playerLookup[modalPlayer].weight}}lbs</span></li>

@@ -26,7 +26,7 @@
                   </tr>
                 </thead>
                 <tbody v-for="team in division" :key="team.id">
-                  <tr @click="$router.push('teams/' + team.id)">
+                  <tr @click="$router.push('/teams/' + team.id)">
                     <td colspan="6" class="text-left col-pad team-name-main">
                       <q-item separator>
                         <div class="rank">{{team.rank}}</div>

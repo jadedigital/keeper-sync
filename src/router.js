@@ -29,32 +29,40 @@ const router = new VueRouter({
       component: load('index'),
       meta: { requiresAuth: true },
       children: [
-        {
-          path: 'team',
-          name: 'My Team',
-          component: load('team'),
-          meta: { requiresAuth: true }
+        { path: 'user',
+          component: load('layout'),
+          meta: { requiresAuth: true },
+          children: [
+            {
+              path: 'team',
+              name: 'My Team',
+              component: load('team'),
+              meta: { requiresAuth: true }
+            },
+            {
+              path: 'league',
+              component: load('league'),
+              meta: { requiresAuth: true }
+            },
+            {
+              path: 'draft',
+              component: load('draft'),
+              meta: { requiresAuth: true }
+            },
+            {
+              path: 'players',
+              component: load('players'),
+              meta: { requiresAuth: true }
+            },
+            {
+              path: 'player/:id',
+              component: load('player'),
+              meta: { requiresAuth: true }
+            }
+          ]
         },
-        {
-          path: 'league',
-          component: load('league'),
-          meta: { requiresAuth: true }
-        },
-        {
-          path: 'draft',
-          component: load('draft'),
-          meta: { requiresAuth: true }
-        },
-        {
-          path: 'players',
-          component: load('players'),
-          meta: { requiresAuth: true }
-        },
-        {
-          path: 'player/:id',
-          component: load('player'),
-          meta: { requiresAuth: true }
-        },
+        { path: 'callback', component: load('Callback') },
+        { path: 'login', component: load('login') },
         {
           path: 'teams/:id',
           component: load('teams'),
@@ -62,8 +70,6 @@ const router = new VueRouter({
         }
       ]
     },
-    { path: '/callback', component: load('Callback') },
-    { path: '/login', component: load('login') },
     // Always leave this last one
     { path: '*', component: load('Error404') } // Not found
   ]

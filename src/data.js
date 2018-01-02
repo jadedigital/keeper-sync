@@ -2,7 +2,7 @@ import axios from 'axios'
 import store from './store'
 import { LocalStorage, Toast } from 'quasar'
 
-export function callApi () {
+export function callApi (types) {
   let data = LocalStorage.get.item('leagueData')
   var leagueId = Object.keys(data)[0]
   store.commit('SET_LEAGUE_DATA', data)
@@ -87,53 +87,60 @@ export function callApi () {
     JSON: 1
   }
 
-  var requests = [
-    {
-      type: 'rosters',
-      params: rosterParams
-    },
-    {
-      type: 'players',
-      params: playerParams,
-      timeOut: 86400
-    },
-    {
-      type: 'leagueStandings',
-      params: standingsParams
-    },
-    {
-      type: 'freeAgents',
-      params: freeAgentsParams
-    },
-    {
-      type: 'league',
-      params: leagueParams
-    },
-    {
-      type: 'projectedScores',
-      params: projectedScoresParams
-    },
-    {
-      type: 'topAdds',
-      params: topAddsParams
-    },
-    {
-      type: 'topOwns',
-      params: topOwnsParams
-    },
-    {
-      type: 'fullNflSchedule',
-      params: nflScheduleParams
-    },
-    {
-      type: 'liveScoring',
-      params: liveScoringParams
-    },
-    {
-      type: 'pointsAllowed',
-      params: pointsAllowedParams
-    }
-  ]
+  var requests = []
+  if (types) {
+    requests = types
+  }
+  else {
+    requests = [
+      {
+        type: 'rosters',
+        params: rosterParams
+      },
+      {
+        type: 'players',
+        params: playerParams,
+        timeOut: 3600000
+      },
+      {
+        type: 'leagueStandings',
+        params: standingsParams
+      },
+      {
+        type: 'freeAgents',
+        params: freeAgentsParams
+      },
+      {
+        type: 'league',
+        params: leagueParams
+      },
+      {
+        type: 'projectedScores',
+        params: projectedScoresParams
+      },
+      {
+        type: 'topAdds',
+        params: topAddsParams
+      },
+      {
+        type: 'topOwns',
+        params: topOwnsParams
+      },
+      {
+        type: 'fullNflSchedule',
+        params: nflScheduleParams
+      },
+      {
+        type: 'liveScoring',
+        params: liveScoringParams
+      },
+      {
+        type: 'pointsAllowed',
+        params: pointsAllowedParams
+      }
+    ]
+  }
+
   var url = 'https://keepersync.com/mfl/export'
   var promises = []
   requests.forEach(el => {
