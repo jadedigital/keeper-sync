@@ -69,7 +69,7 @@ import {
   QTransition
 } from 'quasar'
 import { mapGetters } from 'vuex'
-import 'quasar-extras/animate'
+import { loadData } from '../data'
 
 export default {
   name: 'index',
@@ -111,6 +111,22 @@ export default {
     }
   },
   beforeRouteEnter (to, from, next) {
+    var data = [
+      'leagueData',
+      'activeLeague',
+      'rosters',
+      'players',
+      'leagueStandings',
+      'freeAgents',
+      'league',
+      'projectedScores',
+      'topAdds',
+      'topOwns',
+      'fullNflSchedule',
+      'liveScoring',
+      'pointsAllowed'
+    ]
+    loadData(data)
     next()
   },
   beforeRouteUpdate (to, from, next) {

@@ -140,28 +140,37 @@ export function callApi () {
     var timeCheck = Date.now()
     let lastTime = LocalStorage.get.item(el.type + '_time')
     var diff = timeCheck - lastTime
-    console.log(diff)
-    promises.push(axios.get(url, {
-      params: el.params
-    })
-      .then((response) => {
-        console.log(response)
-        var responseData = JSON.parse(response.data)
-        LocalStorage.set(el.type, responseData[el.type])
-        store.commit('SET_DATA', {type: el.type, data: responseData[el.type]})
-        var key = el.type + '_time'
-        var time = Date.now()
-        LocalStorage.set(key, time)
-        return responseData
+    if (diff > 3600000) {
+      console.log('fetching ' + el.type + ' data from server')
+      promises.push(axios.get(url, {
+        params: el.params
       })
-      .catch((error) => {
-        if (error) {
-          Toast.create("Can't fetch " + el.type + ' data from MFL servers. Please try again later')
-          return error
-        }
-      })
-    )
+        .then((response) => {
+          var responseData = JSON.parse(response.data)
+          LocalStorage.set(el.type, responseData[el.type])
+          store.commit('SET_DATA', {type: el.type, data: responseData[el.type]})
+          var key = el.type + '_time'
+          var time = Date.now()
+          LocalStorage.set(key, time)
+          return responseData
+        })
+        .catch((error) => {
+          if (error) {
+            Toast.create("Can't fetch " + el.type + ' data from MFL servers. Please try again later')
+            return error
+          }
+        })
+      )
+    }
   })
 
   return Promise.all(promises)
+}
+
+export function loadData (data) {
+  data.forEach(el => {
+    console.log('loading ' + el + ' data from cache')
+    let cacheData = LocalStorage.get.item(el)
+    store.commit('SET_DATA', {type: el, data: cacheData})
+  })
 }

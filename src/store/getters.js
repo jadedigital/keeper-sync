@@ -16,5 +16,5 @@ export const liveScoring = state => state.liveScoring
 export const pointsAllowed = state => state.pointsAllowed
 export const dummyToolbar = state => state.dummyToolbar
 export const currentWeek = state => {
-  return state.projectedScores.week
+  return Math.min(state.projectedScores.week, state.league.endWeek)
 }

@@ -97,6 +97,7 @@ export default {
           var leagueData = {}
           leagueData[leagueId] = {cookie: response.data.cookie, host: host, teamId: response.data.leagues.league.franchise_id}
           LocalStorage.set('leagueData', leagueData)
+          LocalStorage.set('activeLeague', leagueId)
           this.$store.commit('SET_LEAGUE_DATA', leagueData)
           this.$store.commit('CHANGE_ACTIVE_LEAGUE', leagueId)
           return callApi()
