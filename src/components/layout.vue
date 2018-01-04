@@ -52,13 +52,14 @@
 
     <q-tabs slot="footer" inverted class="bg-white main-nav">
       <!-- Tabs - notice slot="title" -->
-      <q-tab @click="changeTab('team')" :class="((activeTab === 'team') ? 'active' : '')" default slot="title" name="tab-1" icon="list" label="My Team" />
-      <q-tab @click="changeTab('league')" :class="((activeTab === 'league') ? 'active' : '')" slot="title" name="tab-2" icon="star" label="League" />
+      <q-route-tab to="team" exact slot="title" icon="list" label="My Team" />
+      <q-route-tab to="league" exact slot="title" icon="star" label="League" />
       <div slot="title" class="main-avatar q-tab column flex-center relative-position active icon-and-label">
         <div :style="logoUrl" class="q-item-avatar"></div>
       </div>
-      <q-tab @click="changeTab('draft')" :class="((activeTab === 'draft') ? 'active' : '')" slot="title" name="tab-3" icon="view_comfy" label="Draft"/>
-      <q-tab @click="changeTab('players')" :class="((activeTab === 'players') ? 'active' : '')" slot="title" name="tab-4" icon="person" label="Players" />
+      <!-- <q-route-tab to="draft" exact slot="title" icon="view_comfy" label="Draft"/> -->
+      <q-route-tab to="matchup" exact slot="title" icon="flag" label="Matchup"/>
+      <q-route-tab to="players" exact slot="title" icon="person" label="Players" />
     </q-tabs>
   </q-layout>
 </template>
@@ -118,13 +119,13 @@ export default {
   data () {
     return {
       response: null,
-      activeTab: '',
       modal: false,
       playerSearch: '',
       routeOrder: {
         team: 1,
         league: 2,
         draft: 3,
+        matchup: 3,
         players: 4
       },
       transitionName: ''
@@ -181,10 +182,6 @@ export default {
       close()
       openURL(url, '_self')
     },
-    changeTab (route) {
-      this.activeTab = route
-      this.$router.push(route)
-    },
     toggleModal () {
       this.$refs.search.clear()
       this.modal = !this.modal
@@ -211,6 +208,12 @@ export default {
 </script>
 
 <style lang="stylus">
+.no-pad
+  padding 0
+.no-border
+  border none
+.border-bottom
+  border-bottom solid 1px rgba(0,0,0,0.1)
 .logo-container
   width 255px
   height 242px
@@ -222,6 +225,23 @@ export default {
 .logo
   position absolute
   transform-style preserve-3d
+.contain-main
+  height 100%
+  padding-bottom 62px
+.q-tabs-panes
+  background #fafafa
+.q-item-side-right .q-item-label
+  color #0c0c0c
+  font-weight 500
+.compact-card .q-card-title
+  text-align center
+  font-size 14px
+  font-weight 500
+.compact-card .q-card-primary
+  padding 0
+.q-card.compact-card
+  box-shadow none
+  border solid 1px rgba(0,0,0,0.1)
 .q-tab
   font-size 10px
   padding 0

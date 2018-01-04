@@ -50,6 +50,11 @@ const router = new VueRouter({
               meta: { requiresAuth: true }
             },
             {
+              path: 'matchup',
+              component: load('matchup'),
+              meta: { requiresAuth: true }
+            },
+            {
               path: 'players',
               component: load('players'),
               meta: { requiresAuth: true }
