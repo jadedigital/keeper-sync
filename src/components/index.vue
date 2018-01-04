@@ -13,7 +13,6 @@
 /*
  * Root component
  */
-import { loadData } from '../data'
 export default {
   data () {
     return {
