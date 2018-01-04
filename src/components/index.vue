@@ -21,22 +21,6 @@ export default {
     }
   },
   beforeRouteEnter (to, from, next) {
-    var data = [
-      'leagueData',
-      'activeLeague',
-      'rosters',
-      'players',
-      'leagueStandings',
-      'freeAgents',
-      'league',
-      'projectedScores',
-      'topAdds',
-      'topOwns',
-      'fullNflSchedule',
-      'liveScoring',
-      'pointsAllowed'
-    ]
-    loadData(data)
     next()
   },
   beforeRouteUpdate (to, from, next) {

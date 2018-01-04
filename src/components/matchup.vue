@@ -42,7 +42,7 @@
       </div>
       <div class="row">
         <div class="col-12">
-          <div class="separator-title text-center border-bottom">Starters</div>
+          <div class="separator-title text-center border-bottom uppercase">Starters</div>
         </div>
       </div>
       <div v-for="player in combinedStarters" :key="player.id">
@@ -92,7 +92,7 @@
       </div>
       <div class="row">
         <div class="col-12">
-          <div class="separator-title text-center border-bottom">Bench</div>
+          <div class="separator-title text-center border-bottom uppercase">Bench</div>
         </div>
       </div>
       <div v-for="player in combinedBench" :key="player.id">
@@ -644,6 +644,11 @@ export default {
   margin-right 10px
 .matchup-header .total-score
   font-weight 700
+  font-size 18px
+.separator-title
+  padding 4px 0
+  font-size 12px
+  font-weight 300
 .matchup-list
   font-size 12px
 .matchup-list .list-item
