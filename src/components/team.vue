@@ -14,8 +14,8 @@
               </q-card-title>
               <q-card-separator />
               <div class="card-main bg-white">
-                <q-item separator v-for="(player, key) in startersSorted" :key="player.id" v-if="player.status === 'starter'" @click="goPlayerModal(player.id)">
-                  <q-btn @click="showAS(playerLookup[player.id].name)" round small outline color="primary" style="font-size: 14px; font-weight:400" class="q-item-avatar">{{ playerLookup[player.id].position }}</q-btn>
+                <q-item separator v-for="player in startersOld" :key="player.id" @click="goPlayerModal(player.id)">
+                  <q-btn @click.stop="showAS(playerLookup[player.id].name)" round small style="font-size: 12px; font-weight:400" :class="[ parseFloat(scoringLookup[player.id].gameSecondsRemaining) < 3600 ? 'q-btn-flat text-primary' : 'q-btn-outline bg-white text-primary', 'q-item-avatar']">{{ player.position }}</q-btn>
                   <q-item-side v-if="playerLookup[player.id].position !== 'Def'" :avatar="'https://sports.cbsimg.net/images/football/nfl/players/100x100/' + playerLookup[player.id].cbs_id + '.jpg'" />
                   <q-item-side v-if="playerLookup[player.id].position === 'Def'" :avatar="'https://sports.cbsimg.net/images/nfl/logos/100x100/' + playerLookup[player.id].team + '.png'" />
                   <div class="q-item-main q-item-section team-players">
@@ -35,8 +35,8 @@
               </q-card-title>
               <q-card-separator />
               <div class="card-main bg-white">
-                <q-item separator v-for="(player, key) in startersSorted" :key="player.id" v-if="player.status === 'nonstarter'">
-                  <q-btn round small outline color="primary" style="font-size: 14px; font-weight:400" class="q-item-avatar">BN</q-btn>
+                <q-item separator v-for="player in bench" :key="player.id">
+                  <q-btn @click.stop="showAS(playerLookup[player.id].name)" round small style="font-size: 12px; font-weight:400" :class="[ parseFloat(scoringLookup[player.id].gameSecondsRemaining) < 3600 ? 'q-btn-flat text-primary' : 'q-btn-outline bg-white text-primary', 'q-item-avatar']">BN</q-btn>
                   <q-item-side v-if="playerLookup[player.id].position !== 'Def'" :avatar="'https://sports.cbsimg.net/images/football/nfl/players/100x100/' + playerLookup[player.id].cbs_id + '.jpg'" />
                   <q-item-side v-if="playerLookup[player.id].position === 'Def'" :avatar="'https://sports.cbsimg.net/images/nfl/logos/100x100/' + playerLookup[player.id].team + '.png'" />
                   <div class="q-item-main q-item-section team-players">
@@ -56,7 +56,7 @@
               </q-card-title>
               <q-card-separator />
               <div class="card-main bg-white">
-                <q-item separator v-for="(player, key) in rosterLookup[myTeam].player" :key="player.id" v-if="player.status === 'INJURED_RESERVE'">
+                <q-item separator v-for="player in injuredReserve" :key="player.id">
                   <q-btn round small outline color="primary" style="font-size: 14px; font-weight:400" class="q-item-avatar">IR</q-btn>
                   <q-item-side v-if="playerLookup[player.id].position !== 'Def'" :avatar="'https://sports.cbsimg.net/images/football/nfl/players/100x100/' + playerLookup[player.id].cbs_id + '.jpg'" />
                   <q-item-side v-if="playerLookup[player.id].position === 'Def'" :avatar="'https://sports.cbsimg.net/images/nfl/logos/100x100/' + playerLookup[player.id].team + '.png'" />
@@ -74,7 +74,7 @@
               </q-card-title>
               <q-card-separator />
               <div class="card-main bg-white">
-                <q-item separator v-for="(player, key) in rosterLookup[myTeam].player" :key="player.id" v-if="player.status === 'TAXI_SQUAD'">
+                <q-item separator v-for="player in taxiSquad" :key="player.id">
                   <q-btn round small outline color="primary" style="font-size: 14px; font-weight:400" class="q-item-avatar">TS</q-btn>
                   <q-item-side v-if="playerLookup[player.id].position !== 'Def'" :avatar="'https://sports.cbsimg.net/images/football/nfl/players/100x100/' + playerLookup[player.id].cbs_id + '.jpg'" />
                   <q-item-side v-if="playerLookup[player.id].position === 'Def'" :avatar="'https://sports.cbsimg.net/images/nfl/logos/100x100/' + playerLookup[player.id].team + '.png'" />
@@ -316,20 +316,67 @@ export default {
       return array
     },
     startersOld () {
-      var n = 0
-      var starters = {}
-      var players = this.myScoring[0].players.player
+      var starters = []
+      var players = []
+      this.myScoring[0].players.player.forEach(el => {
+        if (el.status === 'starter') {
+          players.push(el.id)
+        }
+      })
       this.positions.forEach((elarray) => {
-        elarray.forEach((el) => {
-          players.slice(n, n + 1).forEach((pos) => {
-            if (this.playerLookup[pos.id].position === el) {
-              starters[pos.id] = el
-              n++
+        elarray.forEach((elPos) => {
+          players.some((elId) => {
+            if (this.playerLookup[elId].position === elPos) {
+              var index = players.indexOf(elId)
+              players.splice(index, 1)
+              var position = elarray.length > 1 ? elarray.map((pos) => pos[0]).join('/') : elPos
+              var obj = {
+                id: this.playerLookup[elId].id,
+                position: position
+              }
+              starters.push(obj)
             }
+            return this.playerLookup[elId].position === elPos
           })
         })
       })
       return starters
+    },
+    bench () {
+      var bench = []
+      this.myScoring[0].players.player.forEach(el => {
+        if (el.status === 'nonstarter') {
+          var obj = {
+            id: el.id
+          }
+          bench.push(obj)
+        }
+      })
+      return bench
+    },
+    taxiSquad () {
+      var taxiSquad = []
+      this.rosterLookup[this.myTeam].player.forEach(el => {
+        if (el.status === 'TAXI_SQUAD') {
+          var obj = {
+            id: el.id
+          }
+          taxiSquad.push(obj)
+        }
+      })
+      return taxiSquad
+    },
+    injuredReserve () {
+      var injuredReserve = []
+      this.rosterLookup[this.myTeam].player.forEach(el => {
+        if (el.status === 'INJURED_RESERVE') {
+          var obj = {
+            id: el.id
+          }
+          injuredReserve.push(obj)
+        }
+      })
+      return injuredReserve
     },
     positionsBasic () {
       var pos = []
@@ -341,12 +388,22 @@ export default {
     positions () {
       var pos = []
       var flex = []
+      var kick = []
+      var def = []
       var n = 0
       var m = 0
       this.league.starters.position.forEach((el) => {
-        var min = ''
-        var max = ''
-        if (el.limit.indexOf('-')) {
+        var min = 0
+        var max = 0
+        if (el.limit === '1' && el.name === 'Def') {
+          def[0] = new Array(0)
+          def[0].push(el.name)
+        }
+        else if (el.limit === '1' && el.name === 'K') {
+          kick[0] = new Array(0)
+          kick[0].push(el.name)
+        }
+        else if (el.limit.indexOf('-')) {
           min = el.limit.split('-')[0]
           max = el.limit.split('-')[1]
         }
@@ -368,7 +425,7 @@ export default {
         }
         m = 0
       })
-      var positions = pos.concat(flex)
+      var positions = pos.concat(flex, kick, def)
       return positions
     }
   },
