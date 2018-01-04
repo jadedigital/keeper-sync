@@ -104,7 +104,7 @@ export default {
         })
         .then(() => {
           Loading.hide()
-          this.$router.push('team')
+          this.$router.push('user/team')
         })
         .catch((error) => {
           if (error) {
