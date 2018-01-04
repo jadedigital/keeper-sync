@@ -27,7 +27,6 @@ const router = new VueRouter({
   routes: [
     { path: '/',
       component: load('index'),
-      meta: { requiresAuth: true },
       children: [
         { path: 'user',
           component: load('layout'),
