@@ -66,7 +66,6 @@ const router = new VueRouter({
           ]
         },
         { path: 'callback', component: load('Callback') },
-        { path: 'login', component: load('login') },
         {
           path: 'teams/:id',
           component: load('teams'),
@@ -74,6 +73,7 @@ const router = new VueRouter({
         }
       ]
     },
+    { path: '/login', component: load('login') },
     // Always leave this last one
     { path: '*', component: load('Error404') } // Not found
   ]
@@ -81,11 +81,9 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
   if (to.matched.some(record => record.meta.requiresAuth)) {
-    console.log('you made it')
     // this route requires auth, check if logged in
     // if not, redirect to login page.
     if (localStorage.getItem('leagueData') === null) {
-      console.log('not logged in')
       next({
         path: '/login',
         query: { redirect: to.fullPath }

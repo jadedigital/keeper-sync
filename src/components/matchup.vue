@@ -17,6 +17,7 @@
             </div>
             <div class="col-6">
               <div class="total-score pull-right">{{myScoring[myTeam].score}}</div>
+              <div class="total-projection pull-right">{{totalProjected[myTeam]}}</div>
             </div>
           </div>
         </div>
@@ -32,6 +33,7 @@
           <div class="row items-center">
             <div class="col-6">
               <div class="total-score">{{myScoring[opponent].score}}</div>
+              <div class="total-projection">{{totalProjected[opponent]}}</div>
             </div>
             <div class="col-6">
               <img v-if="teamLookup[opponent].icon" :src="teamLookup[opponent].icon" class="q-item-avatar pull-right"/>
@@ -319,6 +321,20 @@ export default {
         newProjection = ((timeRemaining * rate) + score).toFixed(2)
         obj[el.id] = {projection: newProjection}
       })
+      return obj
+    },
+    totalProjected () {
+      var obj = {}
+      var team1 = 0
+      var team2 = 0
+      this.startersOld.forEach(el => {
+        team1 += parseFloat(this.updatedProjection[el.id].projection)
+      })
+      this.opponentStarters.forEach(el => {
+        team2 += parseFloat(this.updatedProjection[el.id].projection)
+      })
+      obj[this.myTeam] = parseFloat(Math.round(team1 * 100) / 100).toFixed(2)
+      obj[this.opponent] = parseFloat(Math.round(team2 * 100) / 100).toFixed(2)
       return obj
     },
     matchupLookup () {
@@ -655,6 +671,7 @@ export default {
   height 48px
   padding 6px 4px
 .matchup-list .team-name
+  font-size 14px
   font-weight 500
   padding-bottom 2px
 .team-name-container
@@ -666,7 +683,7 @@ export default {
   font-weight 300
   font-size 12px
 .matchup-list .team-score
-  font-size 12px
+  font-size 14px
   font-weight 500
   padding-bottom 2px
 .matchup-list .team-projection

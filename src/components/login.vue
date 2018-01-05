@@ -16,7 +16,7 @@ import {
   Loading
 } from 'quasar'
 import { mapGetters } from 'vuex'
-import { callApi } from '../data'
+import { callApi, getWeek, getLeagueData } from '../data'
 
 export default {
   name: 'index',
@@ -26,7 +26,8 @@ export default {
   },
   data () {
     return {
-      response: null
+      response: null,
+      lastWeek: ''
     }
   },
   computed: {
@@ -100,7 +101,26 @@ export default {
           LocalStorage.set('activeLeague', leagueId)
           this.$store.commit('SET_LEAGUE_DATA', leagueData)
           this.$store.commit('CHANGE_ACTIVE_LEAGUE', leagueId)
-          return callApi()
+          return getLeagueData()
+        })
+        .then((response) => {
+          this.lastWeek = response.league.endWeek
+          return getWeek()
+        })
+        .then((response) => {
+          var timeLeft = 0
+          var week = ''
+          response.nflSchedule.matchup.forEach(el => {
+            timeLeft += parseFloat(el.gameSecondsRemaining)
+          })
+          if (timeLeft > 0) {
+            week = parseFloat(response.nflSchedule.week)
+          }
+          else {
+            week = parseFloat(response.nflSchedule.week) + 1
+          }
+          week = Math.min(week, this.lastWeek)
+          return callApi(week)
         })
         .then(() => {
           Loading.hide()

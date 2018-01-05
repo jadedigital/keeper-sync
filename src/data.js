@@ -2,7 +2,7 @@ import axios from 'axios'
 import store from './store'
 import { LocalStorage, Toast } from 'quasar'
 
-export function callApi (types) {
+export function callApi (week, types) {
   let data = LocalStorage.get.item('leagueData')
   var leagueId = Object.keys(data)[0]
   store.commit('SET_LEAGUE_DATA', data)
@@ -48,6 +48,7 @@ export function callApi (types) {
     host: data[leagueId].host,
     TYPE: 'projectedScores',
     L: leagueId,
+    W: week,
     COUNT: 3000,
     JSON: 1
   }
@@ -70,12 +71,12 @@ export function callApi (types) {
     W: 'ALL',
     JSON: 1
   }
-
   var liveScoringParams = {
     cookie: data[leagueId].cookie,
     host: data[leagueId].host,
     TYPE: 'liveScoring',
     L: leagueId,
+    W: week,
     DETAILS: 1,
     JSON: 1
   }
@@ -180,4 +181,63 @@ export function loadData (data) {
     let cacheData = LocalStorage.get.item(el)
     store.commit('SET_DATA', {type: el, data: cacheData})
   })
+}
+
+export function getWeek () {
+  let data = LocalStorage.get.item('leagueData')
+  var leagueId = Object.keys(data)[0]
+  var nflScheduleParams = {
+    cookie: data[leagueId].cookie,
+    host: data[leagueId].host,
+    TYPE: 'nflSchedule',
+    JSON: 1
+  }
+  var url = 'https://keepersync.com/mfl/export'
+
+  return axios.get(url, {
+    params: nflScheduleParams
+  })
+    .then((response) => {
+      var responseData = JSON.parse(response.data)
+      return responseData
+    })
+    .catch((error) => {
+      if (error) {
+        Toast.create("Can't fetch nflSchedule data from MFL servers. Please try again later")
+        return error
+      }
+    })
+}
+
+export function getLeagueData () {
+  console.log('fetching league data from server')
+  let data = LocalStorage.get.item('leagueData')
+  var leagueId = Object.keys(data)[0]
+  var leagueParams = {
+    cookie: data[leagueId].cookie,
+    host: data[leagueId].host,
+    TYPE: 'league',
+    L: leagueId,
+    JSON: 1
+  }
+  var url = 'https://keepersync.com/mfl/export'
+
+  return axios.get(url, {
+    params: leagueParams
+  })
+    .then((response) => {
+      var responseData = JSON.parse(response.data)
+      LocalStorage.set('league', responseData['league'])
+      store.commit('SET_DATA', {type: 'league', data: responseData['league']})
+      var key = 'league_time'
+      var time = Date.now()
+      LocalStorage.set(key, time)
+      return responseData
+    })
+    .catch((error) => {
+      if (error) {
+        Toast.create("Can't fetch league data from MFL servers. Please try again later")
+        return error
+      }
+    })
 }
