@@ -199,7 +199,18 @@ export function getWeek () {
   })
     .then((response) => {
       var responseData = JSON.parse(response.data)
-      return responseData
+      var timeLeft = 0
+      var week = ''
+      responseData.nflSchedule.matchup.forEach(el => {
+        timeLeft += parseFloat(el.gameSecondsRemaining)
+      })
+      if (timeLeft > 0) {
+        week = parseFloat(responseData.nflSchedule.week)
+      }
+      else {
+        week = parseFloat(responseData.nflSchedule.week) + 1
+      }
+      return week
     })
     .catch((error) => {
       if (error) {

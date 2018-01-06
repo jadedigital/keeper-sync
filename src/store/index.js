@@ -25,7 +25,8 @@ export default new Vuex.Store({
     fullNflSchedule: '',
     pointsAllowed: '',
     playerScores: '',
-    dummyToolbar: false
+    dummyToolbar: false,
+    currentWeek: ''
 
   },
   mutations: {

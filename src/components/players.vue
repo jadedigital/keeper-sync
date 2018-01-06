@@ -24,7 +24,7 @@
       </q-collapsible>
       <q-card class="compact-card">
         <q-card-title>
-          Free Agents
+          {{statusFilter === 'fa' ? 'Free Agents' : 'All Players'}}
         </q-card-title>
         <q-card-separator />
         <div v-if="dataLoaded" class="card-main bg-white relative-position no-overflow">
@@ -47,7 +47,7 @@
                     <q-item-side v-if="playerLookup[player.id].position !== 'Def'" :avatar="'https://sports.cbsimg.net/images/football/nfl/players/100x100/' + playerLookup[player.id].cbs_id + '.jpg'" />
                     <q-item-side v-if="playerLookup[player.id].position === 'Def'" :avatar="'https://sports.cbsimg.net/images/nfl/logos/100x100/' + playerLookup[player.id].team + '.png'" />
                     <div class="q-item-main q-item-section team-players">
-                      <div class="q-item-label" style="overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical;">{{playerLookup[player.id].name.split(', ').slice(1).join(' ').charAt(0)}} . {{playerLookup[player.id].name.split(', ').slice(0, -1).join(' ')}}<small> {{playerLookup[player.id].team}}  -  {{playerLookup[player.id].position}}</small></div>
+                      <div class="q-item-label" style="overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical;">{{playerLookup[player.id].name.split(', ').slice(1).join(' ').charAt(0)}}. {{playerLookup[player.id].name.split(', ').slice(0, -1).join(' ')}}<small> {{playerLookup[player.id].team}}  -  {{playerLookup[player.id].position}}</small></div>
                       <div v-if="playerLookup[player.id].team !== 'FA*'" class="q-item-sublabel" style="overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical;">{{matchupLookup[playerLookup[player.id].team].day}} {{matchupLookup[playerLookup[player.id].team].time}} - <span :class="matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rank < 11 ? 'text-positive' : matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rank < 21 ? 'text-warning' : 'text-negative'">{{matchupLookup[playerLookup[player.id].team].location}} {{matchupLookup[playerLookup[player.id].team].vs}} ({{matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rankPretty}})</span></div>
                     </div>
                   </q-item>
@@ -98,10 +98,11 @@ import {
   QCollapsible,
   QSelect,
   QPullToRefresh,
-  Loading
+  Loading,
+  LocalStorage
 } from 'quasar'
 import { mapGetters } from 'vuex'
-import { callApi } from '../data'
+import { callApi, getWeek } from '../data'
 
 export default {
   name: 'index',
@@ -134,6 +135,7 @@ export default {
       queryColumn: 'name',
       positionFilter: [],
       statusFilter: 'fa',
+      playersDetails: [],
       selectOptions: [
         {
           label: 'QB',
@@ -181,7 +183,8 @@ export default {
       fullNflSchedule: 'fullNflSchedule',
       pointsAllowed: 'pointsAllowed',
       currentWeek: 'currentWeek',
-      playerScores: 'playerScores'
+      playerScores: 'playerScores',
+      endWeek: 'endWeek'
     }),
     myTeam () {
       var team = this.leagueData[this.activeLeague].teamId
@@ -214,7 +217,7 @@ export default {
     matchupLookup () {
       var days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat']
       var obj = {}
-      this.fullNflSchedule.nflSchedule[this.currentWeek - 1].matchup.forEach((el, i) => {
+      this.fullNflSchedule.nflSchedule[this.currentWeek].matchup.forEach((el, i) => {
         var date = new Date(el.kickoff * 1000)
         obj[el.team[0].id] = {
           vs: el.team[1].id,
@@ -236,24 +239,6 @@ export default {
         location: ''
       }
       return obj
-    },
-    playersDetails () {
-      var list = []
-      var playerArray = this.players.player
-      playerArray.forEach(el => {
-        var obj = {}
-        obj['projected'] = (this.projectedLookup[el.id] && this.projectedLookup[el.id].score !== '' ? parseFloat(this.projectedLookup[el.id].score) : 0)
-        obj['added'] = (this.addedLookup[el.id] ? parseFloat(this.addedLookup[el.id].percent) : 0)
-        obj['owned'] = (this.ownedLookup[el.id] ? parseFloat(this.ownedLookup[el.id].percent) : 0)
-        obj['name'] = this.playerLookup[el.id].name
-        obj['team'] = this.playerLookup[el.id].team
-        obj['position'] = this.playerLookup[el.id].position
-        obj['fpts'] = (this.ytdLookup[el.id] ? this.ytdLookup[el.id].score : 0)
-        obj['id'] = el.id
-        obj['status'] = (this.faLookup[el.id] ? 'fa' : 'owned')
-        list.push(obj)
-      })
-      return list
     },
     playersSorted () {
       var list = this.playersDetails
@@ -367,8 +352,34 @@ export default {
       return value
     },
     refresher (done) {
-      callApi()
-      done()
+      getWeek()
+        .then((response) => {
+          var week = Math.min(response, this.endWeek)
+          LocalStorage.set('currentWeek', week)
+          this.$store.commit('SET_DATA', {type: 'currentWeek', data: week})
+          return callApi(week)
+        })
+        .then((response) => {
+          done()
+        })
+    },
+    loadPlayersDetails () {
+      var list = []
+      var playerArray = this.players.player
+      playerArray.forEach(el => {
+        var obj = {}
+        obj['projected'] = (this.projectedLookup[el.id] && this.projectedLookup[el.id].score !== '' ? parseFloat(this.projectedLookup[el.id].score) : 0)
+        obj['added'] = (this.addedLookup[el.id] ? parseFloat(this.addedLookup[el.id].percent) : 0)
+        obj['owned'] = (this.ownedLookup[el.id] ? parseFloat(this.ownedLookup[el.id].percent) : 0)
+        obj['name'] = this.playerLookup[el.id].name
+        obj['team'] = this.playerLookup[el.id].team
+        obj['position'] = this.playerLookup[el.id].position
+        obj['fpts'] = (this.ytdLookup[el.id] ? this.ytdLookup[el.id].score : 0)
+        obj['id'] = el.id
+        obj['status'] = (this.faLookup[el.id] ? 'fa' : 'owned')
+        list.push(obj)
+      })
+      this.playersDetails = list
     }
   },
   created () {
@@ -392,6 +403,7 @@ export default {
     })
     callApi('', request)
       .then((response) => {
+        this.loadPlayersDetails()
         Loading.hide()
         this.dataLoaded = true
       })

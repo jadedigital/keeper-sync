@@ -108,18 +108,9 @@ export default {
           return getWeek()
         })
         .then((response) => {
-          var timeLeft = 0
-          var week = ''
-          response.nflSchedule.matchup.forEach(el => {
-            timeLeft += parseFloat(el.gameSecondsRemaining)
-          })
-          if (timeLeft > 0) {
-            week = parseFloat(response.nflSchedule.week)
-          }
-          else {
-            week = parseFloat(response.nflSchedule.week) + 1
-          }
-          week = Math.min(week, this.lastWeek)
+          var week = Math.min(response, this.lastWeek)
+          LocalStorage.set('currentWeek', week)
+          this.store.commit('SET_DATA', {type: 'currentWeek', data: week})
           return callApi(week)
         })
         .then(() => {
