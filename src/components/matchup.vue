@@ -101,7 +101,7 @@
         <div class="row">
           <div class="col-5 matchup">
             <div class="matchup-list">
-              <div class="list-item border-bottom">
+              <div class="list-item border-bottom bg-grey-3">
                 <div class="row">
                   <div class="col-9 team-name-container">
                     <div class="team-name pull-left" >{{playerLookup[player.id].name.split(', ').slice(1).join(' ').charAt(0)}} . {{playerLookup[player.id].name.split(', ').slice(0, -1).join(' ')}} <div class="team">{{playerLookup[player.id].team}}</div></div>
@@ -126,7 +126,7 @@
           </div>
           <div class="col-5 matchup">
             <div class="matchup-list">
-              <div class="list-item border-bottom">
+              <div class="list-item border-bottom bg-grey-3">
                 <div class="row">
                   <div class="col-3">
                     <div class="team-score pull-left" >{{opponentScoringLookup[player.opp].score}}</div>

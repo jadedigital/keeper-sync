@@ -24,6 +24,7 @@ export default new Vuex.Store({
     liveScoring: '',
     fullNflSchedule: '',
     pointsAllowed: '',
+    playerScores: '',
     dummyToolbar: false
 
   },

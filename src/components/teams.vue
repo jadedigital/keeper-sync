@@ -6,14 +6,23 @@
       </q-btn>
 
       <q-toolbar-title>
-        {{this.teamLookup[thisTeam].name}}
+        {{teamLookup[thisTeam].name}}
         <span slot="subtitle">
-          {{this.league.name}}
+          {{league.name}}
         </span>
       </q-toolbar-title>
     </q-toolbar>
     <q-pull-to-refresh :handler="refresher">
       <div class="contain-main">
+        <q-card class="compact-card bg-white">
+          <div class="card-main bg-white">
+            <q-item separator>
+              <q-item-side v-if="teamLookup[thisTeam].icon" :avatar="teamLookup[thisTeam].icon"/>
+              <q-item-side v-else :avatar="'./statics/avatar.jpg'"/>
+              <q-item-main :label="teamLookup[thisTeam].name" :sublabel="teamLookup[thisTeam].owner_name" />
+            </q-item>
+          </div>
+        </q-card>
         <q-list v-if="dataLoaded" highlight class="no-border no-pad bg-grey-1">
           <q-card class="compact-card bg-white">
             <q-card-title>
@@ -22,7 +31,7 @@
             <q-card-separator />
             <div class="card-main bg-white">
               <q-item separator v-for="(player, key) in startersSorted" :key="player.id" v-if="player.status === 'starter'" @click="goPlayerModal(player.id)">
-                <q-btn @click="showAS(playerLookup[player.id].name)" round small outline color="primary" style="font-size: 14px; font-weight:400" class="q-item-avatar">{{ playerLookup[player.id].position }}</q-btn>
+                <q-btn @click="showAS(playerLookup[player.id].name)" round small flat color="primary" style="font-size: 14px; font-weight:400" class="q-item-avatar">{{ playerLookup[player.id].position }}</q-btn>
                 <q-item-side v-if="playerLookup[player.id].position !== 'Def'" :avatar="'https://sports.cbsimg.net/images/football/nfl/players/100x100/' + playerLookup[player.id].cbs_id + '.jpg'" />
                 <q-item-side v-if="playerLookup[player.id].position === 'Def'" :avatar="'https://sports.cbsimg.net/images/nfl/logos/100x100/' + playerLookup[player.id].team + '.png'" />
                 <div class="q-item-main q-item-section team-players">
@@ -43,7 +52,7 @@
             <q-card-separator />
             <div class="card-main bg-white">
               <q-item separator v-for="(player, key) in startersSorted" :key="player.id" v-if="player.status === 'nonstarter'">
-                <q-btn round small outline color="primary" style="font-size: 14px; font-weight:400" class="q-item-avatar">BN</q-btn>
+                <q-btn round small flat color="primary" style="font-size: 14px; font-weight:400" class="q-item-avatar">BN</q-btn>
                 <q-item-side v-if="playerLookup[player.id].position !== 'Def'" :avatar="'https://sports.cbsimg.net/images/football/nfl/players/100x100/' + playerLookup[player.id].cbs_id + '.jpg'" />
                 <q-item-side v-if="playerLookup[player.id].position === 'Def'" :avatar="'https://sports.cbsimg.net/images/nfl/logos/100x100/' + playerLookup[player.id].team + '.png'" />
                 <div class="q-item-main q-item-section team-players">
@@ -64,7 +73,7 @@
             <q-card-separator />
             <div class="card-main bg-white">
               <q-item separator v-for="(player, key) in rosterLookup[thisTeam].player" :key="player.id" v-if="player.status === 'INJURED_RESERVE'">
-                <q-btn round small outline color="primary" style="font-size: 14px; font-weight:400" class="q-item-avatar">IR</q-btn>
+                <q-btn round small flat color="primary" style="font-size: 14px; font-weight:400" class="q-item-avatar">IR</q-btn>
                 <q-item-side v-if="playerLookup[player.id].position !== 'Def'" :avatar="'https://sports.cbsimg.net/images/football/nfl/players/100x100/' + playerLookup[player.id].cbs_id + '.jpg'" />
                 <q-item-side v-if="playerLookup[player.id].position === 'Def'" :avatar="'https://sports.cbsimg.net/images/nfl/logos/100x100/' + playerLookup[player.id].team + '.png'" />
                 <div @click="goPlayer(player.id)" class="q-item-main q-item-section team-players">
@@ -82,7 +91,7 @@
             <q-card-separator />
             <div class="card-main bg-white">
               <q-item separator v-for="(player, key) in rosterLookup[thisTeam].player" :key="player.id" v-if="player.status === 'TAXI_SQUAD'">
-                <q-btn round small outline color="primary" style="font-size: 14px; font-weight:400" class="q-item-avatar">TS</q-btn>
+                <q-btn round small flat color="primary" style="font-size: 14px; font-weight:400" class="q-item-avatar">TS</q-btn>
                 <q-item-side v-if="playerLookup[player.id].position !== 'Def'" :avatar="'https://sports.cbsimg.net/images/football/nfl/players/100x100/' + playerLookup[player.id].cbs_id + '.jpg'" />
                 <q-item-side v-if="playerLookup[player.id].position === 'Def'" :avatar="'https://sports.cbsimg.net/images/nfl/logos/100x100/' + playerLookup[player.id].team + '.png'" />
                 <div class="q-item-main q-item-section team-players">
@@ -243,6 +252,10 @@ export default {
     },
     playerLookup () {
       var array = this.players.player
+      return this.lookup(array, 'id')
+    },
+    divisionLookup () {
+      var array = this.league.divisions.division
       return this.lookup(array, 'id')
     },
     projectedLookup () {
@@ -526,7 +539,6 @@ export default {
 .compact-card .q-card-primary
   padding 0
 .q-card
-  border-radius 10px
   margin 10px
 .slide-fade-enter-active {
   transition: all .2s ease;

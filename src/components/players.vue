@@ -1,65 +1,80 @@
 <template>
-  <div class="contain-main">
-    <q-search
-      v-model="query"
-      icon="search"
-      float-label="Search free agents"
-    />
-    <q-select
-      multiple
-      chips
-      v-model="positionFilter"
-      :options="selectOptions"
-      title="Positions"
-      float-label="Positions"
-    >
-    </q-select>
-    <q-card class="compact-card">
-      <q-card-title>
-        Free Agents
-      </q-card-title>
-      <q-card-separator />
-      <div class="card-main bg-white relative-position no-overflow">
-        <table class="q-table horizontal-separator">
-          <thead>
-            <tr>
-              <th @click="sort('projected')"  nowrap class="text-center" :class="{'text-red': colSortKey === 'projected'}">Proj</th>
-              <th @click="sort('added')" nowrap class="text-center" :class="{'text-red': colSortKey === 'added'}">% Added</th>
-              <th @click="sort('owned')" nowrap class="text-center" :class="{'text-red': colSortKey === 'owned'}">% Owned</th>
-            </tr>
-          </thead>
-          <tbody v-for="player in playersSorted" :key="player.id">
-            <tr>
-              <td colspan="3" class="text-left col-pad team-name-main">
-                <q-item separator>
-                  <q-btn round small outline color="primary" style="font-size: 14px; font-weight:400" class="q-item-avatar">+</q-btn>
-                  <q-item-side v-if="playerLookup[player.id].position !== 'Def'" :avatar="'https://sports.cbsimg.net/images/football/nfl/players/100x100/' + playerLookup[player.id].cbs_id + '.jpg'" />
-                  <q-item-side v-if="playerLookup[player.id].position === 'Def'" :avatar="'https://sports.cbsimg.net/images/nfl/logos/100x100/' + playerLookup[player.id].team + '.png'" />
-                  <div class="q-item-main q-item-section team-players">
-                    <div class="q-item-label" style="overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical;">{{playerLookup[player.id].name.split(', ').slice(1).join(' ').charAt(0)}} . {{playerLookup[player.id].name.split(', ').slice(0, -1).join(' ')}}<small> {{playerLookup[player.id].team}}  -  {{playerLookup[player.id].position}}</small></div>
-                    <div v-if="playerLookup[player.id].team !== 'FA*'" class="q-item-sublabel" style="overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical;">{{matchupLookup[playerLookup[player.id].team].day}} {{matchupLookup[playerLookup[player.id].team].time}} - <span :class="matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rank < 11 ? 'text-positive' : matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rank < 21 ? 'text-warning' : 'text-negative'">{{matchupLookup[playerLookup[player.id].team].location}} {{matchupLookup[playerLookup[player.id].team].vs}} ({{matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rankPretty}})</span></div>
-                  </div>
-                </q-item>
-              </td>
-            </tr>
-            <tr>
-              <td nowrap class="text-center" :class="{'text-red': colSortKey === 'projected'}">{{player.projected}}</td>
-              <td nowrap class="text-center" :class="{'text-red': colSortKey === 'added'}">{{player.added}}</td>
-              <td nowrap class="text-center" :class="{'text-red': colSortKey === 'owned'}">{{player.owned}}</td>
-            </tr>
-          </tbody>
-          <tfoot class="fa-table-footer">
-            <tr>
-              <td colspan="3" class="text-center">
-                <i>Load more</i>
-              </td>
-            </tr>
-          </tfoot>
-        </table>
-        <q-btn @click="loadMore" class="load-more" round small color="primary" icon="keyboard_arrow_down"></q-btn>
-      </div>
-    </q-card>
-  </div>
+  <q-pull-to-refresh :handler="refresher">
+    <div class="contain-main players">
+      <q-collapsible icon="filter_list" label="Filter Players" sublabel="by name, position, status">
+        <q-search
+          v-model="query"
+          icon="search"
+          float-label="Filter by name"
+        />
+        <q-select
+          multiple
+          chips
+          v-model="positionFilter"
+          :options="selectOptions"
+          title="Positions"
+          float-label="Positions"
+        />
+        <q-select
+          v-model="statusFilter"
+          float-label="Status"
+          radio
+          :options="statusOptions"
+        />
+      </q-collapsible>
+      <q-card class="compact-card">
+        <q-card-title>
+          Free Agents
+        </q-card-title>
+        <q-card-separator />
+        <div v-if="dataLoaded" class="card-main bg-white relative-position no-overflow">
+          <table class="q-table horizontal-separator">
+            <thead>
+              <tr>
+                <th @click="sort('projected')"  nowrap class="text-center" :class="{'text-red': colSortKey === 'projected'}">Proj</th>
+                <th @click="sort('added')" nowrap class="text-center" :class="{'text-red': colSortKey === 'added'}">% Added</th>
+                <th @click="sort('owned')" nowrap class="text-center" :class="{'text-red': colSortKey === 'owned'}">% Owned</th>
+                <th @click="sort('fpts')"  nowrap class="text-center" :class="{'text-red': colSortKey === 'fpts'}">FPts</th>
+                <th @click="sort('added')" nowrap class="text-center">% Added</th>
+                <th @click="sort('owned')" nowrap class="text-center">% Owned</th>
+              </tr>
+            </thead>
+            <tbody v-for="player in playersSorted" :key="player.id">
+              <tr>
+                <td colspan="6" class="text-left col-pad team-name-main">
+                  <q-item separator>
+                    <q-btn round small outline color="primary" style="font-size: 14px; font-weight:400; margin-right: 20px;" class="q-item-avatar">+</q-btn>
+                    <q-item-side v-if="playerLookup[player.id].position !== 'Def'" :avatar="'https://sports.cbsimg.net/images/football/nfl/players/100x100/' + playerLookup[player.id].cbs_id + '.jpg'" />
+                    <q-item-side v-if="playerLookup[player.id].position === 'Def'" :avatar="'https://sports.cbsimg.net/images/nfl/logos/100x100/' + playerLookup[player.id].team + '.png'" />
+                    <div class="q-item-main q-item-section team-players">
+                      <div class="q-item-label" style="overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical;">{{playerLookup[player.id].name.split(', ').slice(1).join(' ').charAt(0)}} . {{playerLookup[player.id].name.split(', ').slice(0, -1).join(' ')}}<small> {{playerLookup[player.id].team}}  -  {{playerLookup[player.id].position}}</small></div>
+                      <div v-if="playerLookup[player.id].team !== 'FA*'" class="q-item-sublabel" style="overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical;">{{matchupLookup[playerLookup[player.id].team].day}} {{matchupLookup[playerLookup[player.id].team].time}} - <span :class="matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rank < 11 ? 'text-positive' : matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rank < 21 ? 'text-warning' : 'text-negative'">{{matchupLookup[playerLookup[player.id].team].location}} {{matchupLookup[playerLookup[player.id].team].vs}} ({{matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rankPretty}})</span></div>
+                    </div>
+                  </q-item>
+                </td>
+              </tr>
+              <tr>
+                <td nowrap class="text-center" :class="{'text-red': colSortKey === 'projected'}">{{player.projected}}</td>
+                <td nowrap class="text-center" :class="{'text-red': colSortKey === 'added'}">{{player.added}}</td>
+                <td nowrap class="text-center" :class="{'text-red': colSortKey === 'owned'}">{{player.owned}}</td>
+                <td nowrap class="text-center" :class="{'text-red': colSortKey === 'fpts'}">{{player.fpts}}</td>
+                <td nowrap class="text-center">{{player.added}}</td>
+                <td nowrap class="text-center">{{player.owned}}</td>
+              </tr>
+            </tbody>
+            <tfoot class="fa-table-footer">
+              <tr>
+                <td colspan="6" class="text-center">
+                  <i>Load more</i>
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+          <q-btn @click="loadMore" class="load-more" round small color="primary" icon="keyboard_arrow_down"></q-btn>
+        </div>
+      </q-card>
+    </div>
+  </q-pull-to-refresh>
 </template>
 
 
@@ -80,9 +95,13 @@ import {
   QCardTitle,
   QCardSeparator,
   QSearch,
-  QSelect
+  QCollapsible,
+  QSelect,
+  QPullToRefresh,
+  Loading
 } from 'quasar'
 import { mapGetters } from 'vuex'
+import { callApi } from '../data'
 
 export default {
   name: 'index',
@@ -101,16 +120,20 @@ export default {
     QCardTitle,
     QCardSeparator,
     QSearch,
-    QSelect
+    QCollapsible,
+    QSelect,
+    QPullToRefresh
   },
   data () {
     return {
       response: null,
+      dataLoaded: false,
       colSortKey: 'projected',
       limit: 10,
       query: '',
       queryColumn: 'name',
       positionFilter: [],
+      statusFilter: 'fa',
       selectOptions: [
         {
           label: 'QB',
@@ -132,6 +155,16 @@ export default {
           label: 'Def',
           value: 'def'
         }
+      ],
+      statusOptions: [
+        {
+          label: 'All Players',
+          value: 'all'
+        },
+        {
+          label: 'Free Agents',
+          value: 'fa'
+        }
       ]
     }
   },
@@ -147,7 +180,8 @@ export default {
       topOwns: 'topOwns',
       fullNflSchedule: 'fullNflSchedule',
       pointsAllowed: 'pointsAllowed',
-      currentWeek: 'currentWeek'
+      currentWeek: 'currentWeek',
+      playerScores: 'playerScores'
     }),
     myTeam () {
       var team = this.leagueData[this.activeLeague].teamId
@@ -159,6 +193,14 @@ export default {
     },
     projectedLookup () {
       var array = this.projectedScores.playerScore
+      return this.lookup(array)
+    },
+    ytdLookup () {
+      var array = this.playerScores.playerScore
+      return this.lookup(array)
+    },
+    faLookup () {
+      var array = this.freeAgents.leagueUnit.player
       return this.lookup(array)
     },
     addedLookup () {
@@ -197,14 +239,19 @@ export default {
     },
     playersDetails () {
       var list = []
-      this.freeAgents.leagueUnit.player.forEach(el => {
-        el['projected'] = (this.projectedLookup[el.id].score !== '' ? parseFloat(this.projectedLookup[el.id].score) : 0)
-        el['added'] = (this.addedLookup[el.id] ? parseFloat(this.addedLookup[el.id].percent) : 0)
-        el['owned'] = (this.ownedLookup[el.id] ? parseFloat(this.ownedLookup[el.id].percent) : 0)
-        el['name'] = this.playerLookup[el.id].name
-        el['team'] = this.playerLookup[el.id].team
-        el['position'] = this.playerLookup[el.id].position
-        list.push(el)
+      var playerArray = this.players.player
+      playerArray.forEach(el => {
+        var obj = {}
+        obj['projected'] = (this.projectedLookup[el.id] && this.projectedLookup[el.id].score !== '' ? parseFloat(this.projectedLookup[el.id].score) : 0)
+        obj['added'] = (this.addedLookup[el.id] ? parseFloat(this.addedLookup[el.id].percent) : 0)
+        obj['owned'] = (this.ownedLookup[el.id] ? parseFloat(this.ownedLookup[el.id].percent) : 0)
+        obj['name'] = this.playerLookup[el.id].name
+        obj['team'] = this.playerLookup[el.id].team
+        obj['position'] = this.playerLookup[el.id].position
+        obj['fpts'] = (this.ytdLookup[el.id] ? this.ytdLookup[el.id].score : 0)
+        obj['id'] = el.id
+        obj['status'] = (this.faLookup[el.id] ? 'fa' : 'owned')
+        list.push(obj)
       })
       return list
     },
@@ -217,7 +264,10 @@ export default {
         list = this.order(list, this.colSortKey)
       }
       if (this.positionFilter[0]) {
-        list = this.filter(list, this.positionFilter)
+        list = this.filter(list, 'position', this.positionFilter)
+      }
+      if (this.statusFilter === 'fa') {
+        list = this.filter(list, 'status', ['fa'])
       }
       list = list.slice(0, this.limit)
       return list
@@ -255,13 +305,13 @@ export default {
     },
     order (list, key) {
       return list.sort((a, b) => {
-        var x = a[key]; var y = b[key]
+        var x = parseFloat(a[key]); var y = parseFloat(b[key])
         return ((x < y) ? 1 : ((x > y) ? -1 : 0))
       })
     },
-    filter (list, pos) {
+    filter (list, key, value) {
       return list.filter(el => {
-        return pos.indexOf(el['position'].toLowerCase()) !== -1
+        return value.indexOf(el[key].toLowerCase()) !== -1
       })
     },
     sort (key) {
@@ -315,7 +365,36 @@ export default {
         value = value.toString() + 'th'
       }
       return value
+    },
+    refresher (done) {
+      callApi()
+      done()
     }
+  },
+  created () {
+    var playerScoresParams = {
+      cookie: this.leagueData[this.activeLeague].cookie,
+      host: this.leagueData[this.activeLeague].host,
+      TYPE: 'playerScores',
+      L: this.activeLeague,
+      W: 'YTD',
+      JSON: 1
+    }
+    var request = [
+      {
+        type: 'playerScores',
+        params: playerScoresParams
+      }
+    ]
+    Loading.show({
+      message: 'fetching player YTD scores',
+      delay: 0
+    })
+    callApi('', request)
+      .then((response) => {
+        Loading.hide()
+        this.dataLoaded = true
+      })
   }
 }
 </script>
@@ -337,4 +416,6 @@ th.sortable
   font-weight 300
 .fa-table-footer
   width 100%
+.contain-main.players
+  padding-bottom 122px
 </style>

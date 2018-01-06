@@ -35,7 +35,8 @@ export default {
       'topOwns',
       'fullNflSchedule',
       'liveScoring',
-      'pointsAllowed'
+      'pointsAllowed',
+      'playerScores'
     ]
     loadData(data)
     next()
