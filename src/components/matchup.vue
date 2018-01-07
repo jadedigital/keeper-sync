@@ -1,150 +1,160 @@
 <template>
   <q-pull-to-refresh :handler="refresher">
-    <div class="contain-main">
-      <div class="row items-center border-bottom matchup-header">
-        <div class="col-5 matchup">
-          <div class="row items-center">
-            <div class="col-12">
-              <div class="team-name pull-right">
-                {{teamLookup[myTeam].name}}
-              </div>
-            </div>
-          </div>
-          <div class="row items-center">
-            <div class="col-6">
-              <img v-if="teamLookup[myTeam].icon" :src="teamLookup[myTeam].icon" class="q-item-avatar"/>
-              <img v-else :src="teamLookup[myTeam].icon" class="q-item-avatar"/>
-            </div>
-            <div class="col-6">
-              <div class="total-score pull-right">{{myScoring[myTeam].score}}</div>
-              <div class="total-projection pull-right">{{totalProjected[myTeam]}}</div>
-            </div>
-          </div>
-        </div>
-        <div class="col-2 matchup"></div>
-        <div class="col-5 matchup">
-          <div class="row items-center">
-            <div class="col-12">
-              <div class="team-name">
-                {{teamLookup[opponent].name}}
-              </div>
-            </div>
-          </div>
-          <div class="row items-center">
-            <div class="col-6">
-              <div class="total-score">{{myScoring[opponent].score}}</div>
-              <div class="total-projection">{{totalProjected[opponent]}}</div>
-            </div>
-            <div class="col-6">
-              <img v-if="teamLookup[opponent].icon" :src="teamLookup[opponent].icon" class="q-item-avatar pull-right"/>
-              <img v-else :src="teamLookup[opponent].icon" class="q-item-avatar pull-right"/>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-12">
-          <div class="separator-title text-center border-bottom uppercase">Starters</div>
-        </div>
-      </div>
-      <div v-for="player in combinedStarters" :key="player.id">
-        <div class="row">
-          <div class="col-5 matchup">
-            <div class="matchup-list">
-              <div class="list-item border-bottom">
-                <div class="row">
-                  <div class="col-9 team-name-container">
-                    <div class="team-name pull-left" >{{playerLookup[player.id].name.split(', ').slice(1).join(' ').charAt(0)}} . {{playerLookup[player.id].name.split(', ').slice(0, -1).join(' ')}} <div class="team">{{playerLookup[player.id].team}}</div></div>
-                    <div class="team-matchup pull-left" >{{matchupLookup[playerLookup[player.id].team].day}} {{matchupLookup[playerLookup[player.id].team].time}} - <span :class="matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rank < 11 ? 'text-positive' : matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rank < 21 ? 'text-warning' : 'text-negative'">{{matchupLookup[playerLookup[player.id].team].location}} {{matchupLookup[playerLookup[player.id].team].vs}}</span></div>
-                  </div>
-                  <div class="col-3">
-                    <div class="team-score pull-right" >{{scoringLookup[player.id].score}}</div>
-                    <div class="team-projection pull-right">{{ updatedProjection[player.id].projection }}</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col-2 matchup">
-            <div class="position-list bg-grey-2 text-grey-8">
-              <div class="row items-center positions border-bottom">
+    <q-tabs inverted class="secondary-tabs">
+      <!-- Tabs - notice slot="title" -->
+      <q-tab default slot="title" name="tab-1" label="My Matchup" />
+      <q-tab slot="title" name="tab-2" label="All Matchups"/>
+      <!-- Targets -->
+      <div class="contain-main">
+        <q-tab-pane class="no-pad no-border" name="tab-1">
+    
+          <div class="row items-center border-bottom matchup-header">
+            <div class="col-5 matchup">
+              <div class="row items-center">
                 <div class="col-12">
-                  {{player.position}}
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col-5 matchup">
-            <div class="matchup-list">
-              <div class="list-item border-bottom">
-                <div class="row">
-                  <div class="col-3">
-                    <div class="team-score pull-left" >{{opponentScoringLookup[player.opp].score}}</div>
-                    <div class="team-projection pull-left" >{{ updatedProjection[player.opp].projection }}</div>
-                  </div>
-                  <div class="col-9 team-name-container">
-                    <div class="team-name pull-right" >{{playerLookup[player.opp].name.split(', ').slice(1).join(' ').charAt(0)}} . {{playerLookup[player.opp].name.split(', ').slice(0, -1).join(' ')}}<div class="team"> {{playerLookup[player.opp].team}}</div></div>
-                    <div class="team-matchup pull-right" >{{matchupLookup[playerLookup[player.opp].team].day}} {{matchupLookup[playerLookup[player.opp].team].time}} - <span :class="matchupPoints[playerLookup[player.opp].position][matchupLookup[playerLookup[player.opp].team].vs].rank < 11 ? 'text-positive' : matchupPoints[playerLookup[player.opp].position][matchupLookup[playerLookup[player.opp].team].vs].rank < 21 ? 'text-warning' : 'text-negative'">{{matchupLookup[playerLookup[player.opp].team].location}} {{matchupLookup[playerLookup[player.opp].team].vs}}</span></div>
+                  <div class="team-name pull-right">
+                    {{teamLookup[myTeam].name}}
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-12">
-          <div class="separator-title text-center border-bottom uppercase">Bench</div>
-        </div>
-      </div>
-      <div v-for="player in combinedBench" :key="player.id">
-        <div class="row">
-          <div class="col-5 matchup">
-            <div class="matchup-list">
-              <div class="list-item border-bottom bg-grey-3">
-                <div class="row">
-                  <div class="col-9 team-name-container">
-                    <div class="team-name pull-left" >{{playerLookup[player.id].name.split(', ').slice(1).join(' ').charAt(0)}} . {{playerLookup[player.id].name.split(', ').slice(0, -1).join(' ')}} <div class="team">{{playerLookup[player.id].team}}</div></div>
-                    <div class="team-matchup pull-left" >{{matchupLookup[playerLookup[player.id].team].day}} {{matchupLookup[playerLookup[player.id].team].time}} - <span :class="matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rank < 11 ? 'text-positive' : matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rank < 21 ? 'text-warning' : 'text-negative'">{{matchupLookup[playerLookup[player.id].team].location}} {{matchupLookup[playerLookup[player.id].team].vs}}</span></div>
-                  </div>
-                  <div class="col-3">
-                    <div class="team-score pull-right" >{{scoringLookup[player.id].score}}</div>
-                    <div class="team-projection pull-right">{{ updatedProjection[player.id].projection }}</div>
-                  </div>
+              <div class="row items-center">
+                <div class="col-6">
+                  <img v-if="teamLookup[myTeam].icon" :src="teamLookup[myTeam].icon" class="q-item-avatar"/>
+                  <img v-else :src="teamLookup[myTeam].icon" class="q-item-avatar"/>
+                </div>
+                <div class="col-6">
+                  <div class="total-score pull-right">{{myScoring[myTeam].score}}</div>
+                  <div class="total-projection pull-right">{{totalProjected[myTeam]}}</div>
                 </div>
               </div>
             </div>
-          </div>
-          <div class="col-2 matchup">
-            <div class="position-list bg-grey-2 text-grey-8">
-              <div class="row items-center positions border-bottom">
+            <div class="col-2 matchup"></div>
+            <div class="col-5 matchup">
+              <div class="row items-center">
                 <div class="col-12">
-                  {{player.position}}
+                  <div class="team-name">
+                    {{teamLookup[opponent].name}}
+                  </div>
+                </div>
+              </div>
+              <div class="row items-center">
+                <div class="col-6">
+                  <div class="total-score">{{myScoring[opponent].score}}</div>
+                  <div class="total-projection">{{totalProjected[opponent]}}</div>
+                </div>
+                <div class="col-6">
+                  <img v-if="teamLookup[opponent].icon" :src="teamLookup[opponent].icon" class="q-item-avatar pull-right"/>
+                  <img v-else :src="teamLookup[opponent].icon" class="q-item-avatar pull-right"/>
                 </div>
               </div>
             </div>
           </div>
-          <div class="col-5 matchup">
-            <div class="matchup-list">
-              <div class="list-item border-bottom bg-grey-3">
-                <div class="row">
-                  <div class="col-3">
-                    <div class="team-score pull-left" >{{opponentScoringLookup[player.opp].score}}</div>
-                    <div class="team-projection pull-left" >{{ updatedProjection[player.opp].projection }}</div>
+          <div class="row">
+            <div class="col-12">
+              <div class="separator-title text-center border-bottom uppercase">Starters</div>
+            </div>
+          </div>
+          <div v-for="player in combinedStarters" :key="player.id">
+            <div class="row">
+              <div class="col-5 matchup">
+                <div class="matchup-list">
+                  <div class="list-item border-bottom">
+                    <div class="row">
+                      <div class="col-9 team-name-container">
+                        <div class="team-name pull-left" >{{playerLookup[player.id].name.split(', ').slice(1).join(' ').charAt(0)}} . {{playerLookup[player.id].name.split(', ').slice(0, -1).join(' ')}} <div class="team">{{playerLookup[player.id].team}}</div></div>
+                        <div class="team-matchup pull-left" >{{matchupLookup[playerLookup[player.id].team].day}} {{matchupLookup[playerLookup[player.id].team].time}} - <span :class="matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rank < 11 ? 'text-positive' : matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rank < 21 ? 'text-warning' : 'text-negative'">{{matchupLookup[playerLookup[player.id].team].location}} {{matchupLookup[playerLookup[player.id].team].vs}}</span></div>
+                      </div>
+                      <div class="col-3">
+                        <div class="team-score pull-right" >{{scoringLookup[player.id].score}}</div>
+                        <div class="team-projection pull-right">{{ updatedProjection[player.id].projection }}</div>
+                      </div>
+                    </div>
                   </div>
-                  <div class="col-9 team-name-container">
-                    <div class="team-name pull-right" >{{playerLookup[player.opp].name.split(', ').slice(1).join(' ').charAt(0)}} . {{playerLookup[player.opp].name.split(', ').slice(0, -1).join(' ')}}<div class="team"> {{playerLookup[player.opp].team}}</div></div>
-                    <div class="team-matchup pull-right" >{{matchupLookup[playerLookup[player.opp].team].day}} {{matchupLookup[playerLookup[player.opp].team].time}} - <span :class="matchupPoints[playerLookup[player.opp].position][matchupLookup[playerLookup[player.opp].team].vs].rank < 11 ? 'text-positive' : matchupPoints[playerLookup[player.opp].position][matchupLookup[playerLookup[player.opp].team].vs].rank < 21 ? 'text-warning' : 'text-negative'">{{matchupLookup[playerLookup[player.opp].team].location}} {{matchupLookup[playerLookup[player.opp].team].vs}}</span></div>
+                </div>
+              </div>
+              <div class="col-2 matchup">
+                <div class="position-list bg-grey-2 text-grey-8">
+                  <div class="row items-center positions border-bottom">
+                    <div class="col-12">
+                      {{player.position}}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-5 matchup">
+                <div class="matchup-list">
+                  <div class="list-item border-bottom">
+                    <div class="row">
+                      <div class="col-3">
+                        <div class="team-score pull-left" >{{opponentScoringLookup[player.opp].score}}</div>
+                        <div class="team-projection pull-left" >{{ updatedProjection[player.opp].projection }}</div>
+                      </div>
+                      <div class="col-9 team-name-container">
+                        <div class="team-name pull-right" >{{playerLookup[player.opp].name.split(', ').slice(1).join(' ').charAt(0)}} . {{playerLookup[player.opp].name.split(', ').slice(0, -1).join(' ')}}<div class="team"> {{playerLookup[player.opp].team}}</div></div>
+                        <div class="team-matchup pull-right" >{{matchupLookup[playerLookup[player.opp].team].day}} {{matchupLookup[playerLookup[player.opp].team].time}} - <span :class="matchupPoints[playerLookup[player.opp].position][matchupLookup[playerLookup[player.opp].team].vs].rank < 11 ? 'text-positive' : matchupPoints[playerLookup[player.opp].position][matchupLookup[playerLookup[player.opp].team].vs].rank < 21 ? 'text-warning' : 'text-negative'">{{matchupLookup[playerLookup[player.opp].team].location}} {{matchupLookup[playerLookup[player.opp].team].vs}}</span></div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+          <div class="row">
+            <div class="col-12">
+              <div class="separator-title text-center border-bottom uppercase">Bench</div>
+            </div>
+          </div>
+          <div v-for="player in combinedBench" :key="player.id">
+            <div class="row">
+              <div class="col-5 matchup">
+                <div class="matchup-list">
+                  <div class="list-item border-bottom bg-grey-3">
+                    <div class="row">
+                      <div class="col-9 team-name-container">
+                        <div class="team-name pull-left" >{{playerLookup[player.id].name.split(', ').slice(1).join(' ').charAt(0)}} . {{playerLookup[player.id].name.split(', ').slice(0, -1).join(' ')}} <div class="team">{{playerLookup[player.id].team}}</div></div>
+                        <div class="team-matchup pull-left" >{{matchupLookup[playerLookup[player.id].team].day}} {{matchupLookup[playerLookup[player.id].team].time}} - <span :class="matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rank < 11 ? 'text-positive' : matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rank < 21 ? 'text-warning' : 'text-negative'">{{matchupLookup[playerLookup[player.id].team].location}} {{matchupLookup[playerLookup[player.id].team].vs}}</span></div>
+                      </div>
+                      <div class="col-3">
+                        <div class="team-score pull-right" >{{scoringLookup[player.id].score}}</div>
+                        <div class="team-projection pull-right">{{ updatedProjection[player.id].projection }}</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-2 matchup">
+                <div class="position-list bg-grey-2 text-grey-8">
+                  <div class="row items-center positions border-bottom">
+                    <div class="col-12">
+                      {{player.position}}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-5 matchup">
+                <div class="matchup-list">
+                  <div class="list-item border-bottom bg-grey-3">
+                    <div class="row">
+                      <div class="col-3">
+                        <div class="team-score pull-left" >{{opponentScoringLookup[player.opp].score}}</div>
+                        <div class="team-projection pull-left" >{{ updatedProjection[player.opp].projection }}</div>
+                      </div>
+                      <div class="col-9 team-name-container">
+                        <div class="team-name pull-right" >{{playerLookup[player.opp].name.split(', ').slice(1).join(' ').charAt(0)}} . {{playerLookup[player.opp].name.split(', ').slice(0, -1).join(' ')}}<div class="team"> {{playerLookup[player.opp].team}}</div></div>
+                        <div class="team-matchup pull-right" >{{matchupLookup[playerLookup[player.opp].team].day}} {{matchupLookup[playerLookup[player.opp].team].time}} - <span :class="matchupPoints[playerLookup[player.opp].position][matchupLookup[playerLookup[player.opp].team].vs].rank < 11 ? 'text-positive' : matchupPoints[playerLookup[player.opp].position][matchupLookup[playerLookup[player.opp].team].vs].rank < 21 ? 'text-warning' : 'text-negative'">{{matchupLookup[playerLookup[player.opp].team].location}} {{matchupLookup[playerLookup[player.opp].team].vs}}</span></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </q-tab-pane>
+        <q-tab-pane class="no-pad no-border" name="tab-2">
+        </q-tab-pane>
+      
       </div>
-      
-      
-    </div>
+    </q-tabs>
 
     <q-modal class="player-modal" ref="layoutModal" transition="slide-fade" :content-css="{minWidth: '80vw', minHeight: '80vh'}">
       <q-modal-layout v-if="modalPlayer" class="player-header">

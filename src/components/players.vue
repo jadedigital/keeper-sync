@@ -27,6 +27,7 @@
           {{statusFilter === 'fa' ? 'Free Agents' : 'All Players'}}
         </q-card-title>
         <q-card-separator />
+        <q-spinner v-if="!dataLoaded" color="secondary" size="40px"/>
         <div v-if="dataLoaded" class="card-main bg-white relative-position no-overflow">
           <table class="q-table horizontal-separator">
             <thead>
@@ -98,7 +99,7 @@ import {
   QCollapsible,
   QSelect,
   QPullToRefresh,
-  Loading,
+  QSpinner,
   LocalStorage
 } from 'quasar'
 import { mapGetters } from 'vuex'
@@ -123,7 +124,8 @@ export default {
     QSearch,
     QCollapsible,
     QSelect,
-    QPullToRefresh
+    QPullToRefresh,
+    QSpinner
   },
   data () {
     return {
@@ -397,14 +399,9 @@ export default {
         params: playerScoresParams
       }
     ]
-    Loading.show({
-      message: 'fetching player YTD scores',
-      delay: 0
-    })
     callApi('', request)
       .then((response) => {
         this.loadPlayersDetails()
-        Loading.hide()
         this.dataLoaded = true
       })
   }
@@ -430,4 +427,8 @@ th.sortable
   width 100%
 .contain-main.players
   padding-bottom 122px
+.q-spinner
+  position relative
+  left 50%
+  margin 100px 0 100px -20px
 </style>

@@ -4,7 +4,7 @@
       <!-- Tabs - notice slot="title" -->
       <q-tab default slot="title" name="tab-1" label="Standings" />
       <q-tab slot="title" name="tab-2" label="Transactions"/>
-      <q-tab slot="title" name="tab-3" label="Messages"/>
+      <q-tab slot="title" name="tab-3" label="Message Board"/>
       <!-- Targets -->
       <div class="contain-main bg-grey-1">
         <q-tab-pane class="no-pad no-border" name="tab-1">

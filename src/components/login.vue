@@ -1,15 +1,28 @@
 <template>
-  <q-layout ref="layout" view="hhh lPr fff" class="bg-gradient">
-    <div>
-      <q-btn @click="loginDialog" big class="bg-secondary text-white fixed-center">Login</q-btn>
+  <q-layout ref="layout" view="hhh lPr fff" class="bg-login">
+    <div class="row items-center justify-center login">
+      <div class="col-12 text-white">
+        <div class="login-logo text-white text-center">
+          <div class="main">AudibleX</div>
+          <div class="sub">for myfantasyleague.com</div>
+        </div>
+        <q-input autofocus class="login-username" v-model="username" :error="$v.username.$error" @blur="$v.username.$touch" color="white" type="text" float-label="MFL Username" :attributes="{autocomplete: 'off', autocorrect: 'off'}"/>
+        <q-input class="login-password" v-model="password" :error="$v.password.$error" @blur="$v.password.$touch" color="white" type="password" float-label="Password" :attributes="{autocompletetype: 'email', autocorrect: 'off'}"/>
+        <q-btn @click="login" big class="bg-secondary button">Login</q-btn>
+        <div class="info-text text-white text-center">
+          <div>Don't have an account?<strong> Sign Up!</strong></div>
+          <div class="forgot"> Forgot Password?</div>
+        </div>
+      </div>
     </div>
   </q-layout>
 </template>
-
+-
 <script>
 import {
   QLayout,
   QBtn,
+  QInput,
   Dialog,
   Toast,
   LocalStorage,
@@ -17,16 +30,20 @@ import {
 } from 'quasar'
 import { mapGetters } from 'vuex'
 import { callApi, getWeek, getLeagueData } from '../data'
+import { required } from 'vuelidate/lib/validators'
 
 export default {
   name: 'index',
   components: {
     QLayout,
-    QBtn
+    QBtn,
+    QInput
   },
   data () {
     return {
       response: null,
+      username: '',
+      password: '',
       lastWeek: ''
     }
   },
@@ -42,7 +59,7 @@ export default {
       projectedScores: 'projectedScores',
       topAdds: 'topAdds',
       topOwns: 'topOwns',
-      nflSchedule: 'nflSchedule',
+      fullNflSchedule: 'fullNflSchedule',
       liveScoring: 'liveScoring',
       pointsAllowed: 'pointsAllowed'
     }),
@@ -52,6 +69,14 @@ export default {
         loaded = true
       }
       return loaded
+    }
+  },
+  validations: {
+    username: {
+      required
+    },
+    password: {
+      required
     }
   },
   methods: {
@@ -86,7 +111,23 @@ export default {
         ]
       })
     },
-    mflLogin (userParams) {
+    login () {
+      if (this.$v.username.$error || this.$v.password.$error) {
+        Toast.create('Please enter a valid username and password.')
+      }
+      else {
+        this.mflLogin()
+      }
+    },
+    mflLogin () {
+      Loading.show({
+        message: 'Signing you in',
+        delay: 0
+      })
+      var userParams = {
+        USERNAME: this.username,
+        PASSWORD: this.password
+      }
       var url = 'https://keepersync.com/auth/mfl'
       this.axios.get(url, {
         params: userParams
@@ -109,8 +150,10 @@ export default {
         })
         .then((response) => {
           var week = Math.min(response, this.lastWeek)
+          console.log(week)
           LocalStorage.set('currentWeek', week)
-          this.store.commit('SET_DATA', {type: 'currentWeek', data: week})
+          this.$store.commit('SET_DATA', {type: 'currentWeek', data: week})
+          console.log('you made it')
           return callApi(week)
         })
         .then(() => {
@@ -129,7 +172,39 @@ export default {
 </script>
 
 <style lang="stylus">
-.bg-gradient
-  background linear-gradient(141deg, #3f51b5 15%, #03a9f4 100%)
+.bg-login
+  background linear-gradient(321deg, #3f51b5 15%, #03a9f4 100%)
+.row.login
+  height 100vh
+.login .col-12
+  padding 20px
+.login .q-btn
+  width 100%
+  margin 80px 0 0 0
+.login .login-username
+  margin-top 40px
+.login .login-password
+  margin-top 40px
+.login .q-if:before
+  color rgba(255,255,255,0.5)
+.login .q-if-label
+  color rgba(255,255,255,0.5)
+.login .q-if-control
+  color rgba(255,255,255,0.8)
+.login .q-if-focused .q-if-label
+  color currentColor
+.login .q-input-target
+  color currentColor
+.login .info-text
+  margin-top 30px
+  font-weight 300
+.login .forgot
+  padding-top 10px
+.login-logo .main
+  font-size 32px
+  font-weight 700
+.login-logo .sub
+  font-style italic
+  font-weight 300
 </style>
 
