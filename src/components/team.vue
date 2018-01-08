@@ -3,7 +3,8 @@
     <q-tabs inverted class="secondary-tabs">
       <!-- Tabs - notice slot="title" -->
       <q-tab default slot="title" name="tab-1" label="Roster" />
-      <q-tab count="2" slot="title" name="tab-2" label="Alerts"/>
+      <q-tab slot="title" name="tab-2" label="Draft Picks" />
+      <q-tab count="2" slot="title" name="tab-3" label="Alerts"/>
       <!-- Targets -->
       <div class="contain-main">
         <q-tab-pane class="no-pad no-border" name="tab-1">
@@ -88,7 +89,8 @@
             </q-card>
           </q-list>
         </q-tab-pane>
-        <q-tab-pane name="tab-2">Roster Alerts</q-tab-pane>
+        <q-tab-pane name="tab-2"></q-tab-pane>
+        <q-tab-pane name="tab-3">Roster Alerts</q-tab-pane>
       </div>
     </q-tabs>
     <q-modal class="player-modal" ref="layoutModal" transition="slide-fade" :content-css="{minWidth: '80vw', minHeight: '80vh'}">
@@ -541,8 +543,7 @@ export default {
   font-size 10px
   padding-left 8px
   padding-right 8px
-  right 40px
-  top 10px
+  right 10px
 .slide-fade-enter-active {
   transition: all .2s ease;
 }

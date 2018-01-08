@@ -29,7 +29,7 @@
         <q-card-separator />
         <q-spinner v-if="!dataLoaded" color="secondary" size="40px"/>
         <div v-if="dataLoaded" class="card-main bg-white relative-position no-overflow">
-          <table class="q-table horizontal-separator">
+          <transition-group name="list" tag="table" class="q-table">
             <thead>
               <tr>
                 <th @click="sort('projected')"  nowrap class="text-center" :class="{'text-red': colSortKey === 'projected'}">Proj</th>
@@ -49,7 +49,7 @@
                     <q-item-side v-if="playerLookup[player.id].position === 'Def'" :avatar="'https://sports.cbsimg.net/images/nfl/logos/100x100/' + playerLookup[player.id].team + '.png'" />
                     <div class="q-item-main q-item-section team-players">
                       <div class="q-item-label" style="overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical;">{{playerLookup[player.id].name.split(', ').slice(1).join(' ').charAt(0)}}. {{playerLookup[player.id].name.split(', ').slice(0, -1).join(' ')}}<small> {{playerLookup[player.id].team}}  -  {{playerLookup[player.id].position}}</small></div>
-                      <div v-if="playerLookup[player.id].team !== 'FA*'" class="q-item-sublabel" style="overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical;">{{matchupLookup[playerLookup[player.id].team].day}} {{matchupLookup[playerLookup[player.id].team].time}} - <span :class="matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rank < 11 ? 'text-positive' : matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rank < 21 ? 'text-warning' : 'text-negative'">{{matchupLookup[playerLookup[player.id].team].location}} {{matchupLookup[playerLookup[player.id].team].vs}} ({{matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rankPretty}})</span></div>
+                      <div v-if="playerLookup[player.id].team !== 'FA*'" class="q-item-sublabel" style="overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical;">{{matchupLookup[playerLookup[player.id].team].day}} {{matchupLookup[playerLookup[player.id].team].time}} - <span v-if="matchupPositions.indexOf(playerLookup[player.id].position) !== -1" :class="matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rank < 11 ? 'text-positive' : matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rank < 21 ? 'text-warning' : 'text-negative'">{{matchupLookup[playerLookup[player.id].team].location}} {{matchupLookup[playerLookup[player.id].team].vs}} ({{matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rankPretty}})</span><span v-if="matchupPositions.indexOf(playerLookup[player.id].position) === -1">{{matchupLookup[playerLookup[player.id].team].location}} {{matchupLookup[playerLookup[player.id].team].vs}}</span></div>
                     </div>
                   </q-item>
                 </td>
@@ -70,7 +70,7 @@
                 </td>
               </tr>
             </tfoot>
-          </table>
+          </transition-group>
           <q-btn @click="loadMore" class="load-more" round small color="primary" icon="keyboard_arrow_down"></q-btn>
         </div>
       </q-card>
@@ -138,28 +138,6 @@ export default {
       positionFilter: [],
       statusFilter: 'fa',
       playersDetails: [],
-      selectOptions: [
-        {
-          label: 'QB',
-          value: 'qb'
-        },
-        {
-          label: 'RB',
-          value: 'rb'
-        },
-        {
-          label: 'WR',
-          value: 'wr'
-        },
-        {
-          label: 'TE',
-          value: 'te'
-        },
-        {
-          label: 'Def',
-          value: 'def'
-        }
-      ],
       statusOptions: [
         {
           label: 'All Players',
@@ -175,6 +153,7 @@ export default {
   computed: {
     ...mapGetters({
       activeLeague: 'activeLeague',
+      league: 'league',
       leagueData: 'leagueData',
       rosters: 'rosters',
       players: 'players',
@@ -260,14 +239,28 @@ export default {
       return list
     },
     matchupPoints () {
-      var object = {
-        QB: this.matchupPointsUtil('QB'),
-        RB: this.matchupPointsUtil('RB'),
-        WR: this.matchupPointsUtil('WR'),
-        TE: this.matchupPointsUtil('TE'),
-        Def: this.matchupPointsUtil('Def')
-      }
+      var object = {}
+      this.matchupPositions.forEach(el => {
+        object[el] = this.matchupPointsUtil(el)
+      })
       return object
+    },
+    matchupPositions () {
+      var array = []
+      this.pointsAllowed.team[0].position.forEach(el => {
+        array.push(el.name)
+      })
+      return array
+    },
+    selectOptions () {
+      var array = []
+      this.league.starters.position.forEach(el => {
+        var obj = {}
+        obj['label'] = el.name
+        obj['value'] = el.name.toLowerCase()
+        array.push(obj)
+      })
+      return array
     }
   },
   methods: {
@@ -369,17 +362,19 @@ export default {
       var list = []
       var playerArray = this.players.player
       playerArray.forEach(el => {
-        var obj = {}
-        obj['projected'] = (this.projectedLookup[el.id] && this.projectedLookup[el.id].score !== '' ? parseFloat(this.projectedLookup[el.id].score) : 0)
-        obj['added'] = (this.addedLookup[el.id] ? parseFloat(this.addedLookup[el.id].percent) : 0)
-        obj['owned'] = (this.ownedLookup[el.id] ? parseFloat(this.ownedLookup[el.id].percent) : 0)
-        obj['name'] = this.playerLookup[el.id].name
-        obj['team'] = this.playerLookup[el.id].team
-        obj['position'] = this.playerLookup[el.id].position
-        obj['fpts'] = (this.ytdLookup[el.id] ? this.ytdLookup[el.id].score : 0)
-        obj['id'] = el.id
-        obj['status'] = (this.faLookup[el.id] ? 'fa' : 'owned')
-        list.push(obj)
+        if (this.matchupPositions.indexOf(this.playerLookup[el.id].position) !== -1) {
+          var obj = {}
+          obj['projected'] = (this.projectedLookup[el.id] && this.projectedLookup[el.id].score !== '' ? parseFloat(this.projectedLookup[el.id].score) : 0)
+          obj['added'] = (this.addedLookup[el.id] ? parseFloat(this.addedLookup[el.id].percent) : 0)
+          obj['owned'] = (this.ownedLookup[el.id] ? parseFloat(this.ownedLookup[el.id].percent) : 0)
+          obj['name'] = this.playerLookup[el.id].name
+          obj['team'] = this.playerLookup[el.id].team
+          obj['position'] = this.playerLookup[el.id].position
+          obj['fpts'] = (this.ytdLookup[el.id] ? this.ytdLookup[el.id].score : 0)
+          obj['id'] = el.id
+          obj['status'] = (this.faLookup[el.id] ? 'fa' : 'owned')
+          list.push(obj)
+        }
       })
       this.playersDetails = list
     }
@@ -431,4 +426,11 @@ th.sortable
   position relative
   left 50%
   margin 100px 0 100px -20px
+.list-enter-active, .list-leave-active {
+  transition: all 1s;
+}
+.list-enter, .list-leave-to /* .list-leave-active below version 2.1.8 */ {
+  opacity: 0;
+  transform: translateX(30px);
+}
 </style>

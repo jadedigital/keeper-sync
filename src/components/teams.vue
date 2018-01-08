@@ -517,13 +517,6 @@ export default {
   border none
 .q-item.q-item-separator
   border-color #eaeaea
-.secondary-tabs .q-chip
-  min-height 16px
-  font-size 10px
-  padding-left 8px
-  padding-right 8px
-  right 40px
-  top 10px
 .contain-main
   height 100%
   padding-bottom 62px
