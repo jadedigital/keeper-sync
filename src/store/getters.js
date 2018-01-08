@@ -17,6 +17,7 @@ export const pointsAllowed = state => state.pointsAllowed
 export const playerScores = state => state.playerScores
 export const dummyToolbar = state => state.dummyToolbar
 export const currentWeek = state => state.currentWeek
+export const futureDraftPicks = state => state.futureDraftPicks
 export const endWeek = state => {
   return state.league.endWeek
 }

@@ -1,5 +1,5 @@
 <template>
-  <q-pull-to-refresh :handler="refresher">
+  <q-pull-to-refresh :handler="refresher" class="matchup">
     <q-tabs inverted class="secondary-tabs">
       <!-- Tabs - notice slot="title" -->
       <q-tab default slot="title" name="tab-1" label="My Matchup" />
@@ -9,7 +9,7 @@
         <q-tab-pane class="no-pad no-border" name="tab-1">
     
           <div class="row items-center border-bottom matchup-header">
-            <div class="col-5 matchup">
+            <div class="col-5">
               <div class="row items-center">
                 <div class="col-12">
                   <div class="team-name pull-right">
@@ -708,10 +708,12 @@ export default {
   text-align center
   font-size 9px
   font-weight 500
-.matchup.col-5
+.matchup .col-5
   max-width 45%
   flex 0 0 45%
-.matchup.col-2
+.matchup .col-2
   max-width 10%
   flex 0 0 10%
+.matchup .q-tabs-panes
+  background #fff
 </style>

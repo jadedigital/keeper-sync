@@ -2,17 +2,24 @@
   <q-layout ref="layout" view="hhh lPr fff" class="bg-login">
     <div class="row items-center justify-center login">
       <div class="col-12 text-white">
-        <div class="login-logo text-white text-center">
-          <div class="main">AudibleX</div>
-          <div class="sub">for myfantasyleague.com</div>
+        <div class="login-logo text-white text-center absolute-center">
+          <div class="main">Blitz</div>
+          <div class="sub">MFL fantasy manager</div>
         </div>
-        <q-input autofocus class="login-username" v-model="username" :error="$v.username.$error" @blur="$v.username.$touch" color="white" type="text" float-label="MFL Username" :attributes="{autocomplete: 'off', autocorrect: 'off'}"/>
-        <q-input class="login-password" v-model="password" :error="$v.password.$error" @blur="$v.password.$touch" color="white" type="password" float-label="Password" :attributes="{autocompletetype: 'email', autocorrect: 'off'}"/>
-        <q-btn @click="login" big class="bg-secondary button">Login</q-btn>
-        <div class="info-text text-white text-center">
-          <div>Don't have an account?<strong> Sign Up!</strong></div>
-          <div class="forgot"> Forgot Password?</div>
-        </div>
+        <transition name="fade">
+          <q-spinner-dots v-if="loadingData" color="white" size="100px" class="login-spinner absolute-center"/>
+        </transition>
+        <transition name="sling">
+          <div v-if="!loadingData">
+            <q-input autofocus class="login-username" v-model="username" :error="$v.username.$error" @blur="$v.username.$touch" color="white" type="text" float-label="MFL Username" :attributes="{autocomplete: 'off', autocorrect: 'off'}"/>
+            <q-input class="login-password" v-model="password" :error="$v.password.$error" @blur="$v.password.$touch" color="white" type="password" float-label="Password" :attributes="{autocompletetype: 'email', autocorrect: 'off'}"/>
+            <q-btn @click="login" big class="bg-secondary button">Login</q-btn>
+            <div class="info-text text-white text-center">
+              <div>Don't have an account?<strong> Sign Up!</strong></div>
+              <div class="forgot"> Forgot Password?</div>
+            </div>
+          </div>
+        </transition>
       </div>
     </div>
   </q-layout>
@@ -23,10 +30,9 @@ import {
   QLayout,
   QBtn,
   QInput,
-  Dialog,
+  QSpinnerDots,
   Toast,
-  LocalStorage,
-  Loading
+  LocalStorage
 } from 'quasar'
 import { mapGetters } from 'vuex'
 import { callApi, getWeek, getLeagueData } from '../data'
@@ -37,14 +43,16 @@ export default {
   components: {
     QLayout,
     QBtn,
-    QInput
+    QInput,
+    QSpinnerDots
   },
   data () {
     return {
       response: null,
       username: '',
       password: '',
-      lastWeek: ''
+      lastWeek: '',
+      loadingData: false
     }
   },
   computed: {
@@ -80,37 +88,6 @@ export default {
     }
   },
   methods: {
-    loginDialog () {
-      Dialog.create({
-        title: 'Login',
-        message: 'Login using your MFL username and password.',
-        form: {
-          USERNAME: {
-            type: 'text',
-            label: 'Username',
-            model: ''
-          },
-          PASSWORD: {
-            type: 'password',
-            label: 'Password',
-            model: ''
-          }
-        },
-        buttons: [
-          'Cancel',
-          {
-            label: 'Ok',
-            handler: (data) => {
-              Loading.show({
-                message: 'Signing you in',
-                delay: 0
-              })
-              this.mflLogin(data)
-            }
-          }
-        ]
-      })
-    },
     login () {
       if (this.$v.username.$error || this.$v.password.$error) {
         Toast.create('Please enter a valid username and password.')
@@ -120,10 +97,7 @@ export default {
       }
     },
     mflLogin () {
-      Loading.show({
-        message: 'Signing you in',
-        delay: 0
-      })
+      this.loadingData = true
       var userParams = {
         USERNAME: this.username,
         PASSWORD: this.password
@@ -150,19 +124,17 @@ export default {
         })
         .then((response) => {
           var week = Math.min(response, this.lastWeek)
-          console.log(week)
           LocalStorage.set('currentWeek', week)
           this.$store.commit('SET_DATA', {type: 'currentWeek', data: week})
-          console.log('you made it')
           return callApi(week)
         })
         .then(() => {
-          Loading.hide()
+          this.loadingData = false
           this.$router.push('user/team')
         })
         .catch((error) => {
           if (error) {
-            Loading.hide()
+            this.loadingData = false
             Toast.create('Invalid username or password. Please try again.')
           }
         })
@@ -200,11 +172,25 @@ export default {
   font-weight 300
 .login .forgot
   padding-top 10px
+.login-logo
+  top 100px
 .login-logo .main
   font-size 32px
   font-weight 700
 .login-logo .sub
   font-style italic
-  font-weight 300
+  font-weight 300  
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .5s;
+}
+.fade-enter, .fade-leave-to {
+  opacity: 0;
+}
+.sling-enter-active, .sling-leave-active {
+  transition: all .6s cubic-bezier(.55,0,.1,1);
+}
+.sling-enter, .sling-leave-to {
+  transform: translate(-1000px, 0);
+}
 </style>
 

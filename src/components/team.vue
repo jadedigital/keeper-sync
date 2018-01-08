@@ -6,9 +6,12 @@
       <q-tab slot="title" name="tab-2" label="Draft Picks" />
       <q-tab count="2" slot="title" name="tab-3" label="Alerts"/>
       <!-- Targets -->
-      <div class="contain-main">
+      <div v-if="!dataLoaded" style="height: calc(100vh - 112px);">  
+        <q-spinner color="secondary" size="40px" class="absolute-center" style="margin-left: -20px;"/>
+      </div>
+      <div v-if="dataLoaded" class="contain-main">
         <q-tab-pane class="no-pad no-border" name="tab-1">
-          <q-list v-if="dataLoaded" highlight class="no-border no-pad bg-grey-1">
+          <q-list highlight class="no-border no-pad bg-grey-1">
             <q-card class="compact-card bg-white">
               <q-card-title>
                 Roster
@@ -25,7 +28,7 @@
                   </div>
                   <div class="q-item-side q-item-side-right q-item-section">
                     <div class="q-item-label" style="overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical;">{{scoringLookup[player.id].score}}</div>
-                    <div class="q-item-sublabel" style="overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical;"><small>{{ updatedProjection[player.id].projection }}</small></span></div>
+                    <div class="q-item-sublabel" style="overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical;"><small>{{ updatedProjection[player.id].projection }}</small></div>
                   </div>
                 </q-item>
               </div>
@@ -46,7 +49,7 @@
                   </div>
                   <div class="q-item-side q-item-side-right q-item-section">
                     <div class="q-item-label" style="overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical;">{{scoringLookup[player.id].score}}</div>
-                    <div class="q-item-sublabel" style="overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical;"><small>{{ updatedProjection[player.id].projection }}</small></span></div>
+                    <div class="q-item-sublabel" style="overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical;"><small>{{ updatedProjection[player.id].projection }}</small></div>
                   </div>
                 </q-item>
               </div>
@@ -169,7 +172,8 @@ import {
   QModal,
   QModalLayout,
   QFab,
-  QFabAction
+  QFabAction,
+  QSpinner
 } from 'quasar'
 import { mapGetters } from 'vuex'
 import { callApi } from '../data'
@@ -198,12 +202,13 @@ export default {
     QModal,
     QModalLayout,
     QFab,
-    QFabAction
+    QFabAction,
+    QSpinner
   },
   data () {
     return {
       response: null,
-      dataLoaded: true,
+      dataLoaded: false,
       newWeek: '',
       modalPlayer: '',
       search: ''
@@ -220,7 +225,8 @@ export default {
       projectedScores: 'projectedScores',
       fullNflSchedule: 'fullNflSchedule',
       pointsAllowed: 'pointsAllowed',
-      currentWeek: 'currentWeek'
+      currentWeek: 'currentWeek',
+      futureDraftPicks: 'futureDraftPicks'
     }),
     myTeam () {
       var team = this.leagueData[this.activeLeague].teamId
@@ -518,6 +524,25 @@ export default {
       callApi()
       done()
     }
+  },
+  created () {
+    var futureDraftPicksParams = {
+      cookie: this.leagueData[this.activeLeague].cookie,
+      host: this.leagueData[this.activeLeague].host,
+      TYPE: 'futureDraftPicks',
+      L: this.activeLeague,
+      JSON: 1
+    }
+    var request = [
+      {
+        type: 'futureDraftPicks',
+        params: futureDraftPicksParams
+      }
+    ]
+    callApi('', request)
+      .then((response) => {
+        this.dataLoaded = true
+      })
   }
 }
 </script>

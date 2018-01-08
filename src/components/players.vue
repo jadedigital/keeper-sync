@@ -27,7 +27,7 @@
           {{statusFilter === 'fa' ? 'Free Agents' : 'All Players'}}
         </q-card-title>
         <q-card-separator />
-        <q-spinner v-if="!dataLoaded" color="secondary" size="40px"/>
+        <q-spinner v-if="!dataLoaded" color="secondary" size="40px" class="players-spinner"/>
         <div v-if="dataLoaded" class="card-main bg-white relative-position no-overflow">
           <transition-group name="list" tag="table" class="q-table">
             <thead>
@@ -422,14 +422,14 @@ th.sortable
   width 100%
 .contain-main.players
   padding-bottom 122px
-.q-spinner
+.players-spinner
   position relative
   left 50%
   margin 100px 0 100px -20px
 .list-enter-active, .list-leave-active {
-  transition: all 1s;
+  transition: all 0.2s;
 }
-.list-enter, .list-leave-to /* .list-leave-active below version 2.1.8 */ {
+.list-enter, .list-leave-to {
   opacity: 0;
   transform: translateX(30px);
 }

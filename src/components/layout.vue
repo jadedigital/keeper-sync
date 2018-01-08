@@ -25,7 +25,7 @@
             <q-item @click="$refs.popover.close()">
               Settings
             </q-item>
-            <q-item @click="$refs.popover.close()">
+            <q-item @click="logout">
               Logout
             </q-item>
           </q-list>
@@ -87,7 +87,8 @@ import {
   QSearch,
   QFixedPosition,
   QTransition,
-  QPopover
+  QPopover,
+  LocalStorage
 } from 'quasar'
 import { mapGetters } from 'vuex'
 
@@ -202,6 +203,11 @@ export default {
       return list.filter(function (el) {
         return positions.some(x => el['position'] === x)
       })
+    },
+    logout () {
+      this.$refs.popover.close()
+      LocalStorage.clear()
+      this.$router.push('/login')
     }
   }
 }

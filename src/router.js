@@ -66,6 +66,7 @@ const router = new VueRouter({
           ]
         },
         { path: 'callback', component: load('Callback') },
+        { path: '/login', component: load('login') },
         {
           path: 'teams/:id',
           component: load('teams'),
@@ -73,7 +74,6 @@ const router = new VueRouter({
         }
       ]
     },
-    { path: '/login', component: load('login') },
     // Always leave this last one
     { path: '*', component: load('Error404') } // Not found
   ]

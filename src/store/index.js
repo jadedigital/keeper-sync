@@ -26,7 +26,8 @@ export default new Vuex.Store({
     pointsAllowed: '',
     playerScores: '',
     dummyToolbar: false,
-    currentWeek: ''
+    currentWeek: '',
+    futureDraftPicks: ''
 
   },
   mutations: {

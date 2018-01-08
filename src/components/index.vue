@@ -13,6 +13,7 @@
 /*
  * Root component
  */
+import { LocalStorage } from 'quasar'
 import { loadData } from '../data'
 
 export default {
@@ -22,24 +23,26 @@ export default {
     }
   },
   beforeRouteEnter (to, from, next) {
-    var data = [
-      'leagueData',
-      'activeLeague',
-      'rosters',
-      'players',
-      'leagueStandings',
-      'freeAgents',
-      'league',
-      'projectedScores',
-      'topAdds',
-      'topOwns',
-      'fullNflSchedule',
-      'liveScoring',
-      'pointsAllowed',
-      'playerScores',
-      'currentWeek'
-    ]
-    loadData(data)
+    if (LocalStorage.has('leagueData')) {
+      var data = [
+        'leagueData',
+        'activeLeague',
+        'rosters',
+        'players',
+        'leagueStandings',
+        'freeAgents',
+        'league',
+        'projectedScores',
+        'topAdds',
+        'topOwns',
+        'fullNflSchedule',
+        'liveScoring',
+        'pointsAllowed',
+        'playerScores',
+        'currentWeek'
+      ]
+      loadData(data)
+    }
     next()
   },
   beforeRouteUpdate (to, from, next) {
