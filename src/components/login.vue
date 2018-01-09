@@ -1,28 +1,32 @@
 <template>
-  <q-layout ref="layout" view="hhh lPr fff" class="bg-login">
-    <div class="row items-center justify-center login">
-      <div class="col-12 text-white">
-        <div class="login-logo text-white text-center absolute-center">
-          <div class="main">Blitz</div>
-          <div class="sub">MFL fantasy manager</div>
-        </div>
-        <transition name="fade">
-          <q-spinner-dots v-if="loadingData" color="white" size="100px" class="login-spinner absolute-center"/>
-        </transition>
-        <transition name="sling">
-          <div v-if="!loadingData">
-            <q-input autofocus class="login-username" v-model="username" :error="$v.username.$error" @blur="$v.username.$touch" color="white" type="text" float-label="MFL Username" :attributes="{autocomplete: 'off', autocorrect: 'off'}"/>
-            <q-input class="login-password" v-model="password" :error="$v.password.$error" @blur="$v.password.$touch" color="white" type="password" float-label="Password" :attributes="{autocompletetype: 'email', autocorrect: 'off'}"/>
-            <q-btn @click="login" big class="bg-secondary button">Login</q-btn>
-            <div class="info-text text-white text-center">
-              <div>Don't have an account?<strong> Sign Up!</strong></div>
-              <div class="forgot"> Forgot Password?</div>
-            </div>
+  <div class="pic">
+    <q-layout ref="layout" view="hhh lPr fff" class="bg-login">
+      <div class="row items-center justify-center login">
+        <div class="col-12 text-white">
+          <div class="login-logo text-white text-center">
+            <div class="main">Blitz</div>
+            <div class="sub">MFL fantasy manager</div>
           </div>
-        </transition>
+          <div class="login-wrapper">
+            <transition name="fade">
+              <q-spinner-dots v-if="loadingData" color="white" size="100px" class="login-spinner absolute-center"/>
+            </transition>
+            <transition name="sling">
+              <div v-if="!loadingData">
+                <q-input class="login-username" v-model="username" :error="$v.username.$error" @blur="$v.username.$touch" color="white" type="text" float-label="MFL Username" :attributes="{autocomplete: 'off', autocorrect: 'off'}"/>
+                <q-input class="login-password" v-model="password" :error="$v.password.$error" @blur="$v.password.$touch" color="white" type="password" float-label="Password" :attributes="{autocompletetype: 'email', autocorrect: 'off'}"/>
+                <q-btn @click="login" big class="bg-secondary button">Login</q-btn>
+                <div class="info-text text-white text-center">
+                  <div>Don't have an account?<strong> Sign Up!</strong></div>
+                  <div class="forgot"> Forgot Password?</div>
+                </div>
+              </div>
+            </transition>
+          </div>
+        </div>
       </div>
-    </div>
-  </q-layout>
+    </q-layout>
+  </div>
 </template>
 -
 <script>
@@ -70,14 +74,7 @@ export default {
       fullNflSchedule: 'fullNflSchedule',
       liveScoring: 'liveScoring',
       pointsAllowed: 'pointsAllowed'
-    }),
-    dataLoaded () {
-      var loaded = false
-      if (this.leagueData && this.rosters && this.players && this.league && this.leagueStandings && this.freeAgents && this.projectedScores && this.topAdds && this.topOwns && this.nflSchedule && this.liveScoring && this.pointsAllowed) {
-        loaded = true
-      }
-      return loaded
-    }
+    })
   },
   validations: {
     username: {
@@ -129,8 +126,8 @@ export default {
           return callApi(week)
         })
         .then(() => {
-          this.loadingData = false
           this.$router.push('user/team')
+          this.loadingData = false
         })
         .catch((error) => {
           if (error) {
@@ -144,8 +141,14 @@ export default {
 </script>
 
 <style lang="stylus">
+.pic
+  background: url(https://images.unsplash.com/photo-1509928015542-fcc9b3bcd048) no-repeat center;
+  background-size: cover;
+  height: 100vh;
+  overflow: hidden;
 .bg-login
-  background linear-gradient(321deg, #3f51b5 15%, #03a9f4 100%)
+  background linear-gradient(321deg, rgba(63, 81, 181, 0.8) 15%, rgba(3, 169, 244, 0.8) 100%);
+  z-index 2
 .row.login
   height 100vh
 .login .col-12
@@ -153,8 +156,8 @@ export default {
 .login .q-btn
   width 100%
   margin 80px 0 0 0
-.login .login-username
-  margin-top 40px
+  border-radius 30px
+  box-shadow none
 .login .login-password
   margin-top 40px
 .login .q-if:before
@@ -172,8 +175,6 @@ export default {
   font-weight 300
 .login .forgot
   padding-top 10px
-.login-logo
-  top 100px
 .login-logo .main
   font-size 32px
   font-weight 700
@@ -192,5 +193,8 @@ export default {
 .sling-enter, .sling-leave-to {
   transform: translate(-1000px, 0);
 }
+.login-wrapper
+  height 335px
+  margin-top 40px
 </style>
 
