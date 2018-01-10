@@ -1,5 +1,5 @@
 <template>
-  <div class="pic">
+  <div class="pic" style="background: url(./statics/login.jpg) no-repeat center;">
     <q-layout ref="layout" view="hhh lPr fff" class="bg-login">
       <div class="row items-center justify-center login">
         <div class="col-12 text-white">
@@ -142,13 +142,12 @@ export default {
 
 <style lang="stylus">
 .pic
-  background: url(https://images.unsplash.com/photo-1509928015542-fcc9b3bcd048) no-repeat center;
   background-size: cover;
   height: 100vh;
   overflow: hidden;
 .bg-login
   background linear-gradient(321deg, rgba(63, 81, 181, 0.8) 15%, rgba(3, 169, 244, 0.8) 100%);
-  z-index 2
+  z-index 3
 .row.login
   height 100vh
 .login .col-12

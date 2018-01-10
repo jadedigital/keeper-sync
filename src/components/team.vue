@@ -21,7 +21,7 @@
                 <q-item separator v-for="player in startersOld" :key="player.id" @click="goPlayerModal(player.id)">
                   <q-btn @click.stop="showAS(playerLookup[player.id].name)" round small style="font-size: 12px; font-weight:400" :class="[ parseFloat(scoringLookup[player.id].gameSecondsRemaining) < 3600 ? 'q-btn-flat text-primary' : 'q-btn-outline bg-white text-primary', 'q-item-avatar']">{{ player.position }}</q-btn>
                   <q-item-side v-if="playerLookup[player.id].position !== 'Def'" :avatar="'https://sports.cbsimg.net/images/football/nfl/players/100x100/' + playerLookup[player.id].cbs_id + '.jpg'" />
-                  <q-item-side v-if="playerLookup[player.id].position === 'Def'" :avatar="'https://sports.cbsimg.net/images/nfl/logos/100x100/' + playerLookup[player.id].team + '.png'" />
+                  <q-item-side v-if="playerLookup[player.id].position === 'Def'" :avatar="'./statics/' + teamMap[playerLookup[player.id].team] + '.svg'" />
                   <div class="q-item-main q-item-section team-players">
                     <div class="q-item-label" style="overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical;">{{playerLookup[player.id].name.split(', ').slice(1).join(' ').charAt(0)}} . {{playerLookup[player.id].name.split(', ').slice(0, -1).join(' ')}}<small> {{playerLookup[player.id].team}}  -  {{playerLookup[player.id].position}}</small></div>
                     <div class="q-item-sublabel" style="overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical;">{{matchupLookup[playerLookup[player.id].team].day}} {{matchupLookup[playerLookup[player.id].team].time}} - <span :class="matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rank < 11 ? 'text-positive' : matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rank < 21 ? 'text-warning' : 'text-negative'">{{matchupLookup[playerLookup[player.id].team].location}} {{matchupLookup[playerLookup[player.id].team].vs}} ({{matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rankPretty}})</span></div>
@@ -96,53 +96,6 @@
         <q-tab-pane name="tab-3">Roster Alerts</q-tab-pane>
       </div>
     </q-tabs>
-    <q-modal class="player-modal" ref="layoutModal" transition="slide-fade" :content-css="{minWidth: '80vw', minHeight: '80vh'}">
-      <q-modal-layout v-if="modalPlayer" class="player-header">
-        <q-toolbar class= "bg-blue-grey-9 text-white" slot="header">
-          <q-btn flat @click="$refs.layoutModal.close()">
-            <q-icon name="arrow_back" />
-          </q-btn>
-        </q-toolbar>
-        <div class="player-info bg-blue-grey-9 text-white row reverse items-center">
-          <ul class="col-6 player-info-list">
-            <li>Team: <span>{{playerLookup[modalPlayer].team}} #{{playerLookup[modalPlayer].jersey}}</span></li>
-            <li>HT/WT: <span>{{parseInt(playerLookup[modalPlayer].height / 12)}}'{{playerLookup[modalPlayer].height % 12}}"/{{playerLookup[modalPlayer].weight}}lbs</span></li>
-            <li>Age: <span>{{(new Date(Date.now()).getFullYear() - new Date(playerLookup[modalPlayer].birthdate * 1000).getFullYear())}}</span></li>
-            <li>Exp: <span>{{new Date(Date.now()).getFullYear() - playerLookup[modalPlayer].draft_year}}</span><span v-if="playerLookup[modalPlayer].status === 'R'">({{playerLookup[modalPlayer].status}})</span></li>
-            <li>College: <span>{{playerLookup[modalPlayer].college}}</span></li>
-          </ul>
-          <div class="col-6">
-            <div class="row justify-center">
-              <img class="player-img" :src="'https://sports.cbsimg.net/images/football/nfl/players/100x100/' + playerLookup[modalPlayer].cbs_id + '.jpg'" alt="">
-            </div>
-          </div>
-        </div>
-        <div class="player-actions pull-right">
-          <q-fab
-            color="primary"
-            icon="compare_arrows"
-            direction="down"
-          >
-            <q-fab-action
-              color="red"
-              icon="remove"
-            />
-            <q-fab-action
-              color="blue"
-              icon="local_hospital"
-            />
-          </q-fab>
-        </div>
-        <div class="player-name-main q-toolbar-title">
-          {{playerLookup[modalPlayer].name.split(', ').reverse().join(' ')}}
-          <div class="q-toolbar-subtitle">{{playerLookup[modalPlayer].position}}</div>
-        </div>
-        <q-tabs inverted class="secondary-tabs">
-          <q-tab default slot="title" name="tab-1" label="News" />
-          <q-tab slot="title" name="tab-2" label="Game Log"/>
-        </q-tabs>
-      </q-modal-layout>
-    </q-modal>
   </q-pull-to-refresh>
 </template>
 
@@ -169,10 +122,6 @@ import {
   QToolbar,
   QSearch,
   QIcon,
-  QModal,
-  QModalLayout,
-  QFab,
-  QFabAction,
   QSpinner
 } from 'quasar'
 import { mapGetters } from 'vuex'
@@ -199,10 +148,6 @@ export default {
     QToolbar,
     QSearch,
     QIcon,
-    QModal,
-    QModalLayout,
-    QFab,
-    QFabAction,
     QSpinner
   },
   data () {
@@ -210,7 +155,6 @@ export default {
       response: null,
       dataLoaded: false,
       newWeek: '',
-      modalPlayer: '',
       search: ''
     }
   },
@@ -226,7 +170,8 @@ export default {
       fullNflSchedule: 'fullNflSchedule',
       pointsAllowed: 'pointsAllowed',
       currentWeek: 'currentWeek',
-      futureDraftPicks: 'futureDraftPicks'
+      futureDraftPicks: 'futureDraftPicks',
+      teamMap: 'teamMap'
     }),
     myTeam () {
       var team = this.leagueData[this.activeLeague].teamId
@@ -446,8 +391,8 @@ export default {
       this.$router.push('/player/' + id)
     },
     goPlayerModal (id) {
-      this.modalPlayer = id
-      this.$refs.layoutModal.open()
+      this.$store.commit('SET_DATA', {type: 'modalPlayer', data: id})
+      this.$store.commit('TOGGLE_DATA', 'modalPlayerToggle')
     },
     lookup (array, key) {
       var lookup = {}
@@ -521,7 +466,7 @@ export default {
       })
     },
     refresher (done) {
-      callApi()
+      callApi(this.currentWeek)
       done()
     }
   },
@@ -579,43 +524,4 @@ export default {
 {
   transform: translateX(100%);
 }
-.player-header .layout-header
-  box-shadow none
-.player-info
-  padding-bottom 30px
-.player-info-list
-  list-style none
-  padding-left 0
-  font-weight 500
-.player-info-list span
-  font-weight 300
-.player-info .player-img
-  border-radius 50%
-  border 2px solid
-  background #fff
-.player-actions
-  margin-top -28px
-  margin-right 50px
-  position fixed
-  right 0
-.player-name-main
-  padding 12px
-  font-size 24px
-  font-weight 300
-.player-name-main .q-toolbar-subtitle
-  font-size 18px
-  font-weight 500
-.player-modal .secondary-tabs .active
-  background #3f51b5
-  color white
-.player-modal .secondary-tabs .q-tabs-bar
-  display none
-.player-modal .secondary-tabs
- border 2px solid #3f51b5
- border-radius 8px
- margin 8px
-.player-modal .secondary-tabs .q-tab
-  min-height 30px
-.player-modal .q-tabs-head
-  min-height 38px
 </style>

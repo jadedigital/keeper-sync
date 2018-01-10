@@ -27,8 +27,43 @@ export default new Vuex.Store({
     playerScores: '',
     dummyToolbar: false,
     currentWeek: '',
-    futureDraftPicks: ''
-
+    futureDraftPicks: '',
+    modalPlayer: '',
+    modalPlayerToggle: 1,
+    teamMap: {
+      ARI: 'ARI',
+      ATL: 'ATL',
+      BAL: 'BAL',
+      BUF: 'BUF',
+      CAR: 'CAR',
+      CHI: 'CHI',
+      CIN: 'CIN',
+      CLE: 'CLE',
+      DAL: 'DAL',
+      DEN: 'DEN',
+      DET: 'DET',
+      GBP: 'GB',
+      HOU: 'HOU',
+      IND: 'IND',
+      JAC: 'JAX',
+      KCC: 'KC',
+      LAR: 'LA',
+      LAC: 'LAC',
+      MIA: 'MIA',
+      MIN: 'MIN',
+      NEP: 'NE',
+      NOS: 'NO',
+      NYG: 'NYG',
+      NYJ: 'NYJ',
+      OAK: 'OAK',
+      PHI: 'PHI',
+      PIT: 'PIT',
+      SEA: 'SEA',
+      SFO: 'SF',
+      TBB: 'TB',
+      TEN: 'TEN',
+      WAS: 'WAS'
+    }
   },
   mutations: {
     [types.CHANGE_ACTIVE_TEAM] (state, payload) {
@@ -57,6 +92,9 @@ export default new Vuex.Store({
     },
     [types.SET_DATA] (state, payload) {
       state[payload.type] = payload.data
+    },
+    [types.TOGGLE_DATA] (state, payload) {
+      state[payload] = state[payload] * -1
     }
   },
   actions,

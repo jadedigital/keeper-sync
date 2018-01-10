@@ -46,7 +46,7 @@
                   <q-item separator>
                     <q-btn round small outline color="primary" style="font-size: 14px; font-weight:400; margin-right: 20px;" class="q-item-avatar">+</q-btn>
                     <q-item-side v-if="playerLookup[player.id].position !== 'Def'" :avatar="'https://sports.cbsimg.net/images/football/nfl/players/100x100/' + playerLookup[player.id].cbs_id + '.jpg'" />
-                    <q-item-side v-if="playerLookup[player.id].position === 'Def'" :avatar="'https://sports.cbsimg.net/images/nfl/logos/100x100/' + playerLookup[player.id].team + '.png'" />
+                    <q-item-side v-if="playerLookup[player.id].position === 'Def'" :avatar="'./statics/' + teamMap[playerLookup[player.id].team] + '.svg'" />
                     <div class="q-item-main q-item-section team-players">
                       <div class="q-item-label" style="overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical;">{{playerLookup[player.id].name.split(', ').slice(1).join(' ').charAt(0)}}. {{playerLookup[player.id].name.split(', ').slice(0, -1).join(' ')}}<small> {{playerLookup[player.id].team}}  -  {{playerLookup[player.id].position}}</small></div>
                       <div v-if="playerLookup[player.id].team !== 'FA*'" class="q-item-sublabel" style="overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical;">{{matchupLookup[playerLookup[player.id].team].day}} {{matchupLookup[playerLookup[player.id].team].time}} - <span v-if="matchupPositions.indexOf(playerLookup[player.id].position) !== -1" :class="matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rank < 11 ? 'text-positive' : matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rank < 21 ? 'text-warning' : 'text-negative'">{{matchupLookup[playerLookup[player.id].team].location}} {{matchupLookup[playerLookup[player.id].team].vs}} ({{matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rankPretty}})</span><span v-if="matchupPositions.indexOf(playerLookup[player.id].position) === -1">{{matchupLookup[playerLookup[player.id].team].location}} {{matchupLookup[playerLookup[player.id].team].vs}}</span></div>
@@ -165,7 +165,8 @@ export default {
       pointsAllowed: 'pointsAllowed',
       currentWeek: 'currentWeek',
       playerScores: 'playerScores',
-      endWeek: 'endWeek'
+      endWeek: 'endWeek',
+      teamMap: 'teamMap'
     }),
     myTeam () {
       var team = this.leagueData[this.activeLeague].teamId

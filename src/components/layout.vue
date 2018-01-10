@@ -36,9 +36,60 @@
       <q-search color="primary" v-model="playerSearch" placeholder="Search" stack-label="Search All Players" ref="search">
       </q-search>
       <div v-if="!playerSearch" class="row flex-center"><i class="info">Start typing to search</i></div>
-      <div v-if="playerSearch" v-for="player in playerLookup" :key="player.id" class="row flex-center">{{player.name}} ({{player.team}}) - {{player.id}}</div>
+      <div v-if="playerSearch" v-for="player in playerSearchLookup" :key="player.id" class="row flex-center">{{player.name}} ({{player.team}}) - {{player.id}}</div>
       <q-btn outline color="primary" @click="toggleModal">Cancel</q-btn>
     </q-modal>
+    <div slot="right" class="player-modal player-header">
+      <div v-if="modalPlayer">
+        <div class="player-bg-pic" :style="{background: 'url(./statics/' + teamMap[playerLookup[modalPlayer].team] + '.svg) no-repeat center'}">
+          <div class="bg-gradient-opacity">
+            <div class="row">
+              <q-btn flat @click="$refs.layout.hideRight()">
+                <q-icon name="arrow_back" color="white"/>
+              </q-btn>
+            </div>
+            <div class="player-info text-white row reverse items-center">
+              <ul class="col-6 player-info-list">
+                <li>Team: <span>{{playerLookup[modalPlayer].team}} #{{playerLookup[modalPlayer].jersey}}</span></li>
+                <li>HT/WT: <span>{{parseInt(playerLookup[modalPlayer].height / 12)}}'{{playerLookup[modalPlayer].height % 12}}"/{{playerLookup[modalPlayer].weight}}lbs</span></li>
+                <li>Age: <span>{{(new Date(Date.now()).getFullYear() - new Date(playerLookup[modalPlayer].birthdate * 1000).getFullYear())}}</span></li>
+                <li>Exp: <span>{{new Date(Date.now()).getFullYear() - playerLookup[modalPlayer].draft_year}}</span><span v-if="playerLookup[modalPlayer].status === 'R'">({{playerLookup[modalPlayer].status}})</span></li>
+                <li>College: <span>{{playerLookup[modalPlayer].college}}</span></li>
+              </ul>
+              <div class="col-6">
+                <div class="row justify-center">
+                  <img class="player-img" :src="'https://sports.cbsimg.net/images/football/nfl/players/100x100/' + playerLookup[modalPlayer].cbs_id + '.jpg'" alt="">
+                </div>
+              </div>
+            </div>
+            <div class="player-name-main q-toolbar-title text-white">
+              {{playerLookup[modalPlayer].name.split(', ').reverse().join(' ')}}
+              <div class="q-toolbar-subtitle">{{playerLookup[modalPlayer].position}}</div>
+            </div>
+          </div>
+        </div>
+        <div class="player-actions pull-right">
+          <q-fab
+            color="primary"
+            icon="compare_arrows"
+            direction="down"
+          >
+            <q-fab-action
+              color="red"
+              icon="remove"
+            />
+            <q-fab-action
+              color="blue"
+              icon="local_hospital"
+            />
+          </q-fab>
+        </div>
+        <q-tabs inverted class="secondary-tabs">
+          <q-tab default slot="title" name="tab-1" label="News" />
+          <q-tab slot="title" name="tab-2" label="Game Log"/>
+        </q-tabs>
+      </div>
+    </div>
     <!--
       Replace following <div> with
       <router-view /> component
@@ -83,11 +134,14 @@ import {
   QRouteTab,
   QTabPane,
   QModal,
+  QModalLayout,
   QAutocomplete,
   QSearch,
   QFixedPosition,
   QTransition,
   QPopover,
+  QFab,
+  QFabAction,
   LocalStorage
 } from 'quasar'
 import { mapGetters } from 'vuex'
@@ -114,8 +168,11 @@ export default {
     QSearch,
     QFixedPosition,
     QModal,
+    QModalLayout,
     QTransition,
-    QPopover
+    QPopover,
+    QFab,
+    QFabAction
   },
   data () {
     return {
@@ -147,7 +204,10 @@ export default {
       leagueData: 'leagueData',
       league: 'league',
       players: 'players',
-      dummyToolbar: 'dummyToolbar'
+      dummyToolbar: 'dummyToolbar',
+      modalPlayer: 'modalPlayer',
+      modalPlayerToggle: 'modalPlayerToggle',
+      teamMap: 'teamMap'
     }),
     myTeam () {
       var team = this.leagueData[this.activeLeague].teamId
@@ -158,6 +218,10 @@ export default {
       return this.lookup(array, 'id')
     },
     playerLookup () {
+      var array = this.players.player
+      return this.lookup(array, 'id')
+    },
+    playerSearchLookup () {
       var list = this.players.player
       var positions = []
       this.league.starters.position.forEach(el => {
@@ -176,6 +240,11 @@ export default {
         backgroundSize: 'cover'
       }
       return style
+    }
+  },
+  watch: {
+    modalPlayerToggle () {
+      this.$refs.layout.toggleRight()
     }
   },
   methods: {
@@ -261,6 +330,12 @@ export default {
   color #3f51b5
 .bg-gradient
   background linear-gradient(141deg, #3f51b5 15%, #03a9f4 100%)
+.bg-gradient-opacity
+  background linear-gradient(141deg, rgba(63, 81, 181, 1.0) 15%, rgba(3, 169, 244, 0.8) 100%);
+  z-index 2
+.player-bg-pic
+  background-size: cover;
+  overflow: hidden;
 .search-modal .info
   font-size 120%
   font-weight 300
@@ -292,4 +367,30 @@ export default {
   opacity: 0;
   transform: translate(-200px, 0);
 }
+.layout-aside-right
+  width 100%
+.player-header .layout-header
+  box-shadow none
+.player-info-list
+  list-style none
+  padding-left 0
+  font-weight 500
+.player-info-list span
+  font-weight 300
+.player-info .player-img
+  border-radius 50%
+  border 2px solid
+  background #fff
+.player-actions
+  margin-top -28px
+  margin-right 50px
+  position fixed
+  right 0
+.player-name-main
+  padding 12px
+  font-size 24px
+  font-weight 700
+.player-name-main .q-toolbar-subtitle
+  font-size 18px
+  font-weight 500
 </style>
