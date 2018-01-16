@@ -532,37 +532,3 @@ export default {
   }
 }
 </script>
-
-<style lang="stylus">
-.team-players
-  font-weight 500
-.team-players small
-  color #555
-  font-size 13px
-  font-weight 300
-.team-players .q-item-sublabel
-  color #555
-  font-size 13px
-  font-weight 300
-.secondary-tabs .q-tab
-  min-height 50px
-  font-size 12px
-.q-item.q-item-separator
-  border-color #eaeaea
-.secondary-tabs .q-chip
-  min-height 16px
-  font-size 10px
-  padding-left 8px
-  padding-right 8px
-  right 10px
-.slide-fade-enter-active {
-  transition: all .2s ease;
-}
-.slide-fade-leave-active {
-  transition: all .2s ease;
-}
-.slide-fade-enter, .slide-fade-leave-to
-{
-  transform: translateX(100%);
-}
-</style>
