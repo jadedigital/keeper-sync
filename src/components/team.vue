@@ -92,7 +92,14 @@
             </q-card>
           </q-list>
         </q-tab-pane>
-        <q-tab-pane name="tab-2"></q-tab-pane>
+        <q-tab-pane name="tab-2">
+          <div 
+          v-for="(pick, key) in mySortedPicks"
+          v-bind:key="key"
+          >
+            {{pick.round}} - {{pick.year}} - ({{key}})
+          </div>
+        </q-tab-pane>
         <q-tab-pane name="tab-3">Roster Alerts</q-tab-pane>
       </div>
     </q-tabs>
@@ -189,6 +196,22 @@ export default {
     projectedLookup () {
       var array = this.projectedScores.playerScore
       return this.lookup(array, 'id')
+    },
+    draftPicksLookup () {
+      var array = this.futureDraftPicks.franchise
+      var newArray = []
+      array.forEach(el => {
+        newArray.push(el)
+      })
+      return this.lookup(newArray, 'id')
+    },
+    myPicks () {
+      var myPicks = this.draftPicksLookup[this.myTeam]
+      return myPicks.futureDraftPick
+    },
+    mySortedPicks () {
+      var mySortedPicks = this.order(this.myPicks, 'year')
+      return mySortedPicks
     },
     updatedProjection () {
       var obj = {}
@@ -401,6 +424,13 @@ export default {
         lookup[array[i][key]] = array[i]
       }
       return lookup
+    },
+    order (list, key) {
+      return list.sort((a, b) => {
+        var x = parseInt(a[key]); var y = parseInt(b[key])
+        console.log(x + ' ' + y)
+        return ((x < y) ? -1 : ((x > y) ? 1 : 0))
+      })
     },
     matchupPointsUtil (pos) {
       var array = []
