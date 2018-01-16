@@ -29,7 +29,7 @@
         <q-card-separator />
         <q-spinner v-if="!dataLoaded" color="secondary" size="40px" class="players-spinner"/>
         <div v-if="dataLoaded" class="card-main bg-white relative-position no-overflow">
-          <transition-group name="list" tag="table" class="q-table">
+          <table class="q-table">
             <thead>
               <tr>
                 <th @click="sort('projected')"  nowrap class="text-center" :class="{'text-red': colSortKey === 'projected'}">Proj</th>
@@ -70,7 +70,7 @@
                 </td>
               </tr>
             </tfoot>
-          </transition-group>
+          </table>
           <q-btn @click="loadMore" class="load-more" round small color="primary" icon="keyboard_arrow_down"></q-btn>
         </div>
       </q-card>

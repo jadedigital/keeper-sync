@@ -111,6 +111,9 @@ export default {
           leagueData[leagueId] = {cookie: response.data.cookie, host: host, teamId: response.data.leagues.league.franchise_id}
           LocalStorage.set('leagueData', leagueData)
           LocalStorage.set('activeLeague', leagueId)
+          var time = Date.now()
+          LocalStorage.set('leagueData_time', time)
+          LocalStorage.set('activeLeague_time', time)
           this.$store.commit('SET_LEAGUE_DATA', leagueData)
           this.$store.commit('CHANGE_ACTIVE_LEAGUE', leagueId)
           return getLeagueData()
@@ -122,6 +125,8 @@ export default {
         .then((response) => {
           var week = Math.min(response, this.lastWeek)
           LocalStorage.set('currentWeek', week)
+          var time = Date.now()
+          LocalStorage.set('currentWeek_time', time)
           this.$store.commit('SET_DATA', {type: 'currentWeek', data: week})
           return callApi(week)
         })

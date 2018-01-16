@@ -1,5 +1,5 @@
 <template>
-  <q-pull-to-refresh :handler="refresher">
+  <q-pull-to-refresh :handler="refresher" class="league">
     <q-tabs inverted class="secondary-tabs">
       <!-- Tabs - notice slot="title" -->
       <q-tab default slot="title" name="tab-1" label="Standings" />
@@ -49,14 +49,53 @@
             </div>
           </q-card>
         </q-tab-pane>
-        <q-tab-pane name="tab-2">Transactions</q-tab-pane>
-        <q-tab-pane name="tab-3">Message Board
+        <q-tab-pane class="no-pad no-border" name="tab-2">
+          <q-item separator v-for="(move, key) in transactionPretty" :key="key" class="team-name-main">
+            <q-item-main>
+              <q-item-tile label>{{teamLookup[move.franchise].name}}</q-item-tile>
+              <q-item-tile sublabel>{{move.type.replace('_', ' ')}}</q-item-tile>
+              <q-item-tile v-if="move.type === 'IR'">
+                <span v-if="move.activated">Activated: </span>
+                <span v-for="(player, key2) in move.activated" :key="key2">{{playerLookup[player] ? playerLookup[player].name.split(', ').reverse().join(' ') : ''}}<span v-if="move.activated[key2 + 1]">, </span></span>
+              </q-item-tile>
+              <q-item-tile v-if="move.type === 'IR'">
+                <span v-if="move.deactivated">Deactivated: </span>
+                <span v-for="(player, key2) in move.deactivated" :key="key2">{{playerLookup[player] ? playerLookup[player].name.split(', ').reverse().join(' ') : ''}}<span v-if="move.deactivated[key2 + 1]">, </span></span>
+              </q-item-tile>
+              <q-item-tile v-if="move.added && move.added[0] !== ''">
+                <span>Added: </span>
+                <span v-for="(player, key2) in move.added" :key="key2">{{playerLookup[player] ? playerLookup[player].name.split(', ').reverse().join(' ') : ''}}<span v-if="move.added[key2 + 1]">, </span></span>
+              </q-item-tile>
+              <q-item-tile v-if="move.dropped && move.dropped[0] !== ''">
+                <span>Dropped: </span>
+                <span v-for="(player, key2) in move.dropped" :key="key2">{{playerLookup[player] ? playerLookup[player].name.split(', ').reverse().join(' ') : ''}}<span v-if="move.dropped[key2 + 1]">, </span></span>
+              </q-item-tile>
+              <q-item-tile v-if="move.price">
+                <span>${{move.price}}</span>
+              </q-item-tile>
+            </q-item-main>
+            <q-item-side right>
+              {{move.weekday}}, {{move.month}} {{move.day}}
+            </q-item-side>
+          </q-item>
+        </q-tab-pane>
+        <q-tab-pane class="no-pad no-border" name="tab-3">
+          <q-list highlight>
+            <q-item v-for="chat in msgBoardPretty" :key="chat.id">
+              <q-item-side :avatar="teamLookup[chat.franchise_id].icon ? teamLookup[chat.franchise_id].icon : './statics/avatar.jpg'" />
+              <q-item-main :label="chat.subject" :sublabel="teamLookup[chat.franchise_id].name" />
+              <q-item-side right>
+                <q-item-tile>
+                  {{chat.weekday}}, {{chat.month}} {{chat.day}}
+                </q-item-tile>
+              </q-item-side>
+            </q-item>
+          </q-list>
         </q-tab-pane>
       </div>
     </q-tabs>
   </q-pull-to-refresh>
 </template>
-
 
 <script>
 import {
@@ -67,6 +106,7 @@ import {
   QItem,
   QItemSide,
   QItemMain,
+  QItemTile,
   QItemSeparator,
   QRouteTab,
   QTabPane,
@@ -80,6 +120,7 @@ import {
   QCardSeparator
 } from 'quasar'
 import { mapGetters } from 'vuex'
+import { callApi, loadData } from '../data'
 
 export default {
   name: 'index',
@@ -90,6 +131,7 @@ export default {
     QItem,
     QItemSide,
     QItemMain,
+    QItemTile,
     QItemSeparator,
     QRouteTab,
     QTabPane,
@@ -106,7 +148,8 @@ export default {
     return {
       response: null,
       colSortKeys: {},
-      colSortOrders: {}
+      colSortOrders: {},
+      dataLoaded: false
     }
   },
   computed: {
@@ -116,7 +159,9 @@ export default {
       rosters: 'rosters',
       players: 'players',
       leagueStandings: 'leagueStandings',
-      league: 'league'
+      league: 'league',
+      transactions: 'transactions',
+      messageBoard: 'messageBoard'
     }),
     standings () {
       var obj = {}
@@ -144,13 +189,76 @@ export default {
       })
       return obj
     },
+    transactionPretty () {
+      var locale = 'en-us'
+      var array = []
+      var transArray = []
+      var obj = {}
+      if (!Array.isArray(this.transactions.transaction)) {
+        transArray.push(this.transactions.transaction)
+      }
+      else {
+        transArray = this.transactions.transaction
+      }
+      transArray.forEach(el => {
+        var date = new Date(el.timestamp * 1000)
+        obj = {
+          franchise: el.franchise,
+          type: el.type,
+          transaction: el.transaction,
+          weekday: date.toLocaleString(locale, { weekday: 'short' }),
+          day: date.toLocaleString(locale, { day: 'numeric' }),
+          month: date.toLocaleString(locale, { month: 'short' }),
+          activated: el.activated ? el.activated.split(',') : '',
+          deactivated: el.deactivated ? el.deactivated.split(',') : '',
+          added: el.transaction ? el.transaction.split('|').slice(0, 1).join().split(',') : '',
+          dropped: el.transaction ? el.transaction.split('|').slice(-1).join().split(',') : '',
+          price: el.type === 'BBID_WAIVER' ? el.transaction.split('|').slice(1, 2).join() : ''
+        }
+        array.push(obj)
+      })
+      return array
+    },
+    msgBoardPretty () {
+      var locale = 'en-us'
+      var array = []
+      var msgArray = []
+      var obj = {}
+      if (!Array.isArray(this.messageBoard.thread)) {
+        msgArray.push(this.messageBoard.thread)
+      }
+      else {
+        msgArray = this.messageBoard.thread
+      }
+      msgArray.forEach(el => {
+        var date = new Date(el.lastPostTime * 1000)
+        obj = {
+          franchise_id: el.franchise_id,
+          weekday: date.toLocaleString(locale, { weekday: 'short' }),
+          day: date.toLocaleString(locale, { day: 'numeric' }),
+          month: date.toLocaleString(locale, { month: 'short' }),
+          subject: el.subject,
+          id: el.id
+        }
+        array.push(obj)
+      })
+      return array
+    },
+    playerLookup () {
+      var array = this.players.player
+      return this.lookup(array, 'id')
+    },
     teamLookup () {
-      var obj = this.league.franchises.franchise
-      return this.lookup(obj)
+      var array = this.league.franchises.franchise
+      var obj = this.lookup(array, 'id')
+      obj['0000'] = {
+        name: 'Commissioner'
+      }
+      return obj
     },
     divisionLookup () {
-      var obj = this.league.divisions.division
-      return this.lookup(obj)
+      var array = this.league.divisions.division
+      return this.lookup(array, 'id')
     }
   },
   watch: {
@@ -177,16 +285,53 @@ export default {
       this.fetchStandings()
       done()
     },
-    lookup (array) {
+    lookup (array, key) {
       var lookup = {}
       for (var i = 0, len = array.length; i < len; i++) {
-        lookup[array[i].id] = array[i]
+        lookup[array[i][key]] = array[i]
       }
       return lookup
     },
     fetchStandings () {
       // refresh
     }
+  },
+  created () {
+    var data = [
+      'transactions',
+      'messageBoard'
+    ]
+    loadData(data)
+
+    var transactionsParams = {
+      cookie: this.leagueData[this.activeLeague].cookie,
+      host: this.leagueData[this.activeLeague].host,
+      TYPE: 'transactions',
+      L: this.activeLeague,
+      COUNT: 1,
+      JSON: 1
+    }
+    var messageBoardParams = {
+      cookie: this.leagueData[this.activeLeague].cookie,
+      host: this.leagueData[this.activeLeague].host,
+      TYPE: 'messageBoard',
+      L: this.activeLeague,
+      JSON: 1
+    }
+    var request = [
+      {
+        type: 'transactions',
+        params: transactionsParams
+      },
+      {
+        type: 'messageBoard',
+        params: messageBoardParams
+      }
+    ]
+    callApi('', request)
+      .then((response) => {
+        this.dataLoaded = true
+      })
   },
   mounted () {
     this.league.divisions.division.forEach(el => {
@@ -223,4 +368,12 @@ export default {
 tr .rank
   padding-right 12px
   font-weight 500
+.league .q-item
+  
+.league .q-item-label
+  font-weight 500
+  font-size 14px
+.league .q-item-sublabel
+  font-weight 300
+  font-size 12px
 </style>

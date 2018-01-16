@@ -177,9 +177,12 @@ export function callApi (week, types) {
 
 export function loadData (data) {
   data.forEach(el => {
-    console.log('loading ' + el + ' data from cache')
-    let cacheData = LocalStorage.get.item(el)
-    store.commit('SET_DATA', {type: el, data: cacheData})
+    var timecheck = el + '_time'
+    if (LocalStorage.has(timecheck)) {
+      console.log('loading ' + el + ' data from cache')
+      let cacheData = LocalStorage.get.item(el)
+      store.commit('SET_DATA', {type: el, data: cacheData})
+    }
   })
 }
 

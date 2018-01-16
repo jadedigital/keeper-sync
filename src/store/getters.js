@@ -21,6 +21,8 @@ export const futureDraftPicks = state => state.futureDraftPicks
 export const modalPlayer = state => state.modalPlayer
 export const modalPlayerToggle = state => state.modalPlayerToggle
 export const teamMap = state => state.teamMap
+export const transactions = state => state.transactions
+export const messageBoard = state => state.messageBoard
 export const endWeek = state => {
   return state.league.endWeek
 }

@@ -122,10 +122,11 @@ import {
   QToolbar,
   QSearch,
   QIcon,
-  QSpinner
+  QSpinner,
+  LocalStorage
 } from 'quasar'
 import { mapGetters } from 'vuex'
-import { callApi } from '../data'
+import { callApi, loadData } from '../data'
 
 export default {
   name: 'index',
@@ -471,23 +472,32 @@ export default {
     }
   },
   created () {
-    var futureDraftPicksParams = {
-      cookie: this.leagueData[this.activeLeague].cookie,
-      host: this.leagueData[this.activeLeague].host,
-      TYPE: 'futureDraftPicks',
-      L: this.activeLeague,
-      JSON: 1
+    if (LocalStorage.has('futureDraftPicks')) {
+      var data = [
+        'futureDraftPicks'
+      ]
+      loadData(data)
+      this.dataLoaded = true
     }
-    var request = [
-      {
-        type: 'futureDraftPicks',
-        params: futureDraftPicksParams
+    else {
+      var futureDraftPicksParams = {
+        cookie: this.leagueData[this.activeLeague].cookie,
+        host: this.leagueData[this.activeLeague].host,
+        TYPE: 'futureDraftPicks',
+        L: this.activeLeague,
+        JSON: 1
       }
-    ]
-    callApi('', request)
-      .then((response) => {
-        this.dataLoaded = true
-      })
+      var request = [
+        {
+          type: 'futureDraftPicks',
+          params: futureDraftPicksParams
+        }
+      ]
+      callApi('', request)
+        .then((response) => {
+          this.dataLoaded = true
+        })
+    }
   }
 }
 </script>

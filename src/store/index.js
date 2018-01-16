@@ -30,6 +30,8 @@ export default new Vuex.Store({
     futureDraftPicks: '',
     modalPlayer: '',
     modalPlayerToggle: 1,
+    transactions: '',
+    messageBoard: '',
     teamMap: {
       ARI: 'ARI',
       ATL: 'ATL',
