@@ -96,7 +96,8 @@ export function callApi (week, types) {
     requests = [
       {
         type: 'rosters',
-        params: rosterParams
+        params: rosterParams,
+        timeOut: 3600000
       },
       {
         type: 'players',
@@ -105,39 +106,48 @@ export function callApi (week, types) {
       },
       {
         type: 'leagueStandings',
-        params: standingsParams
+        params: standingsParams,
+        timeOut: 3600000
       },
       {
         type: 'freeAgents',
-        params: freeAgentsParams
+        params: freeAgentsParams,
+        timeOut: 3600000
       },
       {
         type: 'league',
-        params: leagueParams
+        params: leagueParams,
+        timeOut: 3600000
       },
       {
         type: 'projectedScores',
-        params: projectedScoresParams
+        params: projectedScoresParams,
+        timeOut: 3600000
       },
       {
         type: 'topAdds',
-        params: topAddsParams
+        params: topAddsParams,
+        timeOut: 3600000
       },
       {
         type: 'topOwns',
-        params: topOwnsParams
+        params: topOwnsParams,
+        timeOut: 3600000
       },
       {
         type: 'fullNflSchedule',
-        params: nflScheduleParams
+        params: nflScheduleParams,
+        timeOut: 3600000
       },
       {
         type: 'liveScoring',
-        params: liveScoringParams
+        params: liveScoringParams,
+        timeOut: 3600000
       },
       {
         type: 'pointsAllowed',
-        params: pointsAllowedParams
+        params: pointsAllowedParams,
+        timeOut: 3600000
       }
     ]
   }
@@ -148,7 +158,7 @@ export function callApi (week, types) {
     var timeCheck = Date.now()
     let lastTime = LocalStorage.get.item(el.type + '_time')
     var diff = timeCheck - lastTime
-    if (diff > 3600000) {
+    if (diff > el.timeOut) {
       console.log('fetching ' + el.type + ' data from server')
       promises.push(axios.get(url, {
         params: el.params

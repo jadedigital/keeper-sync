@@ -45,7 +45,7 @@ import {
 import { mapGetters } from 'vuex'
 
 export default {
-  name: 'index',
+  name: 'player',
   components: {
     QLayout,
     QToolbar,

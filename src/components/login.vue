@@ -43,7 +43,7 @@ import { callApi, getWeek, getLeagueData } from '../data'
 import { required } from 'vuelidate/lib/validators'
 
 export default {
-  name: 'index',
+  name: 'login',
   components: {
     QLayout,
     QBtn,

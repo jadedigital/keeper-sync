@@ -147,7 +147,7 @@ import {
 import { mapGetters } from 'vuex'
 
 export default {
-  name: 'index',
+  name: 'user',
   components: {
     QLayout,
     QToolbar,
@@ -393,4 +393,37 @@ export default {
 .player-name-main .q-toolbar-subtitle
   font-size 18px
   font-weight 500
+.q-table .q-item
+  padding 0
+.q-table .q-item-label
+  font-weight 500
+  font-size 14px
+.q-table .q-item-sublabel
+  font-weight 300
+  font-size 12px
+.card-main
+  overflow auto
+.q-table
+  font-size 12px
+  width 100%
+.q-table th,td
+  padding-left 0!important
+  padding-right 0!important
+.col-pad
+  padding-left 12px!important
+  padding-right 12px!important
+.team-name-main
+  border-bottom none!important
+  padding-bottom 0!important
+tr .rank
+  padding-right 12px
+  font-weight 500
+.league .q-item-label
+  font-weight 500
+  font-size 14px
+.league .q-item-sublabel
+  font-weight 300
+  font-size 12px
+.league .msg-board .q-list
+  border 0
 </style>

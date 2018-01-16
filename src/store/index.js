@@ -32,6 +32,8 @@ export default new Vuex.Store({
     modalPlayerToggle: 1,
     transactions: '',
     messageBoard: '',
+    currentMsgThread: '',
+    messageBoardThread: '',
     teamMap: {
       ARI: 'ARI',
       ATL: 'ATL',

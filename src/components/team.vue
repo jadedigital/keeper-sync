@@ -136,7 +136,7 @@ import { mapGetters } from 'vuex'
 import { callApi, loadData } from '../data'
 
 export default {
-  name: 'index',
+  name: 'team',
   components: {
     QBtn,
     QList,

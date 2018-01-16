@@ -4,7 +4,7 @@
       <!-- Tabs - notice slot="title" -->
       <q-tab default slot="title" name="tab-1" label="Standings" />
       <q-tab slot="title" name="tab-2" label="Transactions"/>
-      <q-tab slot="title" name="tab-3" label="Message Board"/>
+      <q-tab slot="title" name="tab-3" label="Messages"/>
       <!-- Targets -->
       <div class="contain-main bg-grey-1">
         <q-tab-pane class="no-pad no-border" name="tab-1">
@@ -79,9 +79,13 @@
             </q-item-side>
           </q-item>
         </q-tab-pane>
-        <q-tab-pane class="no-pad no-border" name="tab-3">
+        <q-tab-pane class="no-pad no-border msg-board" name="tab-3">
           <q-list highlight>
-            <q-item v-for="chat in msgBoardPretty" :key="chat.id">
+            <q-item 
+              v-for="chat in msgBoardPretty" 
+              :key="chat.id"
+              @click="goToMsg(chat.id, chat.subject)"
+            >
               <q-item-side :avatar="teamLookup[chat.franchise_id].icon ? teamLookup[chat.franchise_id].icon : './statics/avatar.jpg'" />
               <q-item-main :label="chat.subject" :sublabel="teamLookup[chat.franchise_id].name" />
               <q-item-side right>
@@ -117,13 +121,14 @@ import {
   QFixedPosition,
   QIcon,
   QCardTitle,
-  QCardSeparator
+  QCardSeparator,
+  LocalStorage
 } from 'quasar'
 import { mapGetters } from 'vuex'
 import { callApi, loadData } from '../data'
 
 export default {
-  name: 'index',
+  name: 'league',
   components: {
     QBtn,
     QList,
@@ -292,6 +297,11 @@ export default {
       }
       return lookup
     },
+    goToMsg (id, title) {
+      LocalStorage.set('currentMsgThread', {id: id, title: title})
+      this.$store.commit('SET_DATA', {type: 'currentMsgThread', data: {id: id, title: title}})
+      this.$router.push('/message')
+    },
     fetchStandings () {
       // refresh
     }
@@ -308,7 +318,7 @@ export default {
       host: this.leagueData[this.activeLeague].host,
       TYPE: 'transactions',
       L: this.activeLeague,
-      COUNT: 1,
+      COUNT: 30,
       JSON: 1
     }
     var messageBoardParams = {
@@ -321,11 +331,13 @@ export default {
     var request = [
       {
         type: 'transactions',
-        params: transactionsParams
+        params: transactionsParams,
+        timeOut: 3600000
       },
       {
         type: 'messageBoard',
-        params: messageBoardParams
+        params: messageBoardParams,
+        timeOut: 3600000
       }
     ]
     callApi('', request)
@@ -341,39 +353,3 @@ export default {
   }
 }
 </script>
-
-<style lang="stylus">
-.q-table .q-item
-  padding 0
-.q-table .q-item-label
-  font-weight 500
-  font-size 14px
-.q-table .q-item-sublabel
-  font-weight 300
-  font-size 12px
-.card-main
-  overflow auto
-.q-table
-  font-size 12px
-  width 100%
-.q-table th,td
-  padding-left 0!important
-  padding-right 0!important
-.col-pad
-  padding-left 12px!important
-  padding-right 12px!important
-.team-name-main
-  border-bottom none!important
-  padding-bottom 0!important
-tr .rank
-  padding-right 12px
-  font-weight 500
-.league .q-item
-  
-.league .q-item-label
-  font-weight 500
-  font-size 14px
-.league .q-item-sublabel
-  font-weight 300
-  font-size 12px
-</style>

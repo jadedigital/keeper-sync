@@ -238,7 +238,7 @@ import { mapGetters } from 'vuex'
 import { callApi } from '../data'
 
 export default {
-  name: 'index',
+  name: 'matchup',
   components: {
     QBtn,
     QList,

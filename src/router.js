@@ -30,6 +30,7 @@ const router = new VueRouter({
       children: [
         { path: 'user',
           component: load('layout'),
+          name: 'user',
           meta: { requiresAuth: true },
           children: [
             {
@@ -70,6 +71,13 @@ const router = new VueRouter({
         {
           path: 'teams/:id',
           component: load('teams'),
+          name: 'teams',
+          meta: { requiresAuth: true }
+        },
+        {
+          path: 'message',
+          component: load('message'),
+          name: 'message',
           meta: { requiresAuth: true }
         }
       ]

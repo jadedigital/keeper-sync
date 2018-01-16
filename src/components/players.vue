@@ -106,7 +106,7 @@ import { mapGetters } from 'vuex'
 import { callApi, getWeek } from '../data'
 
 export default {
-  name: 'index',
+  name: 'players',
   components: {
     QBtn,
     QDataTable,
@@ -392,7 +392,8 @@ export default {
     var request = [
       {
         type: 'playerScores',
-        params: playerScoresParams
+        params: playerScoresParams,
+        timeOut: 3600000
       }
     ]
     callApi('', request)

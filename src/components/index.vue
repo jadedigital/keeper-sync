@@ -2,7 +2,7 @@
   <!-- Don't drop "q-app" class -->
   <div>
     <transition :name="transitionName">
-      <keep-alive>
+      <keep-alive :include="cacheRoutes">
         <router-view class="child-view"></router-view>
       </keep-alive>
     </transition>
@@ -19,7 +19,8 @@ import { loadData } from '../data'
 export default {
   data () {
     return {
-      transitionName: ''
+      transitionName: '',
+      cacheRoutes: ['teams', 'user']
     }
   },
   beforeRouteEnter (to, from, next) {
