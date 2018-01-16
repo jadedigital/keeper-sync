@@ -199,29 +199,31 @@ export default {
       var array = []
       var transArray = []
       var obj = {}
-      if (!Array.isArray(this.transactions.transaction)) {
-        transArray.push(this.transactions.transaction)
-      }
-      else {
-        transArray = this.transactions.transaction
-      }
-      transArray.forEach(el => {
-        var date = new Date(el.timestamp * 1000)
-        obj = {
-          franchise: el.franchise,
-          type: el.type,
-          transaction: el.transaction,
-          weekday: date.toLocaleString(locale, { weekday: 'short' }),
-          day: date.toLocaleString(locale, { day: 'numeric' }),
-          month: date.toLocaleString(locale, { month: 'short' }),
-          activated: el.activated ? el.activated.split(',') : '',
-          deactivated: el.deactivated ? el.deactivated.split(',') : '',
-          added: el.transaction ? el.transaction.split('|').slice(0, 1).join().split(',') : '',
-          dropped: el.transaction ? el.transaction.split('|').slice(-1).join().split(',') : '',
-          price: el.type === 'BBID_WAIVER' ? el.transaction.split('|').slice(1, 2).join() : ''
+      if (this.transactions.transaction) {
+        if (!Array.isArray(this.transactions.transaction)) {
+          transArray.push(this.transactions.transaction)
         }
-        array.push(obj)
-      })
+        else {
+          transArray = this.transactions.transaction
+        }
+        transArray.forEach(el => {
+          var date = new Date(el.timestamp * 1000)
+          obj = {
+            franchise: el.franchise,
+            type: el.type,
+            transaction: el.transaction,
+            weekday: date.toLocaleString(locale, { weekday: 'short' }),
+            day: date.toLocaleString(locale, { day: 'numeric' }),
+            month: date.toLocaleString(locale, { month: 'short' }),
+            activated: el.activated ? el.activated.split(',') : '',
+            deactivated: el.deactivated ? el.deactivated.split(',') : '',
+            added: el.transaction ? el.transaction.split('|').slice(0, 1).join().split(',') : '',
+            dropped: el.transaction ? el.transaction.split('|').slice(-1).join().split(',') : '',
+            price: el.type === 'BBID_WAIVER' ? el.transaction.split('|').slice(1, 2).join() : ''
+          }
+          array.push(obj)
+        })
+      }
       return array
     },
     msgBoardPretty () {
@@ -229,24 +231,26 @@ export default {
       var array = []
       var msgArray = []
       var obj = {}
-      if (!Array.isArray(this.messageBoard.thread)) {
-        msgArray.push(this.messageBoard.thread)
-      }
-      else {
-        msgArray = this.messageBoard.thread
-      }
-      msgArray.forEach(el => {
-        var date = new Date(el.lastPostTime * 1000)
-        obj = {
-          franchise_id: el.franchise_id,
-          weekday: date.toLocaleString(locale, { weekday: 'short' }),
-          day: date.toLocaleString(locale, { day: 'numeric' }),
-          month: date.toLocaleString(locale, { month: 'short' }),
-          subject: el.subject,
-          id: el.id
+      if (this.messageBoard.thread) {
+        if (!Array.isArray(this.messageBoard.thread)) {
+          msgArray.push(this.messageBoard.thread)
         }
-        array.push(obj)
-      })
+        else {
+          msgArray = this.messageBoard.thread
+        }
+        msgArray.forEach(el => {
+          var date = new Date(el.lastPostTime * 1000)
+          obj = {
+            franchise_id: el.franchise_id,
+            weekday: date.toLocaleString(locale, { weekday: 'short' }),
+            day: date.toLocaleString(locale, { day: 'numeric' }),
+            month: date.toLocaleString(locale, { month: 'short' }),
+            subject: el.subject,
+            id: el.id
+          }
+          array.push(obj)
+        })
+      }
       return array
     },
     playerLookup () {
