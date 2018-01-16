@@ -210,7 +210,7 @@ export default {
       return myPicks.futureDraftPick
     },
     mySortedPicks () {
-      var mySortedPicks = this.order(this.myPicks, 'year')
+      var mySortedPicks = this.myPicks
       return mySortedPicks
     },
     updatedProjection () {
@@ -520,7 +520,8 @@ export default {
       var request = [
         {
           type: 'futureDraftPicks',
-          params: futureDraftPicksParams
+          params: futureDraftPicksParams,
+          timeOut: 3600000
         }
       ]
       callApi('', request)

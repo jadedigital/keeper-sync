@@ -50,7 +50,7 @@
           </q-card>
         </q-tab-pane>
         <q-tab-pane class="no-pad no-border" name="tab-2">
-          <q-item separator v-for="(move, key) in transactionPretty" :key="key" class="team-name-main">
+          <q-item separator v-if="transactionPretty" v-for="(move, key) in transactionPretty" :key="key" class="team-name-main">
             <q-item-main>
               <q-item-tile label>{{teamLookup[move.franchise].name}}</q-item-tile>
               <q-item-tile sublabel>{{move.type.replace('_', ' ')}}</q-item-tile>
@@ -80,7 +80,7 @@
           </q-item>
         </q-tab-pane>
         <q-tab-pane class="no-pad no-border msg-board" name="tab-3">
-          <q-list highlight>
+          <q-list highlight v-if="msgBoardPretty">
             <q-item 
               v-for="chat in msgBoardPretty" 
               :key="chat.id"
