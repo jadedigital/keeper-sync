@@ -42,6 +42,7 @@ const router = new VueRouter({
             {
               path: 'league',
               component: load('league'),
+              name: 'league',
               meta: { requiresAuth: true }
             },
             {

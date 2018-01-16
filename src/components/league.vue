@@ -2,9 +2,25 @@
   <q-pull-to-refresh :handler="refresher" class="league">
     <q-tabs inverted class="secondary-tabs">
       <!-- Tabs - notice slot="title" -->
-      <q-tab default slot="title" name="tab-1" label="Standings" />
-      <q-tab slot="title" name="tab-2" label="Transactions"/>
-      <q-tab slot="title" name="tab-3" label="Messages"/>
+      <q-tab 
+        default
+        slot="title"
+        name="tab-1" 
+        label="Standings"
+        @click="activeTab('standings')"
+      />
+      <q-tab 
+        slot="title"
+        name="tab-2"
+        label="Transactions"
+        @click="activeTab('transactions')"
+      />
+      <q-tab
+        slot="title"
+        name="tab-3"
+        label="Messages"
+        @click="activeTab('messages')"
+      />
       <!-- Targets -->
       <div class="contain-main bg-white">
         <q-tab-pane class="no-pad no-border" name="tab-1">
@@ -82,7 +98,6 @@
         <q-tab-pane 
           class="no-pad no-border msg-board" 
           name="tab-3" 
-          :style="'height: calc(100vh - (162px - ' + scrollPosition + 'px));'"
         >
           <q-list highlight v-if="msgBoardPretty">
             <q-item 
@@ -99,9 +114,6 @@
               </q-item-side>
             </q-item>
           </q-list>
-          <q-fixed-position corner="bottom-right" :offset="[18, 18]">
-            <q-btn round color="secondary" icon="message" class="bg-gradient shadow-5" />
-          </q-fixed-position>
         </q-tab-pane>
       </div>
     </q-tabs>
@@ -173,8 +185,7 @@ export default {
       leagueStandings: 'leagueStandings',
       league: 'league',
       transactions: 'transactions',
-      messageBoard: 'messageBoard',
-      scrollPosition: 'scrollPosition'
+      messageBoard: 'messageBoard'
     }),
     standings () {
       var obj = {}
@@ -287,6 +298,9 @@ export default {
     launch (url) {
       close()
       openURL(url, '_self')
+    },
+    activeTab (tab) {
+      this.$store.commit('SET_DATA', {type: 'leagueTab', data: tab})
     },
     order (list, key, order) {
       return list.sort((a, b) => {

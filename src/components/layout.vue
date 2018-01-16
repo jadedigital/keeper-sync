@@ -118,6 +118,9 @@
       <q-route-tab to="matchup" exact slot="title" icon="flag" label="Matchup"/>
       <q-route-tab to="players" exact slot="title" icon="person" label="Players" />
     </q-tabs>
+    <q-fixed-position v-if="leagueTab === 'messages' && $route.name === 'league'" corner="bottom-right" :offset="[18, 18]">
+      <q-btn round color="secondary" icon="message" class="bg-gradient shadow-5" />
+    </q-fixed-position>
   </q-layout>
 </template>
 
@@ -214,7 +217,8 @@ export default {
       dummyToolbar: 'dummyToolbar',
       modalPlayer: 'modalPlayer',
       modalPlayerToggle: 'modalPlayerToggle',
-      teamMap: 'teamMap'
+      teamMap: 'teamMap',
+      leagueTab: 'leagueTab'
     }),
     myTeam () {
       var team = this.leagueData[this.activeLeague].teamId
@@ -264,7 +268,6 @@ export default {
       this.modal = !this.modal
     },
     scrollHandler (scroll) {
-      this.$store.commit('SET_DATA', {type: 'scrollPosition', data: scroll.position})
       if (scroll.position > 50) {
         this.headerShadow = true
       }
@@ -478,4 +481,6 @@ tr .rank
 }
 .no-shad .layout-header
   box-shadow none
+.league .msg-board
+  height calc(100vh - 162px)
 </style>
