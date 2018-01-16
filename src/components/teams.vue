@@ -451,6 +451,8 @@ export default {
 </script>
 
 <style lang="stylus">
+.layout.team-layout
+  background-color #fff
 .team-players
   font-weight 500
 .team-players small

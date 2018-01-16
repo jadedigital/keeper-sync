@@ -1,5 +1,11 @@
 <template>
-  <q-layout ref="layout" view="hHh Lpr lFf" :left-class="{'bg-grey-2': true}">
+  <q-layout 
+    @scroll="scrollHandler"
+    ref="layout"
+    view="hHh Lpr lFf"
+    :class="headerShadow ? '' : 'no-shad'"
+    :left-class="{'bg-grey-2': true}"
+  >
     <q-toolbar class="bg-gradient" slot="header">
       <q-btn class="desktop-only" flat @click="$refs.layout.toggleLeft()">
         <q-icon name="search" />
@@ -186,7 +192,8 @@ export default {
         matchup: 3,
         players: 4
       },
-      transitionName: ''
+      transitionName: '',
+      headerShadow: false
     }
   },
   beforeRouteEnter (to, from, next) {
@@ -256,6 +263,15 @@ export default {
       this.$refs.search.clear()
       this.modal = !this.modal
     },
+    scrollHandler (scroll) {
+      this.$store.commit('SET_DATA', {type: 'scrollPosition', data: scroll.position})
+      if (scroll.position > 50) {
+        this.headerShadow = true
+      }
+      else {
+        this.headerShadow = false
+      }
+    },
     lookup (array, id) {
       var lookup = {}
       for (var i = 0, len = array.length; i < len; i++) {
@@ -311,12 +327,13 @@ export default {
 .compact-card .q-card-title
   text-align center
   font-size 14px
-  font-weight 500
+  font-weight 300
 .compact-card .q-card-primary
   padding 0
+  background-color #f7f7f7
 .q-card.compact-card
   box-shadow none
-  border solid 1px rgba(0,0,0,0.1)
+  margin 0
 .q-tab
   font-size 10px
   padding 0
@@ -436,6 +453,8 @@ tr .rank
   color #555
   font-size 13px
   font-weight 300
+.secondary-tabs .q-tabs-head
+  box-shadow 0 1px 5px rgba(0,0,0,.2), 0 2px 2px rgba(0,0,0,.14), 0 3px 1px -2px rgba(0,0,0,.12)
 .secondary-tabs .q-tab
   min-height 50px
   font-size 12px
@@ -457,4 +476,6 @@ tr .rank
 {
   transform: translateX(100%);
 }
+.no-shad .layout-header
+  box-shadow none
 </style>

@@ -6,7 +6,7 @@
       <q-tab slot="title" name="tab-2" label="Transactions"/>
       <q-tab slot="title" name="tab-3" label="Messages"/>
       <!-- Targets -->
-      <div class="contain-main bg-grey-1">
+      <div class="contain-main bg-white">
         <q-tab-pane class="no-pad no-border" name="tab-1">
           <q-card class="compact-card bg-white" v-for="(division, key) in standings" :key="key">
             <q-card-title>
@@ -79,7 +79,11 @@
             </q-item-side>
           </q-item>
         </q-tab-pane>
-        <q-tab-pane class="no-pad no-border msg-board" name="tab-3">
+        <q-tab-pane 
+          class="no-pad no-border msg-board" 
+          name="tab-3" 
+          :style="'height: calc(100vh - (162px - ' + scrollPosition + 'px));'"
+        >
           <q-list highlight v-if="msgBoardPretty">
             <q-item 
               v-for="chat in msgBoardPretty" 
@@ -95,6 +99,9 @@
               </q-item-side>
             </q-item>
           </q-list>
+          <q-fixed-position corner="bottom-right" :offset="[18, 18]">
+            <q-btn round color="secondary" icon="message" class="bg-gradient shadow-5" />
+          </q-fixed-position>
         </q-tab-pane>
       </div>
     </q-tabs>
@@ -166,7 +173,8 @@ export default {
       leagueStandings: 'leagueStandings',
       league: 'league',
       transactions: 'transactions',
-      messageBoard: 'messageBoard'
+      messageBoard: 'messageBoard',
+      scrollPosition: 'scrollPosition'
     }),
     standings () {
       var obj = {}

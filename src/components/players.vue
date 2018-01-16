@@ -1,7 +1,12 @@
 <template>
   <q-pull-to-refresh :handler="refresher">
     <div class="contain-main players">
-      <q-collapsible icon="filter_list" label="Filter Players" sublabel="by name, position, status">
+      <q-collapsible 
+        icon="filter_list"
+        label="Filter Players"
+        sublabel="by name, position, status"
+        class="shadow-2"
+      >
         <q-search
           v-model="query"
           icon="search"
@@ -435,4 +440,6 @@ th.sortable
   opacity: 0;
   transform: translateX(30px);
 }
+.players .q-collapsible .q-item-division
+  padding 5px 16px
 </style>

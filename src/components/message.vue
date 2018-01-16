@@ -1,10 +1,9 @@
 <template>
-  <q-layout ref="childLayout" view="hHh lpr fFf" class="team-layout">
+  <q-layout ref="childLayout" view="hHh lpr fFf" class="message">
     <q-toolbar class="bg-gradient" slot="header">
       <q-btn flat>
         <q-icon @click="$router.go(-1)" name="arrow_back" />
       </q-btn>
-
       <q-toolbar-title>
         {{currentMsgThread.title}}
       </q-toolbar-title>
@@ -24,6 +23,7 @@
         :text="[msg.body]"
         :stamp="msg.weekday"
         :sent="msg.franchise === myTeam"
+        :bg-color="msg.franchise === myTeam ? 'secondary' : 'grey-3'"
       />
     </q-pull-to-refresh>
     <q-input 
@@ -167,8 +167,12 @@ export default {
 <style lang="stylus">
 .msg-input
   margin-bottom 0px
-  padding-bottom 12px
-  margin-top 12px
-  padding-right 4px
-  padding-left 4px
+  margin-top 0px
+  padding-bottom 14px
+  padding-top 14px
+  padding-right 6px
+  padding-left 6px
+  background-color #fff
+.layout.message
+  background-color #fff
 </style>

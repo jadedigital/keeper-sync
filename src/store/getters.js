@@ -25,6 +25,7 @@ export const transactions = state => state.transactions
 export const messageBoard = state => state.messageBoard
 export const currentMsgThread = state => state.currentMsgThread
 export const messageBoardThread = state => state.messageBoardThread
+export const scrollPosition = state => state.scrollPosition
 export const endWeek = state => {
   return state.league.endWeek
 }

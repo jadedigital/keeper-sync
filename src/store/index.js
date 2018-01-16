@@ -34,6 +34,7 @@ export default new Vuex.Store({
     messageBoard: '',
     currentMsgThread: '',
     messageBoardThread: '',
+    scrollPosition: '',
     teamMap: {
       ARI: 'ARI',
       ATL: 'ATL',
