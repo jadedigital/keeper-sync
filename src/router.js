@@ -27,15 +27,17 @@ const router = new VueRouter({
   routes: [
     { path: '/',
       component: load('index'),
+      redirect: {name: 'team'},
       children: [
         { path: 'user',
           component: load('layout'),
+          redirect: {name: 'team'},
           name: 'user',
           meta: { requiresAuth: true },
           children: [
             {
               path: 'team',
-              name: 'My Team',
+              name: 'team',
               component: load('team'),
               meta: { requiresAuth: true }
             },

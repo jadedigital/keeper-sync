@@ -18,7 +18,7 @@
       <q-tab
         slot="title"
         name="tab-3"
-        label="Messages"
+        label="Message Board"
         @click="activeTab('messages')"
       />
       <!-- Targets -->
@@ -67,6 +67,7 @@
         </q-tab-pane>
         <q-tab-pane class="no-pad no-border" name="tab-2">
           <q-item separator v-if="transactionPretty" v-for="(move, key) in transactionPretty" :key="key" class="team-name-main">
+            <q-item-side :avatar="teamLookup[move.franchise].icon ? teamLookup[move.franchise].icon : './statics/avatar.jpg'" />
             <q-item-main>
               <q-item-tile label>{{teamLookup[move.franchise].name}}</q-item-tile>
               <q-item-tile sublabel class="text-red">{{move.type.replace('_', ' ')}}</q-item-tile>

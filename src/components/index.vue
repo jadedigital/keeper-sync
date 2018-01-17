@@ -2,7 +2,7 @@
   <!-- Don't drop "q-app" class -->
   <div>
     <transition :name="transitionName">
-      <keep-alive :include="cacheRoutes">
+      <keep-alive>
         <router-view class="child-view"></router-view>
       </keep-alive>
     </transition>
@@ -19,8 +19,7 @@ import { loadData } from '../data'
 export default {
   data () {
     return {
-      transitionName: '',
-      cacheRoutes: ['teams', 'user']
+      transitionName: ''
     }
   },
   beforeRouteEnter (to, from, next) {
@@ -58,7 +57,7 @@ export default {
 .child-view {
   width: 100%;
   position: absolute;
-  transition: all .5s cubic-bezier(.55,0,.1,1);
+  transition: all .3s;
 }
 .overlap-left-enter, .overlap-left-enter-active {
   opacity: 0;
@@ -67,13 +66,15 @@ export default {
   opacity: 1;
 }
 .overlap-left-leave-active {
-  transform: translate(100%, 0);
+  opacity: 0;
+  transform: translate(30%, 0);
 }
 .overlap-right-leave-active {
   z-index: -1;
   opacity: 1;
 }
 .overlap-right-enter {
-  transform: translate(100%, 0);
+  opacity: 0;
+  transform: translate(30px, 0);
 }
 </style>

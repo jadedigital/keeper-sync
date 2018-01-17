@@ -151,58 +151,11 @@
           </div>
         </q-tab-pane>
         <q-tab-pane class="no-pad no-border" name="tab-2">
+          
         </q-tab-pane>
       
       </div>
     </q-tabs>
-
-    <q-modal class="player-modal" ref="layoutModal" transition="slide-fade" :content-css="{minWidth: '80vw', minHeight: '80vh'}">
-      <q-modal-layout v-if="modalPlayer" class="player-header">
-        <q-toolbar class= "bg-blue-grey-9 text-white" slot="header">
-          <q-btn flat @click="$refs.layoutModal.close()">
-            <q-icon name="arrow_back" />
-          </q-btn>
-        </q-toolbar>
-        <div class="player-info bg-blue-grey-9 text-white row reverse items-center">
-          <ul class="col-6 player-info-list">
-            <li>Team: <span>{{playerLookup[modalPlayer].team}} #{{playerLookup[modalPlayer].jersey}}</span></li>
-            <li>HT/WT: <span>{{parseInt(playerLookup[modalPlayer].height / 12)}}'{{playerLookup[modalPlayer].height % 12}}"/{{playerLookup[modalPlayer].weight}}lbs</span></li>
-            <li>Age: <span>{{(new Date(Date.now()).getFullYear() - new Date(playerLookup[modalPlayer].birthdate * 1000).getFullYear())}}</span></li>
-            <li>Exp: <span>{{new Date(Date.now()).getFullYear() - playerLookup[modalPlayer].draft_year}}</span><span v-if="playerLookup[modalPlayer].status === 'R'">({{playerLookup[modalPlayer].status}})</span></li>
-            <li>College: <span>{{playerLookup[modalPlayer].college}}</span></li>
-          </ul>
-          <div class="col-6">
-            <div class="row justify-center">
-              <img class="player-img" :src="'https://sports.cbsimg.net/images/football/nfl/players/100x100/' + playerLookup[modalPlayer].cbs_id + '.jpg'" alt="">
-            </div>
-          </div>
-        </div>
-        <div class="player-actions pull-right">
-          <q-fab
-            color="primary"
-            icon="compare_arrows"
-            direction="down"
-          >
-            <q-fab-action
-              color="red"
-              icon="remove"
-            />
-            <q-fab-action
-              color="blue"
-              icon="local_hospital"
-            />
-          </q-fab>
-        </div>
-        <div class="player-name-main q-toolbar-title">
-          {{playerLookup[modalPlayer].name.split(', ').reverse().join(' ')}}
-          <div class="q-toolbar-subtitle">{{playerLookup[modalPlayer].position}}</div>
-        </div>
-        <q-tabs inverted class="secondary-tabs">
-          <q-tab default slot="title" name="tab-1" label="News" />
-          <q-tab slot="title" name="tab-2" label="Game Log"/>
-        </q-tabs>
-      </q-modal-layout>
-    </q-modal>
   </q-pull-to-refresh>
 </template>
 

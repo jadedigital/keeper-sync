@@ -20,6 +20,9 @@
       <q-btn flat @click="toggleModal">
         <q-icon name="search" />
       </q-btn>
+      <q-btn flat @click="toggleModal">
+        <q-icon name="message" />
+      </q-btn>
       <q-btn flat>
         <q-icon name="more_vert" />
         <q-popover ref="popover">
@@ -106,7 +109,7 @@
       <q-btn 
         round
         color="secondary"
-        icon="message"
+        icon="edit"
         class="bg-gradient shadow-5"
         @click="$router.push('/newmessage')"
       />
@@ -460,7 +463,10 @@ tr .rank
   font-size 10px
   padding-left 8px
   padding-right 8px
-  right 10px
+.league .secondary-tabs .q-tab
+  width 33%
+.team .secondary-tabs .q-tab
+  width 33%
 .slide-fade-enter-active {
   transition: all .2s ease;
 }
@@ -477,6 +483,7 @@ tr .rank
   height calc(100vh - 162px)
 .team .draft-picks .q-item
   font-size 14px
+  background-color #fff
 .team .draft-picks .q-item-label
   font-weight 500
 .team .draft-picks .q-item-sublabel

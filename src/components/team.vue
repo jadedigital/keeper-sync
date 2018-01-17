@@ -4,7 +4,7 @@
       <!-- Tabs - notice slot="title" -->
       <q-tab default slot="title" name="tab-1" label="Roster" />
       <q-tab slot="title" name="tab-2" label="Draft Picks" />
-      <q-tab count="2" slot="title" name="tab-3" label="Alerts"/>
+      <q-tab count="2" slot="title" name="tab-3" label="Pending Moves"/>
       <!-- Targets -->
       <div v-if="!dataLoaded" style="height: calc(100vh - 112px);">  
         <q-spinner color="secondary" size="40px" class="absolute-center" style="margin-left: -20px;"/>

@@ -74,7 +74,8 @@ export default {
   data () {
     return {
       dataLoaded: false,
-      msgInput: ''
+      msgInput: '',
+      timer: ''
     }
   },
   computed: {
@@ -133,33 +134,45 @@ export default {
         lookup[array[i][key]] = array[i]
       }
       return lookup
+    },
+    fetchData () {
+      var data = [
+        'messageBoardThread'
+      ]
+      loadData(data)
+
+      var messageBoardThreadParams = {
+        cookie: this.leagueData[this.activeLeague].cookie,
+        host: this.leagueData[this.activeLeague].host,
+        TYPE: 'messageBoardThread',
+        L: this.activeLeague,
+        THREAD: this.currentMsgThread.id,
+        JSON: 1
+      }
+      var request = [
+        {
+          type: 'messageBoardThread',
+          params: messageBoardThreadParams,
+          timeOut: 0
+        }
+      ]
+      callApi('', request)
+        .then((response) => {
+          this.dataLoaded = true
+        })
     }
   },
-  created () {
-    var data = [
-      'messageBoardThread'
-    ]
-    loadData(data)
-
-    var messageBoardThreadParams = {
-      cookie: this.leagueData[this.activeLeague].cookie,
-      host: this.leagueData[this.activeLeague].host,
-      TYPE: 'messageBoardThread',
-      L: this.activeLeague,
-      THREAD: this.currentMsgThread.id,
-      JSON: 1
-    }
-    var request = [
-      {
-        type: 'messageBoardThread',
-        params: messageBoardThreadParams,
-        timeOut: 0
-      }
-    ]
-    callApi('', request)
-      .then((response) => {
-        this.dataLoaded = true
-      })
+  activated () {
+    console.log('activated')
+    this.fetchData()
+    this.timer = setInterval(this.fetchData, 5000)
+  },
+  deactivated () {
+    console.log('deactivated')
+    clearInterval(this.timer)
+  },
+  beforeDestroy () {
+    clearInterval(this.timer)
   }
 }
 </script>
