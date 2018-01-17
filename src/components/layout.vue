@@ -74,22 +74,6 @@
             </div>
           </div>
         </div>
-        <div class="player-actions pull-right">
-          <q-fab
-            color="primary"
-            icon="compare_arrows"
-            direction="down"
-          >
-            <q-fab-action
-              color="red"
-              icon="remove"
-            />
-            <q-fab-action
-              color="blue"
-              icon="local_hospital"
-            />
-          </q-fab>
-        </div>
         <q-tabs inverted class="secondary-tabs">
           <q-tab default slot="title" name="tab-1" label="News" />
           <q-tab slot="title" name="tab-2" label="Game Log"/>
