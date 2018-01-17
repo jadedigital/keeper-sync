@@ -80,6 +80,12 @@ const router = new VueRouter({
           component: load('message'),
           name: 'message',
           meta: { requiresAuth: true }
+        },
+        {
+          path: 'newmessage',
+          component: load('newmessage'),
+          name: 'newmessage',
+          meta: { requiresAuth: true }
         }
       ]
     },

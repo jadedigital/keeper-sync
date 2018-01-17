@@ -480,10 +480,6 @@ export default {
 .q-item-side-right .q-item-label
   color #0c0c0c
   font-weight 500
-.compact-card .q-card-title
-  text-align center
-  font-size 14px
-  font-weight 500
 .compact-card .q-card-primary
   padding 0
 .q-card

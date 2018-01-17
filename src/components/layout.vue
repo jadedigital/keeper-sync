@@ -119,7 +119,13 @@
       <q-route-tab to="players" exact slot="title" icon="person" label="Players" />
     </q-tabs>
     <q-fixed-position v-if="leagueTab === 'messages' && $route.name === 'league'" corner="bottom-right" :offset="[18, 18]">
-      <q-btn round color="secondary" icon="message" class="bg-gradient shadow-5" />
+      <q-btn 
+        round
+        color="secondary"
+        icon="message"
+        class="bg-gradient shadow-5"
+        @click="$router.push('/newmessage')"
+      />
     </q-fixed-position>
   </q-layout>
 </template>
@@ -322,8 +328,6 @@ export default {
 .contain-main
   height 100%
   padding-bottom 62px
-.q-tabs-panes
-  background #fafafa
 .q-item-side-right .q-item-label
   color #0c0c0c
   font-weight 500
@@ -441,9 +445,13 @@ tr .rank
 .league .q-item-label
   font-weight 500
   font-size 14px
+.league .q-item
+  font-size 14px
 .league .q-item-sublabel
   font-weight 300
   font-size 12px
+.league .q-item .price
+  font-weight 500
 .league .msg-board .q-list
   border 0
 .team-players
@@ -483,4 +491,19 @@ tr .rank
   box-shadow none
 .league .msg-board
   height calc(100vh - 162px)
+.team .draft-picks .q-item
+  font-size 14px
+.team .draft-picks .q-item-label
+  font-weight 500
+.team .draft-picks .q-item-sublabel
+  font-weight 300
+.team .draft-picks .q-list
+  margin 0
+  padding 0
+.team .draft-picks .q-list-header
+  font-size 14px
+  font-weight 300
+  padding 0
+  line-height 2rem
+  color: #0c0c0c;
 </style>

@@ -165,7 +165,7 @@ export default {
 </script>
 
 <style lang="stylus">
-.msg-input
+.message .msg-input
   margin-bottom 0px
   margin-top 0px
   padding-bottom 14px

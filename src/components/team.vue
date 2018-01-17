@@ -1,5 +1,5 @@
 <template>
-  <q-pull-to-refresh :handler="refresher">
+  <q-pull-to-refresh :handler="refresher" class="team">
     <q-tabs inverted class="secondary-tabs">
       <!-- Tabs - notice slot="title" -->
       <q-tab default slot="title" name="tab-1" label="Roster" />
@@ -92,13 +92,25 @@
             </q-card>
           </q-list>
         </q-tab-pane>
-        <q-tab-pane name="tab-2">
-          <div 
-          v-for="(pick, key) in mySortedPicks"
-          v-bind:key="key"
+        <q-tab-pane name="tab-2" class="draft-picks no-border no-padding">
+          <q-list
+            v-for="(year, key) in pickYears"
+            :key="key"
+            highlight
+            class="no-border"
           >
-            {{pick.round}} - {{pick.year}} - ({{key}})
-          </div>
+            <q-list-header class="text-center bg-grey-2 border-bottom">{{year}}</q-list-header>
+            <q-item
+              v-for="(pick, key) in myPicksPerYear[year]" 
+              :key="key"
+              class="border-bottom"
+            >
+              <q-item-main 
+                :label="'Round ' + pick.round"
+                :sublabel="'Original owner: ' + teamLookup[pick.originalPickFor].name" 
+              />
+            </q-item>
+          </q-list>
         </q-tab-pane>
         <q-tab-pane name="tab-3">Roster Alerts</q-tab-pane>
       </div>
@@ -193,25 +205,63 @@ export default {
       var array = this.players.player
       return this.lookup(array, 'id')
     },
+    teamLookup () {
+      var array = this.league.franchises.franchise
+      return this.lookup(array, 'id')
+    },
     projectedLookup () {
       var array = this.projectedScores.playerScore
       return this.lookup(array, 'id')
     },
     draftPicksLookup () {
       var array = this.futureDraftPicks.franchise
-      var newArray = []
-      array.forEach(el => {
-        newArray.push(el)
-      })
-      return this.lookup(newArray, 'id')
+      return this.lookup(array, 'id')
     },
     myPicks () {
       var myPicks = this.draftPicksLookup[this.myTeam]
-      return myPicks.futureDraftPick
+      var arr = []
+      var obj = {}
+      myPicks.futureDraftPick.forEach(el => {
+        obj = {
+          round: el.round,
+          year: el.year,
+          originalPickFor: el.originalPickFor
+        }
+        arr.push(obj)
+      })
+      arr = this.order(arr, 'year')
+      return arr
     },
-    mySortedPicks () {
-      var mySortedPicks = this.myPicks
-      return mySortedPicks
+    pickYears () {
+      var year = ''
+      var arr = []
+      this.myPicks.forEach(el => {
+        if (year !== el.year) {
+          arr.push(el.year)
+        }
+        year = el.year
+      })
+      return arr
+    },
+    myPicksPerYear () {
+      var mainObj = {}
+      var obj = {}
+      var arr = []
+      this.pickYears.forEach(el => {
+        this.myPicks.forEach(el2 => {
+          if (el2.year === el) {
+            obj = {
+              round: el2.round,
+              originalPickFor: el2.originalPickFor
+            }
+            arr.push(obj)
+            mainObj[el] = arr
+          }
+        })
+        mainObj[el] = this.order(mainObj[el], 'round')
+        arr = []
+      })
+      return mainObj
     },
     updatedProjection () {
       var obj = {}
@@ -428,7 +478,6 @@ export default {
     order (list, key) {
       return list.sort((a, b) => {
         var x = parseInt(a[key]); var y = parseInt(b[key])
-        console.log(x + ' ' + y)
         return ((x < y) ? -1 : ((x > y) ? 1 : 0))
       })
     },

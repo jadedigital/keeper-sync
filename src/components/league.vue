@@ -69,7 +69,7 @@
           <q-item separator v-if="transactionPretty" v-for="(move, key) in transactionPretty" :key="key" class="team-name-main">
             <q-item-main>
               <q-item-tile label>{{teamLookup[move.franchise].name}}</q-item-tile>
-              <q-item-tile sublabel>{{move.type.replace('_', ' ')}}</q-item-tile>
+              <q-item-tile sublabel class="text-red">{{move.type.replace('_', ' ')}}</q-item-tile>
               <q-item-tile v-if="move.type === 'IR'">
                 <span v-if="move.activated">Activated: </span>
                 <span v-for="(player, key2) in move.activated" :key="key2">{{playerLookup[player] ? playerLookup[player].name.split(', ').reverse().join(' ') : ''}}<span v-if="move.activated[key2 + 1]">, </span></span>
@@ -86,7 +86,7 @@
                 <span>Dropped: </span>
                 <span v-for="(player, key2) in move.dropped" :key="key2">{{playerLookup[player] ? playerLookup[player].name.split(', ').reverse().join(' ') : ''}}<span v-if="move.dropped[key2 + 1]">, </span></span>
               </q-item-tile>
-              <q-item-tile v-if="move.price">
+              <q-item-tile class="price text-red" v-if="move.price">
                 <span>${{move.price}}</span>
               </q-item-tile>
             </q-item-main>
