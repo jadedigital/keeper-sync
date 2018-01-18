@@ -3,7 +3,7 @@
     @scroll="scrollHandler"
     ref="layout"
     view="hHh Lpr lFf"
-    :class="headerShadow ? '' : 'no-shad'"
+    :class="headerShadow ? 'header-shadow' : 'no-header-shadow'"
     :left-class="{'bg-grey-2': true}"
   >
     <q-toolbar class="bg-gradient" slot="header">
@@ -477,8 +477,10 @@ tr .rank
 {
   transform: translateX(100%);
 }
-.no-shad .layout-header
+.no-header-shadow .layout-header
   box-shadow none
+.header-shadow .layout-header
+  box-shadow 0 1px 5px rgba(0,0,0,.2), 0 2px 2px rgba(0,0,0,.14), 0 3px 1px -2px rgba(0,0,0,.12)
 .league .msg-board
   height calc(100vh - 162px)
 .team .draft-picks .q-item
@@ -496,5 +498,11 @@ tr .rank
   font-weight 300
   padding 0
   line-height 2rem
-  color: #0c0c0c;
+  color #0c0c0c
+.matchup .all-matchups .q-list
+  border 0
+  border-bottom solid 1px rgba(0,0,0,0.1)
+  margin 0
+.matchup .all-matchups .q-item
+  padding 4px 16px
 </style>

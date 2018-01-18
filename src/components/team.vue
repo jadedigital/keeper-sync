@@ -301,13 +301,10 @@ export default {
       return obj
     },
     matchupPoints () {
-      var object = {
-        QB: this.matchupPointsUtil('QB'),
-        RB: this.matchupPointsUtil('RB'),
-        WR: this.matchupPointsUtil('WR'),
-        TE: this.matchupPointsUtil('TE'),
-        Def: this.matchupPointsUtil('Def')
-      }
+      var object = {}
+      this.league.starters.position.forEach(el => {
+        object[el.name] = this.matchupPointsUtil(el.name)
+      })
       return object
     },
     myScoring () {
