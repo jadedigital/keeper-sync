@@ -52,7 +52,7 @@
               <div class="row">
                 <div class="col-9 team-name-container">
                   <div class="team-name pull-left" >{{playerLookup[player.id].name.split(', ').slice(1).join(' ').charAt(0)}} . {{playerLookup[player.id].name.split(', ').slice(0, -1).join(' ')}} <div class="team">{{playerLookup[player.id].team}}</div></div>
-                  <div class="team-matchup pull-left" >{{matchupLookup[playerLookup[player.id].team].day}} {{matchupLookup[playerLookup[player.id].team].time}} - <span :class="matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rank < 11 ? 'text-positive' : matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rank < 21 ? 'text-warning' : 'text-negative'">{{matchupLookup[playerLookup[player.id].team].location}} {{matchupLookup[playerLookup[player.id].team].vs}}</span></div>
+                  <div v-if="playerLookup[player.id].team !== 'FA'" class="team-matchup pull-left" >{{matchupLookup[playerLookup[player.id].team].day}} {{matchupLookup[playerLookup[player.id].team].time}} - <span :class="matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rank < 11 ? 'text-positive' : matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rank < 21 ? 'text-warning' : 'text-negative'">{{matchupLookup[playerLookup[player.id].team].location}} {{matchupLookup[playerLookup[player.id].team].vs}}</span></div>
                 </div>
                 <div class="col-3">
                   <div class="team-score pull-right" >{{scoringLookupTeamA[player.id].score}}</div>
@@ -81,7 +81,7 @@
                 </div>
                 <div class="col-9 team-name-container">
                   <div class="team-name pull-right" >{{playerLookup[player.opp].name.split(', ').slice(1).join(' ').charAt(0)}} . {{playerLookup[player.opp].name.split(', ').slice(0, -1).join(' ')}}<div class="team"> {{playerLookup[player.opp].team}}</div></div>
-                  <div class="team-matchup pull-right" >{{matchupLookup[playerLookup[player.opp].team].day}} {{matchupLookup[playerLookup[player.opp].team].time}} - <span :class="matchupPoints[playerLookup[player.opp].position][matchupLookup[playerLookup[player.opp].team].vs].rank < 11 ? 'text-positive' : matchupPoints[playerLookup[player.opp].position][matchupLookup[playerLookup[player.opp].team].vs].rank < 21 ? 'text-warning' : 'text-negative'">{{matchupLookup[playerLookup[player.opp].team].location}} {{matchupLookup[playerLookup[player.opp].team].vs}}</span></div>
+                  <div v-if="playerLookup[player.opp].team !== 'FA'" class="team-matchup pull-right" >{{matchupLookup[playerLookup[player.opp].team].day}} {{matchupLookup[playerLookup[player.opp].team].time}} - <span :class="matchupPoints[playerLookup[player.opp].position][matchupLookup[playerLookup[player.opp].team].vs].rank < 11 ? 'text-positive' : matchupPoints[playerLookup[player.opp].position][matchupLookup[playerLookup[player.opp].team].vs].rank < 21 ? 'text-warning' : 'text-negative'">{{matchupLookup[playerLookup[player.opp].team].location}} {{matchupLookup[playerLookup[player.opp].team].vs}}</span></div>
                 </div>
               </div>
             </div>
@@ -102,7 +102,7 @@
               <div class="row">
                 <div class="col-9 team-name-container">
                   <div class="team-name pull-left" >{{playerLookup[player.id].name.split(', ').slice(1).join(' ').charAt(0)}} . {{playerLookup[player.id].name.split(', ').slice(0, -1).join(' ')}} <div class="team">{{playerLookup[player.id].team}}</div></div>
-                  <div class="team-matchup pull-left" >{{matchupLookup[playerLookup[player.id].team].day}} {{matchupLookup[playerLookup[player.id].team].time}} - <span :class="matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rank < 11 ? 'text-positive' : matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rank < 21 ? 'text-warning' : 'text-negative'">{{matchupLookup[playerLookup[player.id].team].location}} {{matchupLookup[playerLookup[player.id].team].vs}}</span></div>
+                  <div v-if="playerLookup[player.id].team !== 'FA'" class="team-matchup pull-left" >{{matchupLookup[playerLookup[player.id].team].day}} {{matchupLookup[playerLookup[player.id].team].time}} - <span :class="matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rank < 11 ? 'text-positive' : matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rank < 21 ? 'text-warning' : 'text-negative'">{{matchupLookup[playerLookup[player.id].team].location}} {{matchupLookup[playerLookup[player.id].team].vs}}</span></div>
                 </div>
                 <div class="col-3">
                   <div class="team-score pull-right" >{{scoringLookupTeamA[player.id].score}}</div>
@@ -131,7 +131,7 @@
                 </div>
                 <div class="col-9 team-name-container">
                   <div class="team-name pull-right" >{{playerLookup[player.opp].name.split(', ').slice(1).join(' ').charAt(0)}} . {{playerLookup[player.opp].name.split(', ').slice(0, -1).join(' ')}}<div class="team"> {{playerLookup[player.opp].team}}</div></div>
-                  <div class="team-matchup pull-right" >{{matchupLookup[playerLookup[player.opp].team].day}} {{matchupLookup[playerLookup[player.opp].team].time}} - <span :class="matchupPoints[playerLookup[player.opp].position][matchupLookup[playerLookup[player.opp].team].vs].rank < 11 ? 'text-positive' : matchupPoints[playerLookup[player.opp].position][matchupLookup[playerLookup[player.opp].team].vs].rank < 21 ? 'text-warning' : 'text-negative'">{{matchupLookup[playerLookup[player.opp].team].location}} {{matchupLookup[playerLookup[player.opp].team].vs}}</span></div>
+                  <div v-if="playerLookup[player.opp].team !== 'FA'" class="team-matchup pull-right" >{{matchupLookup[playerLookup[player.opp].team].day}} {{matchupLookup[playerLookup[player.opp].team].time}} - <span :class="matchupPoints[playerLookup[player.opp].position][matchupLookup[playerLookup[player.opp].team].vs].rank < 11 ? 'text-positive' : matchupPoints[playerLookup[player.opp].position][matchupLookup[playerLookup[player.opp].team].vs].rank < 21 ? 'text-warning' : 'text-negative'">{{matchupLookup[playerLookup[player.opp].team].location}} {{matchupLookup[playerLookup[player.opp].team].vs}}</span></div>
                 </div>
               </div>
             </div>

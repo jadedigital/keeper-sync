@@ -6,7 +6,7 @@
       <q-tab slot="title" name="tab-2" label="All Matchups"/>
       <!-- Targets -->
       <div class="contain-main">
-        <q-select
+        <q-dialog-select
           align="center"
           v-model="weekSelect"
           :options="weekOptions"
@@ -92,7 +92,7 @@ import {
   QFab,
   QItemTile,
   QFabAction,
-  QSelect,
+  QDialogSelect,
   QSpinner
 } from 'quasar'
 import { mapGetters } from 'vuex'
@@ -125,7 +125,7 @@ export default {
     QFab,
     QItemTile,
     QFabAction,
-    QSelect,
+    QDialogSelect,
     QSpinner,
     bMatchup
   },
@@ -160,8 +160,8 @@ export default {
     winners () {
       var obj = {}
       this.liveScoring.matchup.forEach(el => {
-        el.franchise[0].score > el.franchise[1].score ? obj[el.franchise[0].id] = true : obj[el.franchise[0].id] = false
-        el.franchise[0].score < el.franchise[1].score ? obj[el.franchise[1].id] = true : obj[el.franchise[1].id] = false
+        parseFloat(el.franchise[0].score) > parseFloat(el.franchise[1].score) ? obj[el.franchise[0].id] = true : obj[el.franchise[0].id] = false
+        parseFloat(el.franchise[0].score) < parseFloat(el.franchise[1].score) ? obj[el.franchise[1].id] = true : obj[el.franchise[1].id] = false
       })
       return obj
     },
