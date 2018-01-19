@@ -6,43 +6,60 @@
       <q-tab slot="title" name="tab-2" label="All Matchups"/>
       <!-- Targets -->
       <div class="contain-main">
+        <q-select
+          align="center"
+          v-model="weekSelect"
+          :options="weekOptions"
+          @change="changeWeek(weekSelect)"
+        />
         <q-tab-pane class="no-pad no-border" name="tab-1">
-          <b-matchup/>
+          <div v-if="!dataLoaded" style="height: calc(100vh - 112px);">  
+            <q-spinner color="secondary" size="40px" class="absolute-center" style="margin-left: -20px;"/>
+          </div>
+          <div v-if="byeWeek">
+            Bye Week
+          </div>
+          <b-matchup v-if="dataLoaded && !byeWeek"/>
         </q-tab-pane>
         <q-tab-pane class="no-pad no-border all-matchups" name="tab-2">
-          <q-list
-            v-for="(match, key) in liveScoring.matchup"
-            :key="key"
-          >
-            <q-item 
-              v-for="(team, key2) in match.franchise"
-              :key="key2"
-            >
-              <q-item-side :avatar="teamLookup[team.id].icon ? teamLookup[team.id].icon : './statics/avatar.jpg'" />
-              <q-item-main :label="teamLookup[team.id].name" />
-              <q-item-side right>
-                <q-item-tile :class="winners[team.id] === true ? 'strong text-dark' : 'text-dark'">
-                  {{team.score}}
-                </q-item-tile>
-              </q-item-side>
-            </q-item>
-          </q-list>
-          <div class="separator-title text-center border-bottom uppercase">Bye Week</div>
-          <q-list class="bye">
-            <q-item 
-              v-for="(match, key) in liveScoring.franchise"
+          <div v-if="!dataLoaded" style="height: calc(100vh - 112px);">  
+            <q-spinner color="secondary" size="40px" class="absolute-center" style="margin-left: -20px;"/>
+          </div>
+          <div v-if="dataLoaded">
+            <q-list
+              v-for="(match, key) in liveScoring.matchup"
               :key="key"
-              class="border-bottom"
             >
-              <q-item-side :avatar="teamLookup[match.id].icon ? teamLookup[match.id].icon : './statics/avatar.jpg'" />
-              <q-item-main :label="teamLookup[match.id].name" />
-              <q-item-side right>
-                <q-item-tile class="text-dark">
-                  {{match.score}}
-                </q-item-tile>
-              </q-item-side>
-            </q-item>
-          </q-list>
+              <q-item 
+                v-for="(team, key2) in match.franchise"
+                :key="key2"
+              >
+                <q-item-side :avatar="teamLookup[team.id].icon ? teamLookup[team.id].icon : './statics/avatar.jpg'" />
+                <q-item-main :label="teamLookup[team.id].name" />
+                <q-item-side right>
+                  <q-item-tile :class="winners[team.id] === true ? 'strong text-dark' : 'text-dark'">
+                    {{team.score}}
+                  </q-item-tile>
+                </q-item-side>
+              </q-item>
+            </q-list>
+            <div v-if="liveScoring.franchise" class="separator-title text-center border-bottom uppercase">Bye Week</div>
+            <q-list class="bye">
+              <q-item 
+                v-for="(match, key) in liveScoring.franchise"
+                :key="key"
+                class="border-bottom"
+              >
+                <q-item-side :avatar="teamLookup[match.id].icon ? teamLookup[match.id].icon : './statics/avatar.jpg'" />
+                <q-item-main :label="teamLookup[match.id].name" />
+                <q-item-side right>
+                  <q-item-tile class="text-dark">
+                    {{match.score}}
+                  </q-item-tile>
+                </q-item-side>
+              </q-item>
+            </q-list>
+          </div>
         </q-tab-pane>
       </div>
     </q-tabs>
@@ -74,7 +91,9 @@ import {
   QModalLayout,
   QFab,
   QItemTile,
-  QFabAction
+  QFabAction,
+  QSelect,
+  QSpinner
 } from 'quasar'
 import { mapGetters } from 'vuex'
 import { callApi } from '../data'
@@ -106,6 +125,8 @@ export default {
     QFab,
     QItemTile,
     QFabAction,
+    QSelect,
+    QSpinner,
     bMatchup
   },
   data () {
@@ -114,7 +135,9 @@ export default {
       dataLoaded: true,
       newWeek: '',
       modalPlayer: '',
-      search: ''
+      search: '',
+      weekSelect: '',
+      byeWeek: false
     }
   },
   computed: {
@@ -123,7 +146,8 @@ export default {
       leagueData: 'leagueData',
       league: 'league',
       liveScoring: 'liveScoring',
-      matchupTeams: 'matchupTeams'
+      matchupTeams: 'matchupTeams',
+      currentWeek: 'currentWeek'
     }),
     myTeam () {
       var team = this.leagueData[this.activeLeague].teamId
@@ -140,6 +164,19 @@ export default {
         el.franchise[0].score < el.franchise[1].score ? obj[el.franchise[1].id] = true : obj[el.franchise[1].id] = false
       })
       return obj
+    },
+    weekOptions () {
+      var options = []
+      var obj = {}
+      var endWeek = this.currentWeek
+      for (let index = 1; index <= endWeek; index++) {
+        obj = {
+          label: 'Week ' + index,
+          value: index
+        }
+        options.push(obj)
+      }
+      return options
     }
   },
   methods: {
@@ -166,6 +203,12 @@ export default {
         })
       })
       this.$store.commit('SET_DATA', {type: 'matchupTeams', data: {teamA: myTeam, teamB: opponent}})
+      if (!opponent) {
+        this.byeWeek = true
+      }
+      else {
+        this.byeWeek = false
+      }
     },
     lookup (array, key) {
       var lookup = {}
@@ -174,12 +217,40 @@ export default {
       }
       return lookup
     },
+    test (value) {
+      console.log(value)
+    },
+    changeWeek (week) {
+      this.dataLoaded = false
+      var liveScoringParams = {
+        cookie: this.leagueData[this.activeLeague].cookie,
+        host: this.leagueData[this.activeLeague].host,
+        TYPE: 'liveScoring',
+        L: this.activeLeague,
+        W: week,
+        DETAILS: 1,
+        JSON: 1
+      }
+      var request = [
+        {
+          type: 'liveScoring',
+          params: liveScoringParams,
+          timeOut: 0
+        }
+      ]
+      callApi('', request)
+        .then((response) => {
+          this.setTeams()
+          this.dataLoaded = true
+        })
+    },
     refresher (done) {
       callApi()
       done()
     }
   },
   created () {
+    this.weekSelect = parseInt(this.liveScoring.week)
     this.setTeams()
   }
 }
@@ -242,4 +313,10 @@ export default {
   flex 0 0 10%
 .matchup .q-tabs-panes
   background #fff
+.matchup .q-select
+  font-size 14px
+  font-weight 500
+  text-transform uppercase
+.matchup .q-select .q-input-target
+  padding-left 24px
 </style>

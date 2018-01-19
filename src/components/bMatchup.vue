@@ -11,8 +11,7 @@
         </div>
         <div class="row items-center">
           <div class="col-6">
-            <img v-if="teamLookup[teamA].icon" :src="teamLookup[teamA].icon" class="q-item-avatar"/>
-            <img v-else :src="teamLookup[teamA].icon" class="q-item-avatar"/>
+            <img :src="teamLookup[teamA].icon ? teamLookup[teamA].icon : './statics/avatar.jpg'" class="q-item-avatar"/>
           </div>
           <div class="col-6">
             <div class="total-score pull-right">{{allScoring[teamA].score}}</div>
@@ -35,8 +34,7 @@
             <div class="total-projection">{{totalProjected[teamB]}}</div>
           </div>
           <div class="col-6">
-            <img v-if="teamLookup[teamB].icon" :src="teamLookup[teamB].icon" class="q-item-avatar pull-right"/>
-            <img v-else :src="teamLookup[teamB].icon" class="q-item-avatar pull-right"/>
+            <img :src="teamLookup[teamB].icon ? teamLookup[teamB].icon : './statics/avatar.jpg'" class="q-item-avatar pull-right"/>
           </div>
         </div>
       </div>
@@ -259,6 +257,9 @@ export default {
         if (!score) {
           score = 0
         }
+        if (!projection) {
+          projection = 0
+        }
         var rate = projection / 3600
         newProjection = ((timeRemaining * rate) + score).toFixed(2)
         obj[el.id] = {projection: newProjection}
@@ -270,6 +271,9 @@ export default {
         var timeRemaining = parseFloat(this.scoringLookupTeamB[el.id].gameSecondsRemaining)
         if (!score) {
           score = 0
+        }
+        if (!projection) {
+          projection = 0
         }
         var rate = projection / 3600
         newProjection = ((timeRemaining * rate) + score).toFixed(2)
@@ -373,9 +377,11 @@ export default {
       var combined = []
       var n = 0
       benchTeamA.forEach(el => {
-        el['opp'] = benchTeamB[n].id
-        el['position'] = 'BN'
-        combined.push(el)
+        if (benchTeamB[n]) {
+          el['opp'] = benchTeamB[n].id
+          el['position'] = 'BN'
+          combined.push(el)
+        }
         n++
       })
       return combined
