@@ -29,6 +29,7 @@
             <q-list
               v-for="(match, key) in liveScoring.matchup"
               :key="key"
+              @click="goToMatchup(match.franchise)"
             >
               <q-item 
                 v-for="(team, key2) in match.franchise"
@@ -244,6 +245,14 @@ export default {
           this.dataLoaded = true
         })
     },
+    goToMatchup (match) {
+      var obj = {}
+      match.forEach(el => {
+        obj['teamA'] ? obj['teamB'] = el.id : obj['teamA'] = el.id
+      })
+      this.$store.commit('SET_DATA', {type: 'matchupTeams', data: obj})
+      this.$router.push('/otherMatchup')
+    },
     refresher (done) {
       callApi()
       done()
@@ -252,6 +261,9 @@ export default {
   created () {
     this.weekSelect = parseInt(this.liveScoring.week)
     this.setTeams()
+  },
+  activated () {
+    setTimeout(this.setTeams, 500)
   }
 }
 </script>

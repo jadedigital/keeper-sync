@@ -271,11 +271,13 @@ export default {
           }
         })
       })
-      this.liveScoring.franchise.forEach((el) => {
-        if (el.id === this.thisTeam) {
-          array.push(el)
-        }
-      })
+      if (this.liveScoring.franchise) {
+        this.liveScoring.franchise.forEach((el) => {
+          if (el.id === this.thisTeam) {
+            array.push(el)
+          }
+        })
+      }
       return array
     },
     scoringLookup () {

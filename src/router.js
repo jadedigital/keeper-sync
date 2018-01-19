@@ -88,6 +88,12 @@ const router = new VueRouter({
           component: load('newmessage'),
           name: 'newmessage',
           meta: { requiresAuth: true }
+        },
+        {
+          path: 'otherMatchup',
+          component: load('otherMatchup'),
+          name: 'otherMatchup',
+          meta: { requiresAuth: true }
         }
       ]
     },

@@ -1,9 +1,8 @@
 <template>
-  <!-- Don't drop "q-app" class -->
   <div>
     <transition :name="transitionName">
       <keep-alive>
-        <router-view class="child-view"></router-view>
+        <router-view class="child-slide"></router-view>
       </keep-alive>
     </transition>
   </div>
@@ -54,10 +53,10 @@ export default {
 </script>
 
 <style>
-.child-view {
+.child-slide {
   width: 100%;
   position: absolute;
-  transition: all .3s;
+  transition: all 0.3s;
 }
 .overlap-left-enter, .overlap-left-enter-active {
   opacity: 0;
@@ -66,15 +65,14 @@ export default {
   opacity: 1;
 }
 .overlap-left-leave-active {
-  opacity: 0;
-  transform: translate(30%, 0);
+  transform: translate(100%, 0);
 }
 .overlap-right-leave-active {
   z-index: -1;
   opacity: 1;
+  transform: translate(-30px, 0);
 }
 .overlap-right-enter {
-  opacity: 0;
-  transform: translate(30px, 0);
+  transform: translate(100%, 0);
 }
 </style>

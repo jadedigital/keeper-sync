@@ -15,6 +15,7 @@
       class="msg-input"
       v-model="subject"
       placeholder="Subject"
+      ref="subject"
     />
     <q-input 
       class="msg-body"
@@ -64,7 +65,12 @@ export default {
     }
   },
   methods: {
-
+    focus () {
+      this.$refs.subject.focus()
+    }
+  },
+  activated () {
+    setTimeout(this.focus, 500)
   }
 }
 </script>

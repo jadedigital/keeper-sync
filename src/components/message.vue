@@ -163,8 +163,7 @@ export default {
     }
   },
   activated () {
-    console.log('activated')
-    this.fetchData()
+    setTimeout(this.fetchData, 500)
     this.timer = setInterval(this.fetchData, 5000)
   },
   deactivated () {

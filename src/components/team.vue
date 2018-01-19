@@ -545,36 +545,39 @@ export default {
     refresher (done) {
       callApi(this.currentWeek)
       done()
+    },
+    fetchData () {
+      if (LocalStorage.has('futureDraftPicks')) {
+        var data = [
+          'futureDraftPicks'
+        ]
+        loadData(data)
+        this.dataLoaded = true
+      }
+      else {
+        var futureDraftPicksParams = {
+          cookie: this.leagueData[this.activeLeague].cookie,
+          host: this.leagueData[this.activeLeague].host,
+          TYPE: 'futureDraftPicks',
+          L: this.activeLeague,
+          JSON: 1
+        }
+        var request = [
+          {
+            type: 'futureDraftPicks',
+            params: futureDraftPicksParams,
+            timeOut: 3600000
+          }
+        ]
+        callApi('', request)
+          .then((response) => {
+            this.dataLoaded = true
+          })
+      }
     }
   },
   created () {
-    if (LocalStorage.has('futureDraftPicks')) {
-      var data = [
-        'futureDraftPicks'
-      ]
-      loadData(data)
-      this.dataLoaded = true
-    }
-    else {
-      var futureDraftPicksParams = {
-        cookie: this.leagueData[this.activeLeague].cookie,
-        host: this.leagueData[this.activeLeague].host,
-        TYPE: 'futureDraftPicks',
-        L: this.activeLeague,
-        JSON: 1
-      }
-      var request = [
-        {
-          type: 'futureDraftPicks',
-          params: futureDraftPicksParams,
-          timeOut: 3600000
-        }
-      ]
-      callApi('', request)
-        .then((response) => {
-          this.dataLoaded = true
-        })
-    }
+    setTimeout(this.fetchData, 500)
   }
 }
 </script>

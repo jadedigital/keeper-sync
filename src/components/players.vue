@@ -383,29 +383,32 @@ export default {
         }
       })
       this.playersDetails = list
+    },
+    fetchData () {
+      var playerScoresParams = {
+        cookie: this.leagueData[this.activeLeague].cookie,
+        host: this.leagueData[this.activeLeague].host,
+        TYPE: 'playerScores',
+        L: this.activeLeague,
+        W: 'YTD',
+        JSON: 1
+      }
+      var request = [
+        {
+          type: 'playerScores',
+          params: playerScoresParams,
+          timeOut: 3600000
+        }
+      ]
+      callApi('', request)
+        .then((response) => {
+          this.loadPlayersDetails()
+          this.dataLoaded = true
+        })
     }
   },
   created () {
-    var playerScoresParams = {
-      cookie: this.leagueData[this.activeLeague].cookie,
-      host: this.leagueData[this.activeLeague].host,
-      TYPE: 'playerScores',
-      L: this.activeLeague,
-      W: 'YTD',
-      JSON: 1
-    }
-    var request = [
-      {
-        type: 'playerScores',
-        params: playerScoresParams,
-        timeOut: 3600000
-      }
-    ]
-    callApi('', request)
-      .then((response) => {
-        this.loadPlayersDetails()
-        this.dataLoaded = true
-      })
+    setTimeout(this.fetchData, 500)
   }
 }
 </script>

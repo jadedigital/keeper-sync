@@ -330,47 +330,47 @@ export default {
       this.$router.push('/message')
     },
     fetchStandings () {
-      // refresh
+      var data = [
+        'transactions',
+        'messageBoard'
+      ]
+      loadData(data)
+
+      var transactionsParams = {
+        cookie: this.leagueData[this.activeLeague].cookie,
+        host: this.leagueData[this.activeLeague].host,
+        TYPE: 'transactions',
+        L: this.activeLeague,
+        COUNT: 30,
+        JSON: 1
+      }
+      var messageBoardParams = {
+        cookie: this.leagueData[this.activeLeague].cookie,
+        host: this.leagueData[this.activeLeague].host,
+        TYPE: 'messageBoard',
+        L: this.activeLeague,
+        JSON: 1
+      }
+      var request = [
+        {
+          type: 'transactions',
+          params: transactionsParams,
+          timeOut: 3600000
+        },
+        {
+          type: 'messageBoard',
+          params: messageBoardParams,
+          timeOut: 3600000
+        }
+      ]
+      callApi('', request)
+        .then((response) => {
+          this.dataLoaded = true
+        })
     }
   },
   created () {
-    var data = [
-      'transactions',
-      'messageBoard'
-    ]
-    loadData(data)
-
-    var transactionsParams = {
-      cookie: this.leagueData[this.activeLeague].cookie,
-      host: this.leagueData[this.activeLeague].host,
-      TYPE: 'transactions',
-      L: this.activeLeague,
-      COUNT: 30,
-      JSON: 1
-    }
-    var messageBoardParams = {
-      cookie: this.leagueData[this.activeLeague].cookie,
-      host: this.leagueData[this.activeLeague].host,
-      TYPE: 'messageBoard',
-      L: this.activeLeague,
-      JSON: 1
-    }
-    var request = [
-      {
-        type: 'transactions',
-        params: transactionsParams,
-        timeOut: 3600000
-      },
-      {
-        type: 'messageBoard',
-        params: messageBoardParams,
-        timeOut: 3600000
-      }
-    ]
-    callApi('', request)
-      .then((response) => {
-        this.dataLoaded = true
-      })
+    setTimeout(this.fetchStandings, 500)
   },
   mounted () {
     this.league.divisions.division.forEach(el => {
