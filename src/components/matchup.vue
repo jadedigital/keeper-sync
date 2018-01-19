@@ -272,14 +272,19 @@ export default {
 .matchup-header
   height 100px
 .matchup-header .team-name
-  font-size 14px
+  font-size 11px
+  font-weight 700
   padding-bottom 4px
 .matchup-header .q-item-avatar
   margin-left 10px
   margin-right 10px
 .matchup-header .total-score
+  font-weight 400
+  font-size 24px
+.matchup-header .total-score.strong
   font-weight 700
-  font-size 18px
+.matchup-header .total-projection
+  font-size 12px
 .separator-title
   padding 4px 0
   font-size 12px

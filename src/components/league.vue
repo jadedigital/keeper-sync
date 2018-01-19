@@ -23,7 +23,7 @@
       />
       <!-- Targets -->
       <div class="contain-main bg-white">
-        <q-tab-pane class="no-pad no-border" name="tab-1">
+        <q-tab-pane class="no-pad no-border standings" name="tab-1">
           <q-card class="compact-card bg-white" v-for="(division, key) in standings" :key="key">
             <q-card-title>
               {{divisionLookup[key].name}}
@@ -65,30 +65,27 @@
             </div>
           </q-card>
         </q-tab-pane>
-        <q-tab-pane class="no-pad no-border" name="tab-2">
+        <q-tab-pane class="no-pad no-border transactions" name="tab-2">
           <q-item separator v-if="transactionPretty" v-for="(move, key) in transactionPretty" :key="key" class="team-name-main">
             <q-item-side :avatar="teamLookup[move.franchise].icon ? teamLookup[move.franchise].icon : './statics/avatar.jpg'" />
             <q-item-main>
+              <q-item-tile sublabel class="text-primary">{{move.type.replace('_', ' ')}}<span class="text-red" v-if="move.price"> (${{move.price}})</span></q-item-tile>
               <q-item-tile label>{{teamLookup[move.franchise].name}}</q-item-tile>
-              <q-item-tile sublabel class="text-red">{{move.type.replace('_', ' ')}}</q-item-tile>
-              <q-item-tile v-if="move.type === 'IR'">
+              <q-item-tile class="move" v-if="move.type === 'IR'">
                 <span v-if="move.activated">Activated: </span>
                 <span v-for="(player, key2) in move.activated" :key="key2">{{playerLookup[player] ? playerLookup[player].name.split(', ').reverse().join(' ') : ''}}<span v-if="move.activated[key2 + 1]">, </span></span>
               </q-item-tile>
-              <q-item-tile v-if="move.type === 'IR'">
+              <q-item-tile class="move" v-if="move.type === 'IR'">
                 <span v-if="move.deactivated">Deactivated: </span>
                 <span v-for="(player, key2) in move.deactivated" :key="key2">{{playerLookup[player] ? playerLookup[player].name.split(', ').reverse().join(' ') : ''}}<span v-if="move.deactivated[key2 + 1]">, </span></span>
               </q-item-tile>
-              <q-item-tile v-if="move.added && move.added[0] !== ''">
+              <q-item-tile class="move" v-if="move.added && move.added[0] !== ''">
                 <span>Added: </span>
                 <span v-for="(player, key2) in move.added" :key="key2">{{playerLookup[player] ? playerLookup[player].name.split(', ').reverse().join(' ') : ''}}<span v-if="move.added[key2 + 1]">, </span></span>
               </q-item-tile>
-              <q-item-tile v-if="move.dropped && move.dropped[0] !== ''">
+              <q-item-tile class="move" v-if="move.dropped && move.dropped[0] !== ''">
                 <span>Dropped: </span>
                 <span v-for="(player, key2) in move.dropped" :key="key2">{{playerLookup[player] ? playerLookup[player].name.split(', ').reverse().join(' ') : ''}}<span v-if="move.dropped[key2 + 1]">, </span></span>
-              </q-item-tile>
-              <q-item-tile class="price text-red" v-if="move.price">
-                <span>${{move.price}}</span>
               </q-item-tile>
             </q-item-main>
             <q-item-side right>

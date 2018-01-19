@@ -14,12 +14,13 @@
             <img :src="teamLookup[teamA].icon ? teamLookup[teamA].icon : './statics/avatar.jpg'" class="q-item-avatar"/>
           </div>
           <div class="col-6">
-            <div class="total-score pull-right">{{allScoring[teamA].score}}</div>
+            <div :class="[parseFloat(allScoring[teamA].score) > parseFloat(allScoring[teamB].score)? 'strong' : '', 'total-score', 'pull-right']">{{allScoring[teamA].score}}</div>
             <div class="total-projection pull-right">{{totalProjected[teamA]}}</div>
           </div>
         </div>
       </div>
-      <div class="col-2 matchup"></div>
+      <div class="col-2 matchup">
+      </div>
       <div class="col-5 matchup">
         <div class="row items-center">
           <div class="col-12">
@@ -30,7 +31,7 @@
         </div>
         <div class="row items-center">
           <div class="col-6">
-            <div class="total-score">{{allScoring[teamB].score}}</div>
+            <div :class="[parseFloat(allScoring[teamA].score) < parseFloat(allScoring[teamB].score)? 'strong' : '', 'total-score']">{{allScoring[teamB].score}}</div>
             <div class="total-projection">{{totalProjected[teamB]}}</div>
           </div>
           <div class="col-6">

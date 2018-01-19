@@ -21,7 +21,7 @@
         <q-icon name="search" />
       </q-btn>
       <q-btn flat @click="toggleModal">
-        <q-icon name="message" />
+        <q-icon name="chat" />
       </q-btn>
       <q-btn flat>
         <q-icon name="more_vert" />
@@ -108,9 +108,8 @@
     <q-fixed-position v-if="leagueTab === 'messages' && $route.name === 'league'" corner="bottom-right" :offset="[18, 18]">
       <q-btn 
         round
-        color="secondary"
         icon="edit"
-        class="bg-gradient shadow-5"
+        class="bg-gradient shadow-5 text-white"
         @click="$router.push('/newmessage')"
       />
     </q-fixed-position>
@@ -423,7 +422,7 @@ export default {
 .col-pad
   padding-left 12px!important
   padding-right 12px!important
-.team-name-main
+.standings .team-name-main
   border-bottom none!important
   padding-bottom 0!important
 tr .rank
@@ -437,8 +436,14 @@ tr .rank
 .league .q-item-sublabel
   font-weight 300
   font-size 12px
+.league .transactions .q-item-sublabel
+  font-weight 400
+  font-size 12px
+.league .transactions .move
+  font-size 12px
 .league .q-item .price
   font-weight 500
+  font-size 14px
 .league .msg-board .q-list
   border 0
 .team-players
