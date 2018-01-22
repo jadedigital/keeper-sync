@@ -25,7 +25,10 @@
       </q-btn>
       <q-btn flat>
         <q-icon name="more_vert" />
-        <q-popover ref="popover">
+        <q-popover 
+          ref="popover"
+          @open="overlay = true"
+        >
           <!--
             The DOM element(s) that make up the popup,
             in this case a list:
@@ -113,6 +116,11 @@
         @click="$router.push('/newmessage')"
       />
     </q-fixed-position>
+    <div 
+      :class="overlay ? 'overlay' : ''"
+      @click="overlay = false"
+    >
+    </div>
   </q-layout>
 </template>
 
@@ -188,7 +196,8 @@ export default {
         players: 4
       },
       transitionName: '',
-      headerShadow: false
+      headerShadow: false,
+      overlay: false
     }
   },
   beforeRouteEnter (to, from, next) {
@@ -294,6 +303,7 @@ export default {
 </script>
 
 <style lang="stylus">
+@import '~variables'
 .no-pad
   padding 0
 .no-border
@@ -339,7 +349,7 @@ export default {
 .q-tab.active
   color #3f51b5
 .bg-gradient
-  background linear-gradient(141deg, #3f51b5 15%, #03a9f4 100%)
+  background $gradient
 .bg-gradient-opacity
   background linear-gradient(141deg, rgba(63, 81, 181, 1.0) 15%, rgba(3, 169, 244, 0.8) 100%);
   z-index 2

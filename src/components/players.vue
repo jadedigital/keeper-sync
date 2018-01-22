@@ -15,6 +15,7 @@
         <q-select
           multiple
           chips
+          @focus="overlay = true"
           v-model="positionFilter"
           :options="selectOptions"
           title="Positions"
@@ -80,6 +81,11 @@
         </div>
       </q-card>
     </div>
+    <div 
+      :class="overlay ? 'overlay' : ''"
+      @click="overlay = false"
+    >
+    </div>
   </q-pull-to-refresh>
 </template>
 
@@ -143,6 +149,7 @@ export default {
       positionFilter: [],
       statusFilter: 'fa',
       playersDetails: [],
+      overlay: false,
       statusOptions: [
         {
           label: 'All Players',
