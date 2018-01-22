@@ -36,7 +36,10 @@
                 :key="key2"
               >
                 <q-item-side :avatar="teamLookup[team.id].icon ? teamLookup[team.id].icon : './statics/avatar.jpg'" />
-                <q-item-main :label="teamLookup[team.id].name" />
+                <q-item-main 
+                  :label="teamLookup[team.id].name"
+                  :sublabel="standingsLookup[team.id].h2hw + '-' + standingsLookup[team.id].h2hl + '-' + standingsLookup[team.id].h2ht"
+                />
                 <q-item-side right>
                   <q-item-tile :class="winners[team.id] === true ? 'strong text-dark' : 'text-dark'">
                     {{team.score}}
@@ -148,7 +151,8 @@ export default {
       league: 'league',
       liveScoring: 'liveScoring',
       matchupTeams: 'matchupTeams',
-      currentWeek: 'currentWeek'
+      currentWeek: 'currentWeek',
+      leagueStandings: 'leagueStandings'
     }),
     myTeam () {
       var team = this.leagueData[this.activeLeague].teamId
@@ -156,6 +160,10 @@ export default {
     },
     teamLookup () {
       var array = this.league.franchises.franchise
+      return this.lookup(array, 'id')
+    },
+    standingsLookup () {
+      var array = this.leagueStandings.franchise
       return this.lookup(array, 'id')
     },
     winners () {
@@ -251,7 +259,7 @@ export default {
         obj['teamA'] ? obj['teamB'] = el.id : obj['teamA'] = el.id
       })
       this.$store.commit('SET_DATA', {type: 'matchupTeams', data: obj})
-      this.$router.push('/otherMatchup')
+      this.$router.push('/matchup')
     },
     refresher (done) {
       callApi()

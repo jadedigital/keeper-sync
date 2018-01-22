@@ -72,9 +72,9 @@ const router = new VueRouter({
         { path: 'callback', component: load('Callback') },
         { path: '/login', component: load('login') },
         {
-          path: 'teams/:id',
-          component: load('teams'),
-          name: 'teams',
+          path: 'team',
+          component: load('teamOther'),
+          name: 'teamOther',
           meta: { requiresAuth: true }
         },
         {
@@ -90,9 +90,9 @@ const router = new VueRouter({
           meta: { requiresAuth: true }
         },
         {
-          path: 'otherMatchup',
-          component: load('otherMatchup'),
-          name: 'otherMatchup',
+          path: 'matchup',
+          component: load('matchupOther'),
+          name: 'matchupOther',
           meta: { requiresAuth: true }
         }
       ]

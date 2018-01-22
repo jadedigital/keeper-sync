@@ -42,7 +42,7 @@
                   </tr>
                 </thead>
                 <tbody v-for="team in division" :key="team.id">
-                  <tr @click="$router.push('/teams/' + team.id)">
+                  <tr @click="goToTeam(team.id)">
                     <td colspan="6" class="text-left col-pad team-name-main">
                       <q-item separator>
                         <div class="rank">{{team.rank}}</div>
@@ -325,6 +325,10 @@ export default {
       LocalStorage.set('currentMsgThread', {id: id, title: title})
       this.$store.commit('SET_DATA', {type: 'currentMsgThread', data: {id: id, title: title}})
       this.$router.push('/message')
+    },
+    goToTeam (team) {
+      this.$store.commit('SET_DATA', {type: 'displayTeam', data: team})
+      this.$router.push('/team')
     },
     fetchStandings () {
       var data = [

@@ -3,10 +3,10 @@
     @scroll="scrollHandler"
     ref="layout"
     view="hHh Lpr lFf"
-    :class="headerShadow ? 'header-shadow' : 'no-header-shadow'"
+    :class="[headerShadow ? 'header-shadow' : 'no-header-shadow', 'main-layout']"
     :left-class="{'bg-grey-2': true}"
   >
-    <q-toolbar class="bg-gradient" slot="header">
+    <q-toolbar class="bg-gradient toolbar" slot="header">
       <q-btn class="desktop-only" flat @click="$refs.layout.toggleLeft()">
         <q-icon name="search" />
       </q-btn>
@@ -21,27 +21,7 @@
         <q-icon name="search" />
       </q-btn>
       <q-btn flat @click="toggleModal">
-        <q-icon name="chat" />
-      </q-btn>
-      <q-btn flat>
-        <q-icon name="more_vert" />
-        <q-popover 
-          ref="popover"
-          @open="overlay = true"
-        >
-          <!--
-            The DOM element(s) that make up the popup,
-            in this case a list:
-          -->
-          <q-list separator link>
-            <q-item @click="$refs.popover.close()">
-              Settings
-            </q-item>
-            <q-item @click="logout">
-              Logout
-            </q-item>
-          </q-list>
-        </q-popover>
+        <q-icon name="settings" />
       </q-btn>
     </q-toolbar>
     <q-modal class="search-modal" @open="$refs.search.focus()" v-model="modal">
@@ -520,4 +500,8 @@ tr .rank
   margin 0
 .matchup .all-matchups .q-item
   padding 4px 16px
+.settings-popover .q-item
+  padding-right 80px
+.main-layout .q-toolbar
+  padding-right 6px
 </style>

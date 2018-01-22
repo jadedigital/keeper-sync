@@ -36,6 +36,7 @@ export default new Vuex.Store({
     messageBoardThread: '',
     leagueTab: '',
     matchupTeams: {teamA: '', teamB: ''},
+    displayTeam: '',
     teamMap: {
       ARI: 'ARI',
       ATL: 'ATL',
