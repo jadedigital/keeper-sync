@@ -24,6 +24,8 @@
         <q-select
           v-model="statusFilter"
           float-label="Status"
+          @focus="overlay = true"
+          @change="overlay = false"
           radio
           :options="statusOptions"
         />

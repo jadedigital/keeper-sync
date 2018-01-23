@@ -110,7 +110,7 @@ import {
 import { mapGetters } from 'vuex'
 
 export default {
-  name: 'team',
+  name: 'BTeam',
   components: {
     QBtn,
     QList,
@@ -152,7 +152,6 @@ export default {
       fullNflSchedule: 'fullNflSchedule',
       pointsAllowed: 'pointsAllowed',
       currentWeek: 'currentWeek',
-      futureDraftPicks: 'futureDraftPicks',
       teamMap: 'teamMap',
       displayTeam: 'displayTeam'
     }),
@@ -176,59 +175,9 @@ export default {
       var array = this.projectedScores.playerScore
       return this.lookup(array, 'id')
     },
-    draftPicksLookup () {
-      var array = this.futureDraftPicks.franchise
-      return this.lookup(array, 'id')
-    },
-    myPicks () {
-      var myPicks = this.draftPicksLookup[this.thisTeam]
-      var arr = []
-      var obj = {}
-      myPicks.futureDraftPick.forEach(el => {
-        obj = {
-          round: el.round,
-          year: el.year,
-          originalPickFor: el.originalPickFor
-        }
-        arr.push(obj)
-      })
-      arr = this.order(arr, 'year')
-      return arr
-    },
-    pickYears () {
-      var year = ''
-      var arr = []
-      this.myPicks.forEach(el => {
-        if (year !== el.year) {
-          arr.push(el.year)
-        }
-        year = el.year
-      })
-      return arr
-    },
-    myPicksPerYear () {
-      var mainObj = {}
-      var obj = {}
-      var arr = []
-      this.pickYears.forEach(el => {
-        this.myPicks.forEach(el2 => {
-          if (el2.year === el) {
-            obj = {
-              round: el2.round,
-              originalPickFor: el2.originalPickFor
-            }
-            arr.push(obj)
-            mainObj[el] = arr
-          }
-        })
-        mainObj[el] = this.order(mainObj[el], 'round')
-        arr = []
-      })
-      return mainObj
-    },
     updatedProjection () {
       var obj = {}
-      this.myScoring[0].players.player.forEach(el => {
+      this.teamScoring.players.player.forEach(el => {
         var score = parseFloat(this.scoringLookup[el.id].score)
         var projection = parseFloat(this.projectedLookup[el.id].score)
         var newProjection = ''
@@ -270,25 +219,32 @@ export default {
       })
       return object
     },
-    myScoring () {
-      var array = []
+    teamScoring () {
+      var scoring = ''
       this.liveScoring.matchup.forEach((el) => {
         el.franchise.forEach((el2) => {
           if (el2.id === this.thisTeam) {
-            array.push(el2)
+            scoring = el2
           }
         })
       })
-      return array
+      if (this.liveScoring.franchise) {
+        this.liveScoring.franchise.forEach((el) => {
+          if (el.id === this.thisTeam) {
+            scoring = el
+          }
+        })
+      }
+      return scoring
     },
     scoringLookup () {
-      var array = this.myScoring[0].players.player
+      var array = this.teamScoring.players.player
       return this.lookup(array, 'id')
     },
     startersSorted () {
       var array = []
       var positions = this.positionsBasic
-      this.myScoring[0].players.player.forEach((el) => {
+      this.teamScoring.players.player.forEach((el) => {
         var obj = {
           id: el.id,
           pos: this.playerLookup[el.id].position,
@@ -307,7 +263,7 @@ export default {
       var players = []
       var positions = this.positions
       var playerCheck = ''
-      this.myScoring[0].players.player.forEach(el => {
+      this.teamScoring.players.player.forEach(el => {
         if (el.status === 'starter') {
           players.push(el.id)
         }
@@ -335,7 +291,7 @@ export default {
     },
     bench () {
       var bench = []
-      this.myScoring[0].players.player.forEach(el => {
+      this.teamScoring.players.player.forEach(el => {
         if (el.status === 'nonstarter') {
           var obj = {
             id: el.id

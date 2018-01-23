@@ -154,6 +154,9 @@ export default {
       done()
     }
   },
+  created () {
+    setTimeout(this.setTeam, 500)
+  },
   activated () {
     setTimeout(this.setTeam, 500)
   },
