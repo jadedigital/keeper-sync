@@ -72,6 +72,7 @@ import {
   QSpinner
 } from 'quasar'
 import { mapGetters } from 'vuex'
+import { getPlayerNews } from '../data'
 
 export default {
   name: 'player',
@@ -106,6 +107,8 @@ export default {
   computed: {
     ...mapGetters({
       players: 'players',
+      leagueData: 'leagueData',
+      activeLeague: 'activeLeague',
       activePlayer: 'activePlayer',
       teamMap: 'teamMap'
     }),
@@ -131,6 +134,12 @@ export default {
     unsetPlayer () {
       this.dataLoaded = false
     }
+  },
+  activated () {
+    var host = this.leagueData[this.activeLeague].host
+    var league = this.activeLeague
+    var player = this.activePlayer
+    getPlayerNews(host, league, player)
   }
 }
 </script>

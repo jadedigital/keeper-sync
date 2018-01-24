@@ -265,3 +265,27 @@ export function getLeagueData () {
       }
     })
 }
+
+export function getPlayerNews (host, league, player) {
+  var queryParams = {
+    host: host,
+    league: league,
+    player: player
+  }
+  var url = 'https://keepersync.com/mfl/playernews'
+
+  return axios.get(url, {
+    params: queryParams
+  })
+    .then((response) => {
+      var responseData = JSON.parse(response.data)
+      console.log(responseData)
+      return responseData
+    })
+    .catch((error) => {
+      if (error) {
+        Toast.create("Can't fetch news. Please try again later")
+        return error
+      }
+    })
+}
