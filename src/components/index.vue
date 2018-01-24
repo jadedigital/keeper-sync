@@ -18,7 +18,16 @@ import { loadData } from '../data'
 export default {
   data () {
     return {
-      transitionName: ''
+      transitionName: '',
+      routeMap: {
+        user: 1,
+        login: 2,
+        matchup: 3,
+        team: 4,
+        player: 5,
+        message: 6,
+        newmessage: 7
+      }
     }
   },
   beforeRouteEnter (to, from, next) {
@@ -45,27 +54,32 @@ export default {
     next()
   },
   beforeRouteUpdate (to, from, next) {
-    var baseRoute = to.path.split('/')[1]
-    this.transitionName = baseRoute === 'user' ? 'overlap-left' : 'overlap-right'
+    var fromRoute = from.path.split('/')[1]
+    var toRoute = to.path.split('/')[1]
+    this.transitionName = this.routeMap[toRoute] < this.routeMap[fromRoute] ? 'overlap-left' : 'overlap-right'
     next()
   }
 }
 </script>
 
 <style lang="stylus">
-.child-slide 
+.child-slide
   width 100%
+  min-height 100%
   position absolute
-  transition all 0.3s
+  transition all 0.4s
 .overlap-left-enter-active 
   z-index -1
+  position fixed
 .overlap-left-enter 
   transform translate(-20%, 0)
+  position fixed
 .overlap-left-leave-active 
   transform translate(100%, 0)
 .overlap-right-leave-active 
   z-index -1
   transform translate(-20%, 0)
+  position fixed
 .overlap-right-enter 
   transform translate(100%, 0)
 .overlay

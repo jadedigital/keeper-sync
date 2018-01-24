@@ -31,41 +31,6 @@
       <div v-if="playerSearch" v-for="player in playerSearchLookup" :key="player.id" class="row flex-center">{{player.name}} ({{player.team}}) - {{player.id}}</div>
       <q-btn outline color="primary" @click="toggleModal">Cancel</q-btn>
     </q-modal>
-    <div slot="right" class="player-modal player-header">
-      <div v-if="modalPlayer">
-        <div class="player-bg-pic" :style="{background: 'url(./statics/' + teamMap[playerLookup[modalPlayer].team] + '.svg) no-repeat center'}">
-          <div class="bg-gradient-opacity">
-            <div class="row">
-              <q-btn flat @click="$refs.layout.hideRight()">
-                <q-icon name="arrow_back" color="white"/>
-              </q-btn>
-            </div>
-            <div class="player-info text-white row reverse items-center">
-              <ul class="col-6 player-info-list">
-                <li>Team: <span>{{playerLookup[modalPlayer].team}} #{{playerLookup[modalPlayer].jersey}}</span></li>
-                <li>HT/WT: <span>{{parseInt(playerLookup[modalPlayer].height / 12)}}'{{playerLookup[modalPlayer].height % 12}}"/{{playerLookup[modalPlayer].weight}}lbs</span></li>
-                <li>Age: <span>{{(new Date(Date.now()).getFullYear() - new Date(playerLookup[modalPlayer].birthdate * 1000).getFullYear())}}</span></li>
-                <li>Exp: <span>{{new Date(Date.now()).getFullYear() - playerLookup[modalPlayer].draft_year}}</span><span v-if="playerLookup[modalPlayer].status === 'R'">({{playerLookup[modalPlayer].status}})</span></li>
-                <li>College: <span>{{playerLookup[modalPlayer].college}}</span></li>
-              </ul>
-              <div class="col-6">
-                <div class="row justify-center">
-                  <img class="player-img" :src="'https://sports.cbsimg.net/images/football/nfl/players/100x100/' + playerLookup[modalPlayer].cbs_id + '.jpg'" alt="">
-                </div>
-              </div>
-            </div>
-            <div class="player-name-main q-toolbar-title text-white">
-              {{playerLookup[modalPlayer].name.split(', ').reverse().join(' ')}}
-              <div class="q-toolbar-subtitle">{{playerLookup[modalPlayer].position}}</div>
-            </div>
-          </div>
-        </div>
-        <q-tabs inverted class="secondary-tabs">
-          <q-tab default slot="title" name="tab-1" label="News" />
-          <q-tab slot="title" name="tab-2" label="Game Log"/>
-        </q-tabs>
-      </div>
-    </div>
     <!--
       Replace following <div> with
       <router-view /> component
@@ -196,8 +161,6 @@ export default {
       league: 'league',
       players: 'players',
       dummyToolbar: 'dummyToolbar',
-      modalPlayer: 'modalPlayer',
-      modalPlayerToggle: 'modalPlayerToggle',
       teamMap: 'teamMap',
       leagueTab: 'leagueTab'
     }),
@@ -232,11 +195,6 @@ export default {
         backgroundSize: 'cover'
       }
       return style
-    }
-  },
-  watch: {
-    modalPlayerToggle () {
-      this.$refs.layout.toggleRight()
     }
   },
   methods: {

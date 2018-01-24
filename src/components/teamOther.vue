@@ -149,19 +149,13 @@ export default {
     setTeam () {
       this.dataLoaded = true
     },
+    resetTeam () {
+      this.dataLoaded = false
+    },
     refresher (done) {
       callApi()
       done()
     }
-  },
-  created () {
-    setTimeout(this.setTeam, 500)
-  },
-  activated () {
-    setTimeout(this.setTeam, 500)
-  },
-  deactivated () {
-    this.dataLoaded = false
   }
 }
 </script>

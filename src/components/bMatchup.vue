@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="row items-center border-bottom matchup-header">
-      <div class="col-5">
+      <div class="col-5" @click="goToTeam(teamA)">
         <div class="row items-center">
           <div class="col-12">
             <div class="team-name pull-right">
@@ -21,7 +21,7 @@
       </div>
       <div class="col-2 matchup">
       </div>
-      <div class="col-5 matchup">
+      <div class="col-5 matchup" @click="goToTeam(teamB)">
         <div class="row items-center">
           <div class="col-12">
             <div class="team-name">
@@ -47,7 +47,7 @@
     </div>
     <div v-for="player in combinedStarters" :key="player.id">
       <div class="row">
-        <div class="col-5 matchup">
+        <div class="col-5 matchup" @click="goToPlayer(player.id)">
           <div class="matchup-list">
             <div class="list-item border-bottom">
               <div class="row">
@@ -72,7 +72,7 @@
             </div>
           </div>
         </div>
-        <div class="col-5 matchup">
+        <div class="col-5 matchup" @click="goToPlayer(player.opp)">
           <div class="matchup-list">
             <div class="list-item border-bottom">
               <div class="row">
@@ -97,7 +97,7 @@
     </div>
     <div v-for="player in combinedBench" :key="player.id">
       <div class="row">
-        <div class="col-5 matchup">
+        <div class="col-5 matchup" @click="goToPlayer(player.id)">
           <div class="matchup-list">
             <div class="list-item border-bottom bg-grey-3">
               <div class="row">
@@ -122,7 +122,7 @@
             </div>
           </div>
         </div>
-        <div class="col-5 matchup">
+        <div class="col-5 matchup" @click="goToPlayer(player.opp)">
           <div class="matchup-list">
             <div class="list-item border-bottom bg-grey-3">
               <div class="row">
@@ -438,6 +438,14 @@ export default {
         lookup[array[i][key]] = array[i]
       }
       return lookup
+    },
+    goToTeam (team) {
+      this.$store.commit('SET_DATA', {type: 'displayTeam', data: team})
+      this.$router.push('/team')
+    },
+    goToPlayer (id) {
+      this.$store.commit('SET_DATA', {type: 'activePlayer', data: id})
+      this.$router.push('/player')
     },
     matchupPointsUtil (pos) {
       var array = []

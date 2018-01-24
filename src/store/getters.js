@@ -18,8 +18,7 @@ export const playerScores = state => state.playerScores
 export const dummyToolbar = state => state.dummyToolbar
 export const currentWeek = state => state.currentWeek
 export const futureDraftPicks = state => state.futureDraftPicks
-export const modalPlayer = state => state.modalPlayer
-export const modalPlayerToggle = state => state.modalPlayerToggle
+export const activePlayer = state => state.activePlayer
 export const teamMap = state => state.teamMap
 export const transactions = state => state.transactions
 export const messageBoard = state => state.messageBoard

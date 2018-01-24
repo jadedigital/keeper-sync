@@ -22,7 +22,14 @@ const router = new VueRouter({
    */
 
   mode: 'hash',
-  scrollBehavior: () => ({ y: 0 }),
+  scrollBehavior (to, from, savedPosition) {
+    if (savedPosition) {
+      return savedPosition
+    }
+    else {
+      return { x: 0, y: 0 }
+    }
+  },
 
   routes: [
     { path: '/',
@@ -61,11 +68,6 @@ const router = new VueRouter({
               path: 'players',
               component: load('players'),
               meta: { requiresAuth: true }
-            },
-            {
-              path: 'player/:id',
-              component: load('player'),
-              meta: { requiresAuth: true }
             }
           ]
         },
@@ -75,6 +77,12 @@ const router = new VueRouter({
           path: 'team',
           component: load('teamOther'),
           name: 'teamOther',
+          meta: { requiresAuth: true }
+        },
+        {
+          path: 'player',
+          component: load('player'),
+          name: 'player',
           meta: { requiresAuth: true }
         },
         {
