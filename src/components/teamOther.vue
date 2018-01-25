@@ -1,6 +1,6 @@
 <template>
   <q-layout ref="childLayout" view="hHh lpr fff" class="team-layout">
-    <q-toolbar class="bg-gradient" slot="header">
+    <q-toolbar slot="header">
       <q-btn flat>
         <q-icon @click="goBack" name="arrow_back" />
       </q-btn>

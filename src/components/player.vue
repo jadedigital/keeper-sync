@@ -5,7 +5,7 @@
     view="hHh lpr fff"
     :class="[headerShadow ? 'header-shadow' : 'no-header-shadow', 'player-layout']"
   >
-    <q-toolbar :style="'background: linear-gradient(141deg, rgba(63, 81, 181,' + opacity + ') 15%, rgba(3, 169, 244, ' + opacity + ') 100%);'" slot="header">
+    <q-toolbar :style="'background: linear-gradient(141deg, rgba(61, 90, 254,' + opacity + ') 15%, rgba(61, 90, 254, ' + opacity + ') 100%);'" slot="header">
       <q-btn flat>
         <q-icon @click="goBack" name="arrow_back" />
       </q-btn>

@@ -6,7 +6,7 @@
     :class="[headerShadow ? 'header-shadow' : 'no-header-shadow', 'main-layout']"
     :left-class="{'bg-grey-2': true}"
   >
-    <q-toolbar class="bg-indigo-14 toolbar" slot="header">
+    <q-toolbar class="toolbar" slot="header">
       <q-btn class="desktop-only" flat @click="$refs.layout.toggleLeft()">
         <q-icon name="search" />
       </q-btn>
@@ -57,7 +57,7 @@
       <q-btn 
         round
         icon="edit"
-        class="bg-gradient shadow-5 text-white"
+        class="bg-tertiary shadow-5 text-white"
         @click="$router.push('/newmessage')"
       />
     </q-fixed-position>
@@ -285,11 +285,11 @@ export default {
 .q-tabs-inverted .q-tabs-scroller
   color #555
 .q-tab.active
-  color #3f51b5
+  color #3d5afe
 .bg-gradient
   background $gradient
 .bg-gradient-opacity
-  background linear-gradient(141deg, rgba(63, 81, 181, 1.0) 15%, rgba(3, 169, 244, 0.8) 100%);
+  background linear-gradient(141deg, rgba(61, 90, 254, 1.0) 15%, rgba(61, 90, 254, 0.8) 100%);
   z-index 2
 .player-bg-pic
   background-size: cover;
@@ -416,6 +416,7 @@ tr .rank
   font-size 10px
   padding-left 8px
   padding-right 8px
+  background #ff1744
 .league .secondary-tabs .q-tab
   width 33%
 .team .secondary-tabs .q-tab

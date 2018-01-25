@@ -33,18 +33,18 @@
               <table class="q-table horizontal-separator">
                 <thead>
                   <tr>
-                    <th @click="sort(key, 'rank', -1)" nowrap class="text-center" :class="{'text-red': colSortKeys[key] === 'rank'}">W-L-T</th>
-                    <th @click="sort(key, 'streakSort', 1)" nowrap class="text-center" :class="{'text-red': colSortKeys[key] === 'streakSort'}">Streak</th>
-                    <th @click="sort(key, 'pf', 1)" nowrap class="text-center" :class="{'text-red': colSortKeys[key] === 'pf'}">PF</th>
-                    <th @click="sort(key, 'pa', 1)" nowrap class="text-center" :class="{'text-red': colSortKeys[key] === 'pa'}">PA</th>
-                    <th @click="sort(key, 'budget', 1)" nowrap class="text-center" :class="{'text-red': colSortKeys[key] === 'budget'}">Budget</th>
-                    <th v-if="league.divisions.count > 1" @click="sort(key, 'divw', 1)" nowrap class="text-center" :class="{'text-red': colSortKeys[key] === 'divw'}">Division</th>
+                    <th @click="sort(key, 'rank', -1)" nowrap class="text-center" :class="{'text-tertiary': colSortKeys[key] === 'rank'}">W-L-T</th>
+                    <th @click="sort(key, 'streakSort', 1)" nowrap class="text-center" :class="{'text-tertiary': colSortKeys[key] === 'streakSort'}">Streak</th>
+                    <th @click="sort(key, 'pf', 1)" nowrap class="text-center" :class="{'text-tertiary': colSortKeys[key] === 'pf'}">PF</th>
+                    <th @click="sort(key, 'pa', 1)" nowrap class="text-center" :class="{'text-tertiary': colSortKeys[key] === 'pa'}">PA</th>
+                    <th @click="sort(key, 'budget', 1)" nowrap class="text-center" :class="{'text-tertiary': colSortKeys[key] === 'budget'}">Budget</th>
+                    <th v-if="league.divisions.count > 1" @click="sort(key, 'divw', 1)" nowrap class="text-center" :class="{'text-tertiary': colSortKeys[key] === 'divw'}">Division</th>
                   </tr>
                 </thead>
                 <tbody v-for="team in division" :key="team.id">
                   <tr @click="goToTeam(team.id)">
                     <td colspan="6" class="text-left col-pad team-name-main">
-                      <q-item separator>
+                      <q-item link separator>
                         <div class="rank">{{team.rank}}</div>
                         <q-item-side v-if="teamLookup[team.id].icon" :avatar="teamLookup[team.id].icon"/>
                         <q-item-side v-else :avatar="'./statics/avatar.jpg'"/>
@@ -53,12 +53,12 @@
                     </td>
                   </tr>
                   <tr>
-                    <td nowrap class="text-center" :class="{'text-red': colSortKeys[key] === 'rank'}">{{team.h2hw}}-{{team.h2hl}}-{{team.h2ht}}</td>
-                    <td nowrap class="text-center" :class="{'text-red': colSortKeys[key] === 'streakSort'}">{{team.streak_type}}{{team.streak_len}}</td>
-                    <td nowrap class="text-center" :class="{'text-red': colSortKeys[key] === 'pf'}">{{team.pf}}</td>
-                    <td nowrap class="text-center" :class="{'text-red': colSortKeys[key] === 'pa'}">{{team.pa}}</td>
-                    <td nowrap class="text-center" :class="{'text-red': colSortKeys[key] === 'budget'}">{{teamLookup[team.id].bbidAvailableBalance}}</td>
-                    <td v-if="league.divisions.count > 1" nowrap class="text-center" :class="{'text-red': colSortKeys[key] === 'divw'}">{{team.divw}}-{{team.divl}}-{{team.divt}}</td>
+                    <td nowrap class="text-center" :class="{'text-tertiary': colSortKeys[key] === 'rank'}">{{team.h2hw}}-{{team.h2hl}}-{{team.h2ht}}</td>
+                    <td nowrap class="text-center" :class="{'text-tertiary': colSortKeys[key] === 'streakSort'}">{{team.streak_type}}{{team.streak_len}}</td>
+                    <td nowrap class="text-center" :class="{'text-tertiary': colSortKeys[key] === 'pf'}">{{team.pf}}</td>
+                    <td nowrap class="text-center" :class="{'text-tertiary': colSortKeys[key] === 'pa'}">{{team.pa}}</td>
+                    <td nowrap class="text-center" :class="{'text-tertiary': colSortKeys[key] === 'budget'}">{{teamLookup[team.id].bbidAvailableBalance}}</td>
+                    <td v-if="league.divisions.count > 1" nowrap class="text-center" :class="{'text-tertiary': colSortKeys[key] === 'divw'}">{{team.divw}}-{{team.divl}}-{{team.divt}}</td>
                   </tr>
                 </tbody>
               </table>
@@ -69,7 +69,7 @@
           <q-item separator v-if="transactionPretty" v-for="(move, key) in transactionPretty" :key="key" class="team-name-main">
             <q-item-side :avatar="teamLookup[move.franchise].icon ? teamLookup[move.franchise].icon : './statics/avatar.jpg'" />
             <q-item-main>
-              <q-item-tile sublabel class="text-primary">{{move.type.replace('_', ' ')}}<span class="text-red" v-if="move.price"> (${{move.price}})</span></q-item-tile>
+              <q-item-tile sublabel class="text-primary">{{move.type.replace('_', ' ')}}<span class="text-tertiary" v-if="move.price"> (${{move.price}})</span></q-item-tile>
               <q-item-tile label>{{teamLookup[move.franchise].name}}</q-item-tile>
               <q-item-tile class="move" v-if="move.type === 'IR'">
                 <span v-if="move.activated">Activated: </span>
