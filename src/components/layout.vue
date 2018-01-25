@@ -6,7 +6,7 @@
     :class="[headerShadow ? 'header-shadow' : 'no-header-shadow', 'main-layout']"
     :left-class="{'bg-grey-2': true}"
   >
-    <q-toolbar class="bg-gradient toolbar" slot="header">
+    <q-toolbar class="bg-indigo-14 toolbar" slot="header">
       <q-btn class="desktop-only" flat @click="$refs.layout.toggleLeft()">
         <q-icon name="search" />
       </q-btn>
@@ -207,7 +207,7 @@ export default {
       this.modal = !this.modal
     },
     scrollHandler (scroll) {
-      if (scroll.position > 50) {
+      if (scroll.position > 48) {
         this.headerShadow = true
       }
       else {

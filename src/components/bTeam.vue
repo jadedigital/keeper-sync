@@ -7,7 +7,7 @@
         </q-card-title>
         <q-card-separator />
         <div class="card-main bg-white">
-          <q-item separator v-for="player in startersOld" :key="player.id" @click="goToPlayer(player.id)">
+          <q-item link separator v-for="player in startersOld" :key="player.id" @click="goToPlayer(player.id)">
             <q-btn @click.stop="showAS(playerLookup[player.id].name)" round small style="font-size: 12px; font-weight:400" :class="[ parseFloat(scoringLookup[player.id].gameSecondsRemaining) < 3600 ? 'q-btn-flat text-primary' : 'q-btn-outline bg-white text-primary', 'q-item-avatar']">{{ player.position }}</q-btn>
             <q-item-side v-if="playerLookup[player.id].position !== 'Def'" :avatar="'https://sports.cbsimg.net/images/football/nfl/players/100x100/' + playerLookup[player.id].cbs_id + '.jpg'" />
             <q-item-side v-if="playerLookup[player.id].position === 'Def'" :avatar="'./statics/' + teamMap[playerLookup[player.id].team] + '.svg'" />

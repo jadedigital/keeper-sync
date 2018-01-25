@@ -1,15 +1,29 @@
 <template>
-  <q-layout ref="layout" view="hHh lpr fff" class="player-layout">
+  <q-layout
+    @scroll="scrollHandler"
+    ref="layout"
+    view="hHh lpr fff"
+    :class="[headerShadow ? 'header-shadow' : 'no-header-shadow', 'player-layout']"
+  >
+    <q-toolbar :style="'background: linear-gradient(141deg, rgba(63, 81, 181,' + opacity + ') 15%, rgba(3, 169, 244, ' + opacity + ') 100%);'" slot="header">
+      <q-btn flat>
+        <q-icon @click="goBack" name="arrow_back" />
+      </q-btn>
+
+      <q-toolbar-title 
+        :style="'color: rgba(255, 255, 255,' + opacity + ')'"
+      >
+        {{playerLookup[activePlayer].name.split(', ').reverse().join(' ')}}
+        <span slot="subtitle">
+          {{playerLookup[activePlayer].position}}
+        </span>
+      </q-toolbar-title>
+    </q-toolbar>
 
     <div style="height: calc(100vh); background-color: #fff;">
       <div class="player-modal player-header">
-        <div class="player-bg-pic" :style="{background: 'url(./statics/' + teamMap[playerLookup[activePlayer].team] + '.svg) no-repeat center'}">
+        <div ref="playerBg" class="player-bg-pic" :style="{background: 'url(./statics/' + teamMap[playerLookup[activePlayer].team] + '.svg) no-repeat center'}">
           <div class="bg-gradient-opacity">
-            <div class="row">
-              <q-btn flat @click="goBack">
-                <q-icon name="arrow_back" color="white"/>
-              </q-btn>
-            </div>
             <div class="player-info text-white row reverse items-center">
               <ul class="col-6 player-info-list">
                 <li>Team: <span>{{playerLookup[activePlayer].team}} #{{playerLookup[activePlayer].jersey}}</span></li>
@@ -42,7 +56,7 @@
             style="margin-left: -20px;"
           />
           <q-tab-pane v-if="dataLoaded" class="no-pad no-border news" name="tab-1">
-            <q-list link class="no-border">
+            <q-list class="no-border">
               <q-item
                 v-for="news in playerNews"
                 :key="news.rank"
@@ -129,7 +143,9 @@ export default {
     return {
       dataLoaded: false,
       playerNews: '',
-      player: ''
+      player: '',
+      opacity: 0,
+      headerShadow: false
     }
   },
   computed: {
@@ -146,6 +162,25 @@ export default {
     }
   },
   methods: {
+    scrollHandler (scroll) {
+      var height = this.$refs.playerBg.clientHeight
+      if (scroll.position === 0) {
+        this.opacity = 0
+      }
+      else if (scroll.position > (height - 50)) {
+        this.opacity = 1
+      }
+      else {
+        this.opacity = scroll.position / (height - 50)
+      }
+
+      if (scroll.position > height - 2) {
+        this.headerShadow = true
+      }
+      else {
+        this.headerShadow = false
+      }
+    },
     lookup (array, id) {
       var lookup = {}
       for (var i = 0, len = array.length; i < len; i++) {
@@ -175,6 +210,8 @@ export default {
       this.dataLoaded = true
     }
     this.player = this.activePlayer
+    this.opacity = 0
+    this.headerShadow = false
   },
   deactivated () {
     this.dataLoaded = false
@@ -188,5 +225,9 @@ export default {
 .player-layout .news .no-news
   text-align center
   padding 10px
+.player-layout .layout-page-container
+  padding-top 0!important
+.player-layout .player-info
+  padding-top 50px
 </style>
 

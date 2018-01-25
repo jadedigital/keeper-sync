@@ -150,12 +150,16 @@ export default {
     setTeam () {
       this.dataLoaded = true
     },
+    unsetTeam () {
+      this.dataLoaded = false
+    },
     refresher (done) {
       callApi()
       done()
     }
   },
   activated () {
+    this.dataLoaded = false
     if (this.displayTeam !== this.team) {
       setTimeout(this.setTeam, 500)
     }
@@ -163,9 +167,6 @@ export default {
       this.dataLoaded = true
     }
     this.team = this.displayTeam
-  },
-  deactivated () {
-    this.dataLoaded = false
   }
 }
 </script>
