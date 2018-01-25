@@ -103,11 +103,12 @@ export default {
   data () {
     return {
       response: null,
-      dataLoaded: true,
+      dataLoaded: false,
       newWeek: '',
       modalPlayer: '',
       search: '',
-      data: false
+      data: false,
+      team: ''
     }
   },
   computed: {
@@ -149,13 +150,22 @@ export default {
     setTeam () {
       this.dataLoaded = true
     },
-    resetTeam () {
-      this.dataLoaded = false
-    },
     refresher (done) {
       callApi()
       done()
     }
+  },
+  activated () {
+    if (this.displayTeam !== this.team) {
+      setTimeout(this.setTeam, 500)
+    }
+    else {
+      this.dataLoaded = true
+    }
+    this.team = this.displayTeam
+  },
+  deactivated () {
+    this.dataLoaded = false
   }
 }
 </script>

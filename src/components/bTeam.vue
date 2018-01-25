@@ -1,6 +1,6 @@
 <template>
   <div>
-    <q-list highlight class="no-border no-pad bg-grey-1">
+    <q-list link class="no-border no-pad bg-grey-1">
       <q-card class="compact-card bg-white">
         <q-card-title>
           Roster

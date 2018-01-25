@@ -1,8 +1,8 @@
 <template>
-  <q-layout ref="layout" view="hHh lpr fff">
+  <q-layout ref="layout" view="hHh lpr fff" class="player-layout">
 
-    <div style="height: calc(100vh - 50px); background-color: #fff;">
-      <div v-if="dataLoaded" class="player-modal player-header">
+    <div style="height: calc(100vh); background-color: #fff;">
+      <div class="player-modal player-header">
         <div class="player-bg-pic" :style="{background: 'url(./statics/' + teamMap[playerLookup[activePlayer].team] + '.svg) no-repeat center'}">
           <div class="bg-gradient-opacity">
             <div class="row">
@@ -33,15 +33,39 @@
         <q-tabs inverted class="secondary-tabs">
           <q-tab default slot="title" name="tab-1" label="News" />
           <q-tab slot="title" name="tab-2" label="Game Log"/>
+      
+          <q-spinner 
+            v-if="!dataLoaded" 
+            color="secondary" 
+            size="40px" 
+            class="absolute-center" 
+            style="margin-left: -20px;"
+          />
+          <q-tab-pane v-if="dataLoaded" class="no-pad no-border news" name="tab-1">
+            <q-list link class="no-border">
+              <q-item
+                v-for="news in playerNews"
+                :key="news.rank"
+              >
+                <q-item-main>
+                  <q-item-tile label>{{news.headline}}</q-item-tile>
+                  <q-item-tile sublabel class="timestamp text-red">{{news.timestamp}} ago</q-item-tile>
+                  <q-item-tile sublabel>{{news.body}}</q-item-tile>
+                </q-item-main>
+              </q-item>
+            </q-list>
+            <div 
+              v-if="playerNews.length === 0"
+              class="no-news"
+            >
+              No recent news
+            </div>
+          </q-tab-pane>
+          <q-tab-pane class="no-pad no-border" name="tab-2">
+            stats
+          </q-tab-pane>
         </q-tabs>
       </div>
-      <q-spinner 
-        v-if="!dataLoaded" 
-        color="secondary" 
-        size="40px" 
-        class="absolute-center" 
-        style="margin-left: -20px;"
-      />
     </div>
 
   </q-layout>
@@ -69,7 +93,8 @@ import {
   QSearch,
   QFixedPosition,
   QTransition,
-  QSpinner
+  QSpinner,
+  QItemTile
 } from 'quasar'
 import { mapGetters } from 'vuex'
 import { getPlayerNews } from '../data'
@@ -97,11 +122,14 @@ export default {
     QFixedPosition,
     QModal,
     QTransition,
-    QSpinner
+    QSpinner,
+    QItemTile
   },
   data () {
     return {
-      dataLoaded: true
+      dataLoaded: false,
+      playerNews: '',
+      player: ''
     }
   },
   computed: {
@@ -128,18 +156,37 @@ export default {
     goBack () {
       this.$router.go(-1)
     },
-    setPlayer () {
-      this.dataLoaded = true
-    },
-    unsetPlayer () {
-      this.dataLoaded = false
+    loadPlayerNews () {
+      var host = this.leagueData[this.activeLeague].host
+      var league = this.activeLeague
+      var player = this.activePlayer
+      getPlayerNews(host, league, player).then((response) => {
+        this.playerNews = response.data
+        this.dataLoaded = true
+      })
     }
   },
   activated () {
-    var host = this.leagueData[this.activeLeague].host
-    var league = this.activeLeague
-    var player = this.activePlayer
-    getPlayerNews(host, league, player)
+    this.dataLoaded = false
+    if (this.activePlayer !== this.player) {
+      this.loadPlayerNews()
+    }
+    else {
+      this.dataLoaded = true
+    }
+    this.player = this.activePlayer
+  },
+  deactivated () {
+    this.dataLoaded = false
   }
 }
 </script>
+
+<style lang="stylus">
+.player-layout .news .timestamp
+  font-weight 300
+.player-layout .news .no-news
+  text-align center
+  padding 10px
+</style>
+

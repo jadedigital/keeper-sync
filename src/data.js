@@ -269,18 +269,16 @@ export function getLeagueData () {
 export function getPlayerNews (host, league, player) {
   var queryParams = {
     host: host,
-    league: league,
-    player: player
+    league: parseInt(league),
+    player: parseInt(player)
   }
-  var url = 'https://keepersync.com/mfl/playernews'
+  var url = 'https://keepersync.com/playernews'
 
   return axios.get(url, {
     params: queryParams
   })
     .then((response) => {
-      var responseData = JSON.parse(response.data)
-      console.log(responseData)
-      return responseData
+      return response
     })
     .catch((error) => {
       if (error) {
