@@ -1,6 +1,6 @@
 <template>
   <q-layout ref="childLayout" view="hHh lpr fFf" class="message">
-    <q-toolbar class="bg-gradient" slot="header">
+    <q-toolbar slot="header">
       <q-btn flat>
         <q-icon @click="$router.go(-1)" name="arrow_back" />
       </q-btn>

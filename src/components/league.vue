@@ -30,46 +30,45 @@
             </q-card-title>
             <q-card-separator />
             <div class="card-main bg-white">
-              <table class="q-table horizontal-separator">
-                <thead>
-                  <tr>
-                    <th @click="sort(key, 'rank', -1)" nowrap class="text-center" :class="{'text-tertiary': colSortKeys[key] === 'rank'}">W-L-T</th>
-                    <th @click="sort(key, 'streakSort', 1)" nowrap class="text-center" :class="{'text-tertiary': colSortKeys[key] === 'streakSort'}">Streak</th>
-                    <th @click="sort(key, 'pf', 1)" nowrap class="text-center" :class="{'text-tertiary': colSortKeys[key] === 'pf'}">PF</th>
-                    <th @click="sort(key, 'pa', 1)" nowrap class="text-center" :class="{'text-tertiary': colSortKeys[key] === 'pa'}">PA</th>
-                    <th @click="sort(key, 'budget', 1)" nowrap class="text-center" :class="{'text-tertiary': colSortKeys[key] === 'budget'}">Budget</th>
-                    <th v-if="league.divisions.count > 1" @click="sort(key, 'divw', 1)" nowrap class="text-center" :class="{'text-tertiary': colSortKeys[key] === 'divw'}">Division</th>
-                  </tr>
-                </thead>
-                <tbody v-for="team in division" :key="team.id">
-                  <tr @click="goToTeam(team.id)">
-                    <td colspan="6" class="text-left col-pad team-name-main">
-                      <q-item link separator>
-                        <div class="rank">{{team.rank}}</div>
-                        <q-item-side v-if="teamLookup[team.id].icon" :avatar="teamLookup[team.id].icon"/>
-                        <q-item-side v-else :avatar="'./statics/avatar.jpg'"/>
-                        <q-item-main :label="teamLookup[team.id].name" :sublabel="teamLookup[team.id].owner_name" />
-                      </q-item>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td nowrap class="text-center" :class="{'text-tertiary': colSortKeys[key] === 'rank'}">{{team.h2hw}}-{{team.h2hl}}-{{team.h2ht}}</td>
-                    <td nowrap class="text-center" :class="{'text-tertiary': colSortKeys[key] === 'streakSort'}">{{team.streak_type}}{{team.streak_len}}</td>
-                    <td nowrap class="text-center" :class="{'text-tertiary': colSortKeys[key] === 'pf'}">{{team.pf}}</td>
-                    <td nowrap class="text-center" :class="{'text-tertiary': colSortKeys[key] === 'pa'}">{{team.pa}}</td>
-                    <td nowrap class="text-center" :class="{'text-tertiary': colSortKeys[key] === 'budget'}">{{teamLookup[team.id].bbidAvailableBalance}}</td>
-                    <td v-if="league.divisions.count > 1" nowrap class="text-center" :class="{'text-tertiary': colSortKeys[key] === 'divw'}">{{team.divw}}-{{team.divl}}-{{team.divt}}</td>
-                  </tr>
-                </tbody>
-              </table>
+              <div class="q-table horizontal-separator">
+                <div class="row header-row border-bottom">
+                  <div @click="sort(key, 'rank', -1)" nowrap class="text-center col-2" :class="{'text-tertiary': colSortKeys[key] === 'rank'}">W-L-T</div>
+                  <div @click="sort(key, 'streakSort', 1)" nowrap class="text-center col-2" :class="{'text-tertiary': colSortKeys[key] === 'streakSort'}">Streak</div>
+                  <div @click="sort(key, 'pf', 1)" nowrap class="text-center col-2" :class="{'text-tertiary': colSortKeys[key] === 'pf'}">PF</div>
+                  <div @click="sort(key, 'pa', 1)" nowrap class="text-center col-2" :class="{'text-tertiary': colSortKeys[key] === 'pa'}">PA</div>
+                  <div @click="sort(key, 'budget', 1)" nowrap class="text-center col-2" :class="{'text-tertiary': colSortKeys[key] === 'budget'}">Budget</div>
+                  <div v-if="league.divisions.count > 1" @click="sort(key, 'divw', 1)" nowrap class="text-center col-2" :class="{'text-tertiary': colSortKeys[key] === 'divw'}">Division</div>
+                </div>
+                <div class="border-bottom main-row"  v-for="team in division" :key="team.id">
+                  <div @click="goToTeam(team.id)" class="row text-left col-pad name-row">
+                    <q-item link separator class="col-12">
+                      <div class="rank">{{team.rank}}</div>
+                      <q-item-side v-if="teamLookup[team.id].icon" :avatar="teamLookup[team.id].icon"/>
+                      <q-item-side v-else :avatar="'./statics/avatar.jpg'"/>
+                      <q-item-main :label="teamLookup[team.id].name" :sublabel="teamLookup[team.id].owner_name" />
+                    </q-item>
+                  </div>
+                  <div class="row stat-row">
+                    <div nowrap class="text-center col-2" :class="{'text-tertiary': colSortKeys[key] === 'rank'}">{{team.h2hw}}-{{team.h2hl}}-{{team.h2ht}}</div>
+                    <div nowrap class="text-center col-2" :class="{'text-tertiary': colSortKeys[key] === 'streakSort'}">{{team.streak_type}}{{team.streak_len}}</div>
+                    <div nowrap class="text-center col-2" :class="{'text-tertiary': colSortKeys[key] === 'pf'}">{{team.pf}}</div>
+                    <div nowrap class="text-center col-2" :class="{'text-tertiary': colSortKeys[key] === 'pa'}">{{team.pa}}</div>
+                    <div nowrap class="text-center col-2" :class="{'text-tertiary': colSortKeys[key] === 'budget'}">{{teamLookup[team.id].bbidAvailableBalance}}</div>
+                    <div v-if="league.divisions.count > 1" nowrap class="text-center col-2" :class="{'text-tertiary': colSortKeys[key] === 'divw'}">{{team.divw}}-{{team.divl}}-{{team.divt}}</div>
+                  </div>
+                </div>
+              </div>
             </div>
           </q-card>
         </q-tab-pane>
-        <q-tab-pane class="no-pad no-border transactions" name="tab-2">
+        <q-tab-pane 
+          class="no-pad no-border transactions"
+          name="tab-2"
+        >
           <q-item separator v-if="transactionPretty" v-for="(move, key) in transactionPretty" :key="key" class="team-name-main">
             <q-item-side :avatar="teamLookup[move.franchise].icon ? teamLookup[move.franchise].icon : './statics/avatar.jpg'" />
             <q-item-main>
-              <q-item-tile sublabel class="text-primary">{{move.type.replace('_', ' ')}}<span class="text-tertiary" v-if="move.price"> (${{move.price}})</span></q-item-tile>
+              <q-item-tile sublabel class="text-primary">{{move.type.replace('_', ' ')}}<span class="text-tertiary" v-if="move.price"> - ${{move.price}}</span></q-item-tile>
               <q-item-tile label>{{teamLookup[move.franchise].name}}</q-item-tile>
               <q-item-tile class="move" v-if="move.type === 'IR'">
                 <span v-if="move.activated">Activated: </span>
@@ -381,3 +380,43 @@ export default {
   }
 }
 </script>
+
+<style lang="stylus">
+.league .rank
+  padding-right 12px
+  font-weight 500
+.league .q-item-label
+  font-weight 500
+  font-size 14px
+.league .q-item
+  font-size 14px
+.league .q-item-sublabel
+  font-weight 300
+  font-size 12px
+.league .transactions .q-item-sublabel
+  font-weight 400
+  font-size 12px
+.league .transactions .move
+  font-size 12px
+.league .q-item .price
+  font-weight 500
+  font-size 14px
+.league .msg-board .q-list
+  border 0
+.league .main-row
+  padding 8px 0
+.league .name-row
+  padding 0 10px
+.league .header-row
+  font-weight 700
+  text-align center
+  padding 6px 0
+.league .stat-row
+  padding-top 6px
+.league .q-table .q-item
+  padding 0
+.league .q-table
+  font-size 12px
+  width 100%
+</style>
+

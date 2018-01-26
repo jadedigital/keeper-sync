@@ -6,11 +6,7 @@
     :class="[headerShadow ? 'header-shadow' : 'no-header-shadow', 'main-layout']"
     :left-class="{'bg-grey-2': true}"
   >
-    <q-toolbar class="toolbar" slot="header">
-      <q-btn class="desktop-only" flat @click="$refs.layout.toggleLeft()">
-        <q-icon name="search" />
-      </q-btn>
-
+    <q-toolbar class="toolbar border-bottom" slot="header">
       <q-toolbar-title>
         {{this.teamLookup[myTeam].name}}
         <span slot="subtitle">
@@ -19,6 +15,9 @@
       </q-toolbar-title>
       <q-btn flat @click="toggleModal">
         <q-icon name="search" />
+      </q-btn>
+      <q-btn flat>
+        <q-icon name="chat" />
       </q-btn>
       <q-btn flat @click="toggleModal">
         <q-icon name="settings" />
@@ -50,6 +49,7 @@
         <div :style="logoUrl" class="q-item-avatar"></div>
       </div>
       <!-- <q-route-tab to="draft" exact slot="title" icon="view_comfy" label="Draft"/> -->
+      <!-- <q-route-tab to="chat" exact slot="title" icon="chat" label="Chat"/> -->
       <q-route-tab to="matchup" exact slot="title" icon="flag" label="Matchup"/>
       <q-route-tab to="players" exact slot="title" icon="person" label="Players" />
     </q-tabs>
@@ -248,6 +248,8 @@ export default {
   border none
 .border-bottom
   border-bottom solid 1px rgba(0,0,0,0.1)
+.card-main
+  overflow auto
 .logo-container
   width 255px
   height 242px
@@ -351,49 +353,9 @@ export default {
 .player-name-main .q-toolbar-subtitle
   font-size 18px
   font-weight 500
-.q-table .q-item
-  padding 0
-.q-table .q-item-label
-  font-weight 500
-  font-size 14px
-.q-table .q-item-sublabel
-  font-weight 300
-  font-size 12px
-.card-main
-  overflow auto
-.q-table
-  font-size 12px
-  width 100%
-.q-table th,td
-  padding-left 0!important
-  padding-right 0!important
-.col-pad
-  padding-left 12px!important
-  padding-right 12px!important
 .standings .team-name-main
   border-bottom none!important
   padding-bottom 0!important
-tr .rank
-  padding-right 12px
-  font-weight 500
-.league .q-item-label
-  font-weight 500
-  font-size 14px
-.league .q-item
-  font-size 14px
-.league .q-item-sublabel
-  font-weight 300
-  font-size 12px
-.league .transactions .q-item-sublabel
-  font-weight 400
-  font-size 12px
-.league .transactions .move
-  font-size 12px
-.league .q-item .price
-  font-weight 500
-  font-size 14px
-.league .msg-board .q-list
-  border 0
 .team-players
   font-weight 500
 .team-players small

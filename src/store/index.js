@@ -21,6 +21,8 @@ export default new Vuex.Store({
     projectedScores: '',
     topAdds: '',
     topOwns: '',
+    topDrops: '',
+    topStarters: '',
     liveScoring: '',
     fullNflSchedule: '',
     pointsAllowed: '',

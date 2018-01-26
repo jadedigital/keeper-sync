@@ -11,6 +11,8 @@ export const freeAgents = state => state.freeAgents
 export const projectedScores = state => state.projectedScores
 export const topOwns = state => state.topOwns
 export const topAdds = state => state.topAdds
+export const topDrops = state => state.topDrops
+export const topStarters = state => state.topStarters
 export const fullNflSchedule = state => state.fullNflSchedule
 export const liveScoring = state => state.liveScoring
 export const pointsAllowed = state => state.pointsAllowed
