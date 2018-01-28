@@ -287,3 +287,25 @@ export function getPlayerNews (host, league, player) {
       }
     })
 }
+
+export function getPlayerStats (host, league, player) {
+  var queryParams = {
+    host: host,
+    league: parseInt(league),
+    player: parseInt(player)
+  }
+  var url = 'https://keepersync.com/playerstats'
+
+  return axios.get(url, {
+    params: queryParams
+  })
+    .then((response) => {
+      return response
+    })
+    .catch((error) => {
+      if (error) {
+        Toast.create("Can't fetch stats. Please try again later")
+        return error
+      }
+    })
+}

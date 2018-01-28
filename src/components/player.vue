@@ -47,16 +47,18 @@
         <q-tabs inverted class="secondary-tabs">
           <q-tab default slot="title" name="tab-1" label="News" />
           <q-tab slot="title" name="tab-2" label="Game Log"/>
-      
-          <q-spinner 
-            v-if="!dataLoaded" 
-            color="secondary" 
-            size="40px" 
-            class="absolute-center" 
-            style="margin-left: -20px;"
-          />
-          <q-tab-pane v-if="dataLoaded" class="no-pad no-border news" name="tab-1">
-            <q-list class="no-border">
+          <q-tab-pane class="no-pad no-border news" name="tab-1">
+            <q-spinner 
+              v-if="!dataLoaded" 
+              color="primary" 
+              size="40px" 
+              class="absolute-center" 
+              style="margin-left: -20px;"
+            />
+            <q-list 
+              v-if="dataLoaded"
+              class="no-border"
+            >
               <q-item
                 v-for="news in playerNews"
                 :key="news.rank"
@@ -76,7 +78,21 @@
             </div>
           </q-tab-pane>
           <q-tab-pane class="no-pad no-border" name="tab-2">
-            stats
+            <q-spinner 
+              v-if="!statsLoaded" 
+              color="primary" 
+              size="40px" 
+              class="absolute-center" 
+              style="margin-left: -20px;"
+            />
+            <div 
+              v-for="stat in playerStatsClean"
+              :key="stat.week"
+            >
+              <div>
+                week {{stat.week}}: {{stat.points}}
+              </div>
+            </div>
           </q-tab-pane>
         </q-tabs>
       </div>
@@ -111,7 +127,7 @@ import {
   QItemTile
 } from 'quasar'
 import { mapGetters } from 'vuex'
-import { getPlayerNews } from '../data'
+import { getPlayerNews, getPlayerStats } from '../data'
 
 export default {
   name: 'player',
@@ -142,7 +158,9 @@ export default {
   data () {
     return {
       dataLoaded: false,
-      playerNews: '',
+      statsLoaded: false,
+      playerNews: [],
+      playerStats: [],
       player: '',
       opacity: 0,
       headerShadow: false
@@ -154,11 +172,18 @@ export default {
       leagueData: 'leagueData',
       activeLeague: 'activeLeague',
       activePlayer: 'activePlayer',
-      teamMap: 'teamMap'
+      teamMap: 'teamMap',
+      league: 'league'
     }),
     playerLookup () {
       var array = this.players.player
       return this.lookup(array, 'id')
+    },
+    playerStatsClean () {
+      var arr = this.playerStats
+      var toDelete = arr.length - parseInt(this.league.endWeek)
+      arr.splice(-1, toDelete)
+      return arr
     }
   },
   methods: {
@@ -191,7 +216,7 @@ export default {
     goBack () {
       this.$router.go(-1)
     },
-    loadPlayerNews () {
+    fetchData () {
       var host = this.leagueData[this.activeLeague].host
       var league = this.activeLeague
       var player = this.activePlayer
@@ -199,15 +224,21 @@ export default {
         this.playerNews = response.data
         this.dataLoaded = true
       })
+      getPlayerStats(host, league, player).then((response) => {
+        this.playerStats = response.data
+        this.statsLoaded = true
+      })
     }
   },
   activated () {
     this.dataLoaded = false
+    this.statsLoaded = false
     if (this.activePlayer !== this.player) {
-      this.loadPlayerNews()
+      this.fetchData()
     }
     else {
       this.dataLoaded = true
+      this.statsLoaded = true
     }
     this.player = this.activePlayer
     this.opacity = 0
@@ -215,6 +246,7 @@ export default {
   },
   deactivated () {
     this.dataLoaded = false
+    this.statsLoaded = false
   }
 }
 </script>
