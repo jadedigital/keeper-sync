@@ -65,19 +65,19 @@
               >
                 <q-item-main>
                   <q-item-tile label>{{news.headline}}</q-item-tile>
-                  <q-item-tile sublabel class="timestamp text-red">{{news.timestamp}} ago</q-item-tile>
-                  <q-item-tile sublabel>{{news.body}}</q-item-tile>
+                  <q-item-tile sublabel class="timestamp text-red">{{news.timestamp}}</q-item-tile>
+                  <q-item-tile sublabel>{{news.body.replace(news.timestamp, '')}}<span class="text-primary" v-if="news.source" @click="launch(news.link)"> Source: {{news.source}}</span></q-item-tile>
                 </q-item-main>
               </q-item>
             </q-list>
             <div 
-              v-if="playerNews.length === 0"
+              v-if="playerNews.length === 0 && dataLoaded"
               class="no-news"
             >
               No recent news
             </div>
           </q-tab-pane>
-          <q-tab-pane class="no-pad no-border" name="tab-2">
+          <q-tab-pane class="no-pad no-border stat-pane" name="tab-2">
             <q-spinner 
               v-if="!statsLoaded" 
               color="primary" 
@@ -85,14 +85,35 @@
               class="absolute-center" 
               style="margin-left: -20px;"
             />
-            <div 
-              v-for="stat in playerStatsClean"
-              :key="stat.week"
+            <table 
+              class="stat-table"
+              v-if="statsLoaded"
             >
-              <div>
-                week {{stat.week}}: {{stat.points}}
-              </div>
-            </div>
+              <tbody>
+                <tr>
+                  <th
+                    v-for="(stat, statKey) in playerStatsHeader"
+                    :key="statKey"
+                    :colspan="stat.colspan"
+                  >
+                    {{stat.value}}
+                  </th>
+                </tr>
+                <tr 
+                  v-for="(row, key) in playerStatsBody"
+                  :key="key"
+                  :class="[key % 2 === 0 ? 'even' : 'odd', key === 0 ? 'text-tertiary' : 'stat-body']"
+                  class="border-bottom"
+                >
+                  <td 
+                    v-for="(stat, statKey) in row"
+                    :key="statKey"
+                  >
+                    {{stat.value}} 
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </q-tab-pane>
         </q-tabs>
       </div>
@@ -103,6 +124,7 @@
 
 <script>
 import {
+  openURL,
   QLayout,
   QToolbar,
   QToolbarTitle,
@@ -179,14 +201,19 @@ export default {
       var array = this.players.player
       return this.lookup(array, 'id')
     },
-    playerStatsClean () {
-      var arr = this.playerStats
-      var toDelete = arr.length - parseInt(this.league.endWeek)
-      arr.splice(-1, toDelete)
-      return arr
+    playerStatsHeader () {
+      return this.playerStats[0]
+    },
+    playerStatsBody () {
+      const array = [...this.playerStats]
+      array.splice(0, 1)
+      return array
     }
   },
   methods: {
+    launch (url) {
+      openURL(url, '_self')
+    },
     scrollHandler (scroll) {
       var height = this.$refs.playerBg.clientHeight
       if (scroll.position === 0) {
@@ -217,14 +244,12 @@ export default {
       this.$router.go(-1)
     },
     fetchData () {
-      var host = this.leagueData[this.activeLeague].host
-      var league = this.activeLeague
-      var player = this.activePlayer
-      getPlayerNews(host, league, player).then((response) => {
+      var player = this.playerLookup[this.activePlayer].rotoworld_id
+      getPlayerNews(player).then((response) => {
         this.playerNews = response.data
         this.dataLoaded = true
       })
-      getPlayerStats(host, league, player).then((response) => {
+      getPlayerStats(player).then((response) => {
         this.playerStats = response.data
         this.statsLoaded = true
       })
@@ -261,5 +286,18 @@ export default {
   padding-top 0!important
 .player-layout .player-info
   padding-top 50px
+.player-layout .stat-table
+  padding-top 10px
+  border-spacing 0
+  font-size 14px
+.player-layout .stat-table td
+  padding 2px 6px
+.player-layout .stat-table tr.stat-body
+  font-weight 300
+.player-layout .stat-table tr.odd
+  background-color #ececec
+.player-layout .stat-pane 
+  overflow auto
+  padding-bottom 20px
 </style>
 

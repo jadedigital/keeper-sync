@@ -46,7 +46,13 @@
               <div @click="sort('started')" nowrap class="text-center col-2" :class="{'text-red': colSortKey === 'started'}">% Started</div>
               <div @click="sort('dropped')" nowrap class="text-center col-2" :class="{'text-red': colSortKey === 'dropped'}">% Dropped</div>
             </div>
-            <div class="border-bottom main-row" v-for="player in playersSorted" :key="player.id">
+            <div 
+              class="border-bottom main-row"
+              v-for="player in playersSorted"
+              :key="player.id"
+              :class="{'active': selectedPlayer === player.id}"
+              @click="goToPlayer(player.id)"
+            >
               <div class="row text-left col-pad name-row">
                 <q-item separator class="col-12">
                   <q-btn round small outline color="primary" style="font-size: 14px; font-weight:400; margin-right: 20px;" class="q-item-avatar">+</q-btn>
@@ -136,7 +142,6 @@ export default {
   },
   data () {
     return {
-      response: null,
       dataLoaded: false,
       colSortKey: 'projected',
       limit: 10,
@@ -146,6 +151,7 @@ export default {
       statusFilter: 'fa',
       playersDetails: [],
       overlay: false,
+      selectedPlayer: '',
       statusOptions: [
         {
           label: 'All Players',
@@ -286,6 +292,11 @@ export default {
     launch (url) {
       close()
       openURL(url, '_self')
+    },
+    goToPlayer (id) {
+      this.selectedPlayer = id
+      this.$store.commit('SET_DATA', {type: 'activePlayer', data: id})
+      this.$router.push('/player')
     },
     lookup (array, key) {
       if (!key) {
@@ -449,6 +460,7 @@ export default {
   },
   activated () {
     this.limit = 10
+    this.selectedPlayer = ''
   }
 }
 </script>
@@ -473,6 +485,8 @@ export default {
 .players .q-table
   font-size 12px
   width 100%
+.players .q-table .active
+  background-color #ccc
 .players .col-pad
   padding-left 12px!important
   padding-right 12px!important

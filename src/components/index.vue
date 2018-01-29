@@ -47,7 +47,9 @@ export default {
         'liveScoring',
         'pointsAllowed',
         'playerScores',
-        'currentWeek'
+        'currentWeek',
+        'topStarters',
+        'topDrops'
       ]
       loadData(data)
     }

@@ -39,9 +39,15 @@
                   <div @click="sort(key, 'budget', 1)" nowrap class="text-center col-2" :class="{'text-tertiary': colSortKeys[key] === 'budget'}">Budget</div>
                   <div v-if="league.divisions.count > 1" @click="sort(key, 'divw', 1)" nowrap class="text-center col-2" :class="{'text-tertiary': colSortKeys[key] === 'divw'}">Division</div>
                 </div>
-                <div class="border-bottom main-row"  v-for="team in division" :key="team.id">
-                  <div @click="goToTeam(team.id)" class="row text-left col-pad name-row">
-                    <q-item link separator class="col-12">
+                <div 
+                  class="border-bottom main-row"
+                  v-for="team in division" 
+                  :key="team.id"
+                  :class="{'active': selectedTeam === team.id}"
+                  @click="goToTeam(team.id)"
+                >
+                  <div class="row text-left col-pad name-row">
+                    <q-item separator class="col-12">
                       <div class="rank">{{team.rank}}</div>
                       <q-item-side v-if="teamLookup[team.id].icon" :avatar="teamLookup[team.id].icon"/>
                       <q-item-side v-else :avatar="'./statics/avatar.jpg'"/>
@@ -170,7 +176,8 @@ export default {
       response: null,
       colSortKeys: {},
       colSortOrders: {},
-      dataLoaded: false
+      dataLoaded: false,
+      selectedTeam: ''
     }
   },
   computed: {
@@ -326,6 +333,7 @@ export default {
       this.$router.push('/message')
     },
     goToTeam (team) {
+      this.selectedTeam = team
       this.$store.commit('SET_DATA', {type: 'displayTeam', data: team})
       this.$router.push('/team')
     },
@@ -371,6 +379,9 @@ export default {
   },
   created () {
     setTimeout(this.fetchStandings, 500)
+  },
+  activated () {
+    this.selectedTeam = ''
   },
   mounted () {
     this.league.divisions.division.forEach(el => {
@@ -418,5 +429,7 @@ export default {
 .league .q-table
   font-size 12px
   width 100%
+.league .q-table .active
+  background-color #ccc
 </style>
 

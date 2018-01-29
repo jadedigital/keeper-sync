@@ -266,10 +266,8 @@ export function getLeagueData () {
     })
 }
 
-export function getPlayerNews (host, league, player) {
+export function getPlayerNews (player) {
   var queryParams = {
-    host: host,
-    league: parseInt(league),
     player: parseInt(player)
   }
   var url = 'https://keepersync.com/playernews'
@@ -288,10 +286,8 @@ export function getPlayerNews (host, league, player) {
     })
 }
 
-export function getPlayerStats (host, league, player) {
+export function getPlayerStats (player) {
   var queryParams = {
-    host: host,
-    league: parseInt(league),
     player: parseInt(player)
   }
   var url = 'https://keepersync.com/playerstats'

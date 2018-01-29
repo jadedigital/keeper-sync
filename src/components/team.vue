@@ -190,24 +190,36 @@ export default {
       done()
     },
     fetchData () {
-      var futureDraftPicksParams = {
-        cookie: this.leagueData[this.activeLeague].cookie,
-        host: this.leagueData[this.activeLeague].host,
-        TYPE: 'futureDraftPicks',
-        L: this.activeLeague,
-        JSON: 1
+      if (LocalStorage.has('futureDraftPicks')) {
+        var data = [
+          'futureDraftPicks'
+        ]
+        loadData(data)
+        this.dataLoaded = true
       }
-      var request = [
-        {
-          type: 'futureDraftPicks',
-          params: futureDraftPicksParams,
-          timeOut: 3600000
+      else {
+        var futureDraftPicksParams = {
+          cookie: this.leagueData[this.activeLeague].cookie,
+          host: this.leagueData[this.activeLeague].host,
+          TYPE: 'futureDraftPicks',
+          L: this.activeLeague,
+          JSON: 1
         }
-      ]    
-      callApi('', request)
-        .then((response) => {
-          this.dataLoaded = true
-        })
+        var request = [
+          {
+            type: 'futureDraftPicks',
+            params: futureDraftPicksParams,
+            timeOut: 3600000
+          }
+        ]
+        callApi('', request)
+          .then((response) => {
+            this.dataLoaded = true
+          })
+      }
+    },
+    setTeam () {
+      this.dataLoaded = true
     }
   },
   created () {
@@ -216,6 +228,10 @@ export default {
   },
   activated () {
     this.$store.commit('SET_DATA', {type: 'displayTeam', data: this.myTeam})
+    setTimeout(this.setTeam, 500)
+  },
+  deactivated () {
+    this.dataLoaded = false
   }
 }
 </script>
