@@ -31,6 +31,7 @@
                 <li>Age: <span>{{(new Date(Date.now()).getFullYear() - new Date(playerLookup[activePlayer].birthdate * 1000).getFullYear())}}</span></li>
                 <li>Exp: <span>{{new Date(Date.now()).getFullYear() - playerLookup[activePlayer].draft_year}}</span><span v-if="playerLookup[activePlayer].status === 'R'">({{playerLookup[activePlayer].status}})</span></li>
                 <li>College: <span>{{playerLookup[activePlayer].college}}</span></li>
+                <li>Owner: <span>{{playerStatus.status}}</span></li>
               </ul>
               <div class="col-6">
                 <div class="row justify-center">
@@ -39,7 +40,7 @@
               </div>
             </div>
             <div class="player-name-main q-toolbar-title text-white">
-              {{playerLookup[activePlayer].name.split(', ').reverse().join(' ')}}
+              {{playerLookup[activePlayer].name.split(', ').reverse().join(' ')}} <b-injury class="injury" :player="activePlayer" details></b-injury>
               <div class="q-toolbar-subtitle">{{playerLookup[activePlayer].position}}</div>
             </div>
           </div>
@@ -149,7 +150,8 @@ import {
   QItemTile
 } from 'quasar'
 import { mapGetters } from 'vuex'
-import { getPlayerNews, getPlayerStats } from '../data'
+import { getPlayerNews, getPlayerStats, callApi } from '../data'
+import bInjury from './bInjury.vue'
 
 export default {
   name: 'player',
@@ -175,7 +177,8 @@ export default {
     QModal,
     QTransition,
     QSpinner,
-    QItemTile
+    QItemTile,
+    bInjury
   },
   data () {
     return {
@@ -195,7 +198,8 @@ export default {
       activeLeague: 'activeLeague',
       activePlayer: 'activePlayer',
       teamMap: 'teamMap',
-      league: 'league'
+      league: 'league',
+      playerStatus: 'playerStatus'
     }),
     playerLookup () {
       var array = this.players.player
@@ -208,6 +212,27 @@ export default {
       const array = [...this.playerStats]
       array.splice(0, 1)
       return array
+    },
+    playerStatusParams () {
+      var params = {
+        cookie: this.leagueData[this.activeLeague].cookie,
+        host: this.leagueData[this.activeLeague].host,
+        TYPE: 'playerStatus',
+        L: this.activeLeague,
+        P: this.activePlayer,
+        JSON: 1
+      }
+      return params
+    },
+    request () {
+      var request = [
+        {
+          type: 'playerStatus',
+          params: this.playerStatusParams,
+          timeOut: 0
+        }
+      ]
+      return request
     }
   },
   methods: {
@@ -253,6 +278,7 @@ export default {
         this.playerStats = response.data
         this.statsLoaded = true
       })
+      callApi('', this.request)
     }
   },
   activated () {
@@ -299,5 +325,9 @@ export default {
 .player-layout .stat-pane 
   overflow auto
   padding-bottom 20px
+.player-layout .injury
+  display inline
+  font-size 16px
+  font-weight 300
 </style>
 

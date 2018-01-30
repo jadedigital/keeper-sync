@@ -49,7 +49,8 @@ export default {
         'playerScores',
         'currentWeek',
         'topStarters',
-        'topDrops'
+        'topDrops',
+        'injuries'
       ]
       loadData(data)
     }

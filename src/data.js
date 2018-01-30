@@ -22,6 +22,12 @@ export function callApi (week, types) {
     DETAILS: 1,
     JSON: 1
   }
+  var injuriesParams = {
+    cookie: data[leagueId].cookie,
+    host: data[leagueId].host,
+    TYPE: 'injuries',
+    JSON: 1
+  }
   var leagueParams = {
     cookie: data[leagueId].cookie,
     host: data[leagueId].host,
@@ -147,6 +153,11 @@ export function callApi (week, types) {
       {
         type: 'pointsAllowed',
         params: pointsAllowedParams,
+        timeOut: 3600000
+      },
+      {
+        type: 'injuries',
+        params: injuriesParams,
         timeOut: 3600000
       }
     ]

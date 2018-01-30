@@ -16,6 +16,7 @@ export const topStarters = state => state.topStarters
 export const fullNflSchedule = state => state.fullNflSchedule
 export const liveScoring = state => state.liveScoring
 export const pointsAllowed = state => state.pointsAllowed
+export const injuries = state => state.injuries
 export const playerScores = state => state.playerScores
 export const dummyToolbar = state => state.dummyToolbar
 export const currentWeek = state => state.currentWeek
@@ -29,6 +30,7 @@ export const messageBoardThread = state => state.messageBoardThread
 export const leagueTab = state => state.leagueTab
 export const matchupTeams = state => state.matchupTeams
 export const displayTeam = state => state.displayTeam
+export const playerStatus = state => state.playerStatus
 export const endWeek = state => {
   return state.league.endWeek
 }

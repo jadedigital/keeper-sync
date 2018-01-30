@@ -415,6 +415,18 @@ export default {
   padding 0
   line-height 2rem
   color #0c0c0c
+.team .injury
+  display inline
+.team .team-player-name
+  display inline
+  overflow hidden 
+  -webkit-box-orient vertical
+.team-layout .injury
+  display inline
+.team-layout .team-player-name
+  display inline
+  overflow hidden 
+  -webkit-box-orient vertical
 .matchup .all-matchups .q-list
   border 0
   border-bottom solid 1px rgba(0,0,0,0.1)
