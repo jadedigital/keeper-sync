@@ -399,34 +399,6 @@ export default {
   box-shadow 0 1px 5px rgba(0,0,0,.2), 0 2px 2px rgba(0,0,0,.14), 0 3px 1px -2px rgba(0,0,0,.12)
 .league .msg-board
   height calc(100vh - 162px)
-.team .draft-picks .q-item
-  font-size 14px
-  background-color #fff
-.team .draft-picks .q-item-label
-  font-weight 500
-.team .draft-picks .q-item-sublabel
-  font-weight 300
-.team .draft-picks .q-list
-  margin 0
-  padding 0
-.team .draft-picks .q-list-header
-  font-size 14px
-  font-weight 300
-  padding 0
-  line-height 2rem
-  color #0c0c0c
-.team .injury
-  display inline
-.team .team-player-name
-  display inline
-  overflow hidden 
-  -webkit-box-orient vertical
-.team-layout .injury
-  display inline
-.team-layout .team-player-name
-  display inline
-  overflow hidden 
-  -webkit-box-orient vertical
 .matchup .all-matchups .q-list
   border 0
   border-bottom solid 1px rgba(0,0,0,0.1)

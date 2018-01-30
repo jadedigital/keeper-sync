@@ -28,8 +28,11 @@
             >
               <q-item-main 
                 :label="'Round ' + pick.round"
-                :sublabel="'Original owner: ' + teamLookup[pick.originalPickFor].name" 
-              />
+              >
+                <q-item-tile class="owner">
+                  Original owner: <span>{{teamLookup[pick.originalPickFor].name}}</span>
+                </q-item-tile>
+              </q-item-main>
             </q-item>
           </q-list>
         </q-tab-pane>
@@ -47,6 +50,7 @@ import {
   QItem,
   QItemSide,
   QItemMain,
+  QItemTile,
   QItemSeparator,
   QRouteTab,
   QTabs,
@@ -75,6 +79,7 @@ export default {
     QItem,
     QItemSide,
     QItemMain,
+    QItemTile,
     QItemSeparator,
     QRouteTab,
     QTabs,
@@ -235,3 +240,36 @@ export default {
   }
 }
 </script>
+
+<style lang="stylus">
+@import '~variables'
+.team .draft-picks .q-item
+  font-size 14px
+  background-color #fff
+.team .draft-picks .q-item-label
+  color $primary
+.team .draft-picks .owner span
+  font-weight 500
+.team .draft-picks .q-list
+  margin 0
+  padding 0
+.team .draft-picks .q-list-header
+  font-size 14px
+  font-weight 300
+  padding 0
+  line-height 2rem
+  color #0c0c0c
+.team .injury
+  display inline
+.team .team-player-name
+  display inline
+  overflow hidden 
+  -webkit-box-orient vertical
+.team-layout .injury
+  display inline
+.team-layout .team-player-name
+  display inline
+  overflow hidden 
+  -webkit-box-orient vertical
+</style>
+

@@ -11,7 +11,7 @@
       </q-btn>
 
       <q-toolbar-title 
-        :style="'color: rgba(255, 255, 255,' + opacity + ')'"
+        :style="'color: rgba(255, 255, 255,' + (opacity - (1.0 - opacity)) + ')'"
       >
         {{playerLookup[activePlayer].name.split(', ').reverse().join(' ')}}
         <span slot="subtitle">
@@ -25,7 +25,7 @@
         <div ref="playerBg" class="player-bg-pic" :style="{background: 'url(./statics/' + teamMap[playerLookup[activePlayer].team] + '.svg) no-repeat center'}">
           <div class="bg-gradient-opacity">
             <div class="player-info text-white row reverse items-center">
-              <ul class="col-6 player-info-list">
+              <ul class="col-6 player-info-list" :style="{'opacity': 1 - opacity}">
                 <li>Team: <span>{{playerLookup[activePlayer].team}} #{{playerLookup[activePlayer].jersey}}</span></li>
                 <li>HT/WT: <span>{{parseInt(playerLookup[activePlayer].height / 12)}}'{{playerLookup[activePlayer].height % 12}}"/{{playerLookup[activePlayer].weight}}lbs</span></li>
                 <li>Age: <span>{{(new Date(Date.now()).getFullYear() - new Date(playerLookup[activePlayer].birthdate * 1000).getFullYear())}}</span></li>
@@ -34,12 +34,12 @@
                 <li>Owner: <span>{{playerStatus.status}}</span></li>
               </ul>
               <div class="col-6">
-                <div class="row justify-center">
+                <div class="row justify-center" :style="{'opacity': 1 - opacity}">
                   <img class="player-img" :src="'https://sports.cbsimg.net/images/football/nfl/players/100x100/' + playerLookup[activePlayer].cbs_id + '.jpg'" alt="">
                 </div>
               </div>
             </div>
-            <div class="player-name-main q-toolbar-title text-white">
+            <div class="player-name-main q-toolbar-title text-white" :style="{'opacity': 1 - opacity}">
               {{playerLookup[activePlayer].name.split(', ').reverse().join(' ')}} <b-injury class="injury" :player="activePlayer" details></b-injury>
               <div class="q-toolbar-subtitle">{{playerLookup[activePlayer].position}}</div>
             </div>
@@ -54,7 +54,7 @@
               color="primary" 
               size="40px" 
               class="absolute-center" 
-              style="margin-left: -20px;"
+              style="margin-left: -20px; margin-top: 100px;"
             />
             <q-list 
               v-if="dataLoaded"
@@ -119,7 +119,33 @@
         </q-tabs>
       </div>
     </div>
-
+    <q-fixed-position corner="bottom-right" :offset="[18, 18]">
+      <q-btn
+        v-if="faLookup[activePlayer]"
+        round
+        icon="add"
+        class="bg-green-13 shadow-5 text-white"
+      />
+      <q-fab
+        v-if="teamLookup[myTeam].name === playerStatus.status"
+        direction="left"
+        icon="more_horiz"
+        color="primary"
+      >
+        <q-fab-action
+          color="tertiary"
+          icon="remove"
+        />
+        <button class="q-btn row inline flex-center q-focusable q-hoverable relative-position q-btn-round q-btn-small bg-green-13 text-white"><div class="desktop-only q-focus-helper"></div><span class="q-btn-inner row col flex-center">TS</span></button>
+        <button class="q-btn row inline flex-center q-focusable q-hoverable relative-position q-btn-round q-btn-small bg-primary text-white"><div class="desktop-only q-focus-helper"></div><span class="q-btn-inner row col flex-center">IR</span></button>
+      </q-fab>
+      <q-btn
+        v-if="!faLookup[activePlayer] && teamLookup[myTeam].name !== playerStatus.status"
+        round
+        icon="swap_horiz"
+        class="bg-primary shadow-5 text-white"
+      />
+    </q-fixed-position>
   </q-layout>
 </template>
 
@@ -130,6 +156,8 @@ import {
   QToolbar,
   QToolbarTitle,
   QBtn,
+  QFab,
+  QFabAction,
   QIcon,
   QList,
   QListHeader,
@@ -160,6 +188,8 @@ export default {
     QToolbar,
     QToolbarTitle,
     QBtn,
+    QFab,
+    QFabAction,
     QIcon,
     QList,
     QListHeader,
@@ -199,10 +229,23 @@ export default {
       activePlayer: 'activePlayer',
       teamMap: 'teamMap',
       league: 'league',
-      playerStatus: 'playerStatus'
+      playerStatus: 'playerStatus',
+      freeAgents: 'freeAgents'
     }),
     playerLookup () {
       var array = this.players.player
+      return this.lookup(array, 'id')
+    },
+    faLookup () {
+      var array = this.freeAgents.leagueUnit.player
+      return this.lookup(array, 'id')
+    },
+    myTeam () {
+      var team = this.leagueData[this.activeLeague].teamId
+      return team
+    },
+    teamLookup () {
+      var array = this.league.franchises.franchise
       return this.lookup(array, 'id')
     },
     playerStatsHeader () {
@@ -284,6 +327,9 @@ export default {
   activated () {
     this.dataLoaded = false
     this.statsLoaded = false
+    if (!this.activePlayer) {
+      this.$router.push('/')
+    }
     if (this.activePlayer !== this.player) {
       this.fetchData()
     }
