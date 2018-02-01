@@ -11,7 +11,7 @@
       </div>
       <div v-if="dataLoaded" class="contain-main">
         <q-tab-pane class="no-pad no-border" name="tab-1">
-          <b-team/>
+          <b-team :thisTeam="myTeam"/>
         </q-tab-pane>
         <q-tab-pane name="tab-2" class="draft-picks no-border no-padding">
           <q-list
@@ -228,15 +228,7 @@ export default {
     }
   },
   created () {
-    this.$store.commit('SET_DATA', {type: 'displayTeam', data: this.myTeam})
     setTimeout(this.fetchData, 500)
-  },
-  activated () {
-    this.$store.commit('SET_DATA', {type: 'displayTeam', data: this.myTeam})
-    setTimeout(this.setTeam, 500)
-  },
-  deactivated () {
-    this.dataLoaded = false
   }
 }
 </script>

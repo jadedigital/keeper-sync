@@ -119,7 +119,7 @@
         </q-tabs>
       </div>
     </div>
-    <q-fixed-position corner="bottom-right" :offset="[18, 18]">
+    <div class="fixed-fab">
       <q-btn
         v-if="faLookup[activePlayer]"
         round
@@ -132,12 +132,9 @@
         icon="more_horiz"
         color="primary"
       >
-        <q-fab-action
-          color="tertiary"
-          icon="remove"
-        />
-        <button class="q-btn row inline flex-center q-focusable q-hoverable relative-position q-btn-round q-btn-small bg-green-13 text-white"><div class="desktop-only q-focus-helper"></div><span class="q-btn-inner row col flex-center">TS</span></button>
-        <button class="q-btn row inline flex-center q-focusable q-hoverable relative-position q-btn-round q-btn-small bg-primary text-white"><div class="desktop-only q-focus-helper"></div><span class="q-btn-inner row col flex-center">IR</span></button>
+        <button class="q-btn row inline flex-center q-focusable q-hoverable relative-position q-btn-round q-btn-small bg-light-blue-14 text-white"><div class="desktop-only q-focus-helper"></div><span class="q-btn-inner row col flex-center">TS</span></button>
+        <button class="q-btn row inline flex-center q-focusable q-hoverable relative-position q-btn-round q-btn-small bg-green-14 text-white"><div class="desktop-only q-focus-helper"></div><span class="q-btn-inner row col flex-center">IR</span></button>
+        <button class="q-btn row inline flex-center q-focusable q-hoverable relative-position q-btn-round q-btn-small bg-tertiary text-white"><div class="desktop-only q-focus-helper"></div><span class="q-btn-inner row col flex-center">DROP</span></button>
       </q-fab>
       <q-btn
         v-if="!faLookup[activePlayer] && teamLookup[myTeam].name !== playerStatus.status"
@@ -145,7 +142,7 @@
         icon="swap_horiz"
         class="bg-primary shadow-5 text-white"
       />
-    </q-fixed-position>
+    </div>
   </q-layout>
 </template>
 
@@ -375,5 +372,10 @@ export default {
   display inline
   font-size 16px
   font-weight 300
+.player-layout .fixed-fab
+  position fixed
+  bottom 0
+  right 0
+  margin 18px
 </style>
 

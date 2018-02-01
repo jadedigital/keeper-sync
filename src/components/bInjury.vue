@@ -1,15 +1,29 @@
 <template>
-  <div>
-    <span v-if="!details">{{injuryLookup[player] ? '(' + map[injuryLookup[player].status] + ')' : ''}}</span>
-    <span v-if="details">{{injuryLookup[player] ? '(' + map[injuryLookup[player].status] + ' - ' + injuryLookup[player].details.trim() + ')' : ''}}</span>
+  <div v-if="injuryLookup[player]">
+    <span v-if="!details">
+      <q-chip color="tertiary">
+        {{map[injuryLookup[player].status]}}
+      </q-chip>
+    </span>
+    <span v-if="details">
+      <q-chip color="tertiary">
+        {{map[injuryLookup[player].status] + ' - ' + injuryLookup[player].details.trim()}}
+      </q-chip>
+    </span>
   </div>
 </template>
 
 <script>
+import {
+  QChip
+} from 'quasar'
 import { mapGetters } from 'vuex'
 
 export default {
   name: 'BInjury',
+  components: {
+    QChip
+  },
   props: {
     player: String,
     details: Boolean

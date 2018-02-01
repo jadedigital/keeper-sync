@@ -74,9 +74,9 @@ const router = new VueRouter({
         { path: 'callback', component: load('Callback') },
         { path: '/login', component: load('login') },
         {
-          path: 'team',
-          component: load('teamOther'),
-          name: 'teamOther',
+          path: 'team/:id',
+          component: load('teamOtherID'),
+          name: 'teamOtherID',
           meta: { requiresAuth: true }
         },
         {

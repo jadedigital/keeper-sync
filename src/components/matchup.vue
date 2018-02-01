@@ -136,7 +136,7 @@ export default {
   data () {
     return {
       response: null,
-      dataLoaded: true,
+      dataLoaded: false,
       newWeek: '',
       modalPlayer: '',
       search: '',
@@ -218,6 +218,7 @@ export default {
       else {
         this.byeWeek = false
       }
+      this.dataLoaded = true
     },
     lookup (array, key) {
       var lookup = {}
@@ -250,7 +251,6 @@ export default {
       callApi('', request)
         .then((response) => {
           this.setTeams()
-          this.dataLoaded = true
         })
     },
     goToMatchup (match) {
@@ -268,7 +268,7 @@ export default {
   },
   created () {
     this.weekSelect = parseInt(this.liveScoring.week)
-    this.setTeams()
+    setTimeout(this.setTeams, 500)
   },
   activated () {
     setTimeout(this.setTeams, 500)

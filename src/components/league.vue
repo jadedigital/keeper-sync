@@ -334,8 +334,7 @@ export default {
     },
     goToTeam (team) {
       this.selectedTeam = team
-      this.$store.commit('SET_DATA', {type: 'displayTeam', data: team})
-      this.$router.push('/team')
+      this.$router.push('/team/' + team)
     },
     fetchStandings () {
       var data = [

@@ -85,23 +85,11 @@ import {
   ActionSheet,
   QBtn,
   QList,
-  QListHeader,
   QItem,
   QItemSide,
-  QItemMain,
-  QItemSeparator,
-  QRouteTab,
-  QTabs,
-  QTab,
-  QTabPane,
   QCard,
-  QPullToRefresh,
   QCardTitle,
-  QCardSeparator,
-  QToolbar,
-  QSearch,
-  QIcon,
-  QSpinner
+  QCardSeparator
 } from 'quasar'
 import { mapGetters } from 'vuex'
 import bInjury from './bInjury.vue'
@@ -111,31 +99,19 @@ export default {
   components: {
     QBtn,
     QList,
-    QListHeader,
     QItem,
     QItemSide,
-    QItemMain,
-    QItemSeparator,
-    QRouteTab,
-    QTabs,
-    QTab,
-    QTabPane,
-    QPullToRefresh,
     QCard,
     QCardTitle,
     QCardSeparator,
-    QToolbar,
-    QSearch,
-    QIcon,
-    QSpinner,
     bInjury
+  },
+  props: {
+    thisTeam: String
   },
   data () {
     return {
-      response: null,
-      dataLoaded: false,
-      newWeek: '',
-      search: ''
+      response: null
     }
   },
   computed: {
@@ -153,14 +129,6 @@ export default {
       teamMap: 'teamMap',
       displayTeam: 'displayTeam'
     }),
-    thisTeam () {
-      var team = this.displayTeam
-      return team
-    },
-    myTeam () {
-      var team = this.leagueData[this.activeLeague].teamId
-      return team
-    },
     rosterLookup () {
       var array = this.rosters.franchise
       return this.lookup(array, 'id')
