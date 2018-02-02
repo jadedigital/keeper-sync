@@ -175,9 +175,11 @@ export function callApi (week, types) {
         params: el.params
       })
         .then((response) => {
+          console.log(el)
+          console.log(el.params.TYPE)
           var responseData = JSON.parse(response.data)
-          LocalStorage.set(el.type, responseData[el.type])
-          store.commit('SET_DATA', {type: el.type, data: responseData[el.type]})
+          LocalStorage.set(el.type, responseData[el.params.TYPE])
+          store.commit('SET_DATA', {type: el.type, data: responseData[el.params.TYPE]})
           var key = el.type + '_time'
           var time = Date.now()
           LocalStorage.set(key, time)

@@ -76,7 +76,8 @@ export default {
     return {
       response: null,
       dataLoaded: false,
-      thisTeam: ''
+      thisTeam: '',
+      lastTeam: ''
     }
   },
   computed: {
@@ -117,7 +118,13 @@ export default {
   },
   activated () {
     this.thisTeam = this.$route.params.id
-    setTimeout(this.setTeam, 700)
+    if (this.thisTeam !== this.lastTeam) {
+      setTimeout(this.setTeam, 700)
+    }
+    else {
+      this.setTeam()
+    }
+    this.lastTeam = this.$route.params.id
   },
   deactivated () {
     this.dataLoaded = false

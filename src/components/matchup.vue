@@ -8,6 +8,7 @@
       <div class="contain-main">
         <q-dialog-select
           align="center"
+          title="Select Week"
           v-model="weekSelect"
           :options="weekOptions"
           @change="changeWeek(weekSelect)"
@@ -27,7 +28,7 @@
           </div>
           <div v-if="dataLoaded">
             <q-list
-              v-for="(match, key) in liveScoring.matchup"
+              v-for="(match, key) in displayScoring.matchup"
               :key="key"
               @click="goToMatchup(match.franchise)"
             >
@@ -47,10 +48,10 @@
                 </q-item-side>
               </q-item>
             </q-list>
-            <div v-if="liveScoring.franchise" class="separator-title text-center border-bottom uppercase">Bye Week</div>
+            <div v-if="displayScoring.franchise" class="separator-title text-center border-bottom uppercase">Bye Week</div>
             <q-list class="bye">
               <q-item 
-                v-for="(match, key) in liveScoring.franchise"
+                v-for="(match, key) in displayScoring.franchise"
                 :key="key"
                 class="border-bottom"
               >
@@ -150,6 +151,7 @@ export default {
       leagueData: 'leagueData',
       league: 'league',
       liveScoring: 'liveScoring',
+      matchupLiveScoring: 'matchupLiveScoring',
       matchupTeams: 'matchupTeams',
       currentWeek: 'currentWeek',
       leagueStandings: 'leagueStandings'
@@ -166,9 +168,17 @@ export default {
       var array = this.leagueStandings.franchise
       return this.lookup(array, 'id')
     },
+    displayScoring () {
+      if (this.matchupLiveScoring) {
+        return this.matchupLiveScoring
+      }
+      else {
+        return this.liveScoring
+      }
+    },
     winners () {
       var obj = {}
-      this.liveScoring.matchup.forEach(el => {
+      this.displayScoring.matchup.forEach(el => {
         parseFloat(el.franchise[0].score) > parseFloat(el.franchise[1].score) ? obj[el.franchise[0].id] = true : obj[el.franchise[0].id] = false
         parseFloat(el.franchise[0].score) < parseFloat(el.franchise[1].score) ? obj[el.franchise[1].id] = true : obj[el.franchise[1].id] = false
       })
@@ -197,7 +207,7 @@ export default {
       var myTeam = this.leagueData[this.activeLeague].teamId
       var array = []
       var opponent = ''
-      this.liveScoring.matchup.forEach((el) => {
+      this.displayScoring.matchup.forEach((el) => {
         el.franchise.forEach((el2) => {
           if (el2.id === myTeam) {
             array.push(el)
@@ -232,7 +242,7 @@ export default {
     },
     changeWeek (week) {
       this.dataLoaded = false
-      var liveScoringParams = {
+      var matchupLiveScoringParams = {
         cookie: this.leagueData[this.activeLeague].cookie,
         host: this.leagueData[this.activeLeague].host,
         TYPE: 'liveScoring',
@@ -243,8 +253,8 @@ export default {
       }
       var request = [
         {
-          type: 'liveScoring',
-          params: liveScoringParams,
+          type: 'matchupLiveScoring',
+          params: matchupLiveScoringParams,
           timeOut: 0
         }
       ]
@@ -267,7 +277,7 @@ export default {
     }
   },
   created () {
-    this.weekSelect = parseInt(this.liveScoring.week)
+    this.weekSelect = parseInt(this.displayScoring.week)
     setTimeout(this.setTeams, 500)
   },
   activated () {
@@ -325,6 +335,8 @@ export default {
   font-size 12px
   font-weight 300
   white-space nowrap
+.matchup-list .team-matchup span
+  font-weight 500
 .position-list .positions
   height 48px
   text-align center

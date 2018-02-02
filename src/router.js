@@ -80,7 +80,7 @@ const router = new VueRouter({
           meta: { requiresAuth: true }
         },
         {
-          path: 'player',
+          path: 'player/:id',
           component: load('player'),
           name: 'player',
           meta: { requiresAuth: true }

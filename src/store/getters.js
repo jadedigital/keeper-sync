@@ -15,6 +15,7 @@ export const topDrops = state => state.topDrops
 export const topStarters = state => state.topStarters
 export const fullNflSchedule = state => state.fullNflSchedule
 export const liveScoring = state => state.liveScoring
+export const matchupLiveScoring = state => state.matchupLiveScoring
 export const pointsAllowed = state => state.pointsAllowed
 export const injuries = state => state.injuries
 export const playerScores = state => state.playerScores

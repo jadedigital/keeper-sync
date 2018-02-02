@@ -10,7 +10,8 @@
         <q-icon @click="goBack" name="arrow_back" />
       </q-btn>
 
-      <q-toolbar-title 
+      <q-toolbar-title
+        v-if="activePlayer"
         :style="'color: rgba(255, 255, 255,' + (opacity - (1.0 - opacity)) + ')'"
       >
         {{playerLookup[activePlayer].name.split(', ').reverse().join(' ')}}
@@ -22,7 +23,7 @@
 
     <div style="height: calc(100vh); background-color: #fff;">
       <div class="player-modal player-header">
-        <div ref="playerBg" class="player-bg-pic" :style="{background: 'url(./statics/' + teamMap[playerLookup[activePlayer].team] + '.svg) no-repeat center'}">
+        <div v-if="activePlayer" ref="playerBg" class="player-bg-pic" :style="{background: 'url(./statics/' + teamMap[playerLookup[activePlayer].team] + '.svg) no-repeat center'}">
           <div class="bg-gradient-opacity">
             <div class="player-info text-white row reverse items-center">
               <ul class="col-6 player-info-list" :style="{'opacity': 1 - opacity}">
@@ -31,7 +32,7 @@
                 <li>Age: <span>{{(new Date(Date.now()).getFullYear() - new Date(playerLookup[activePlayer].birthdate * 1000).getFullYear())}}</span></li>
                 <li>Exp: <span>{{new Date(Date.now()).getFullYear() - playerLookup[activePlayer].draft_year}}</span><span v-if="playerLookup[activePlayer].status === 'R'">({{playerLookup[activePlayer].status}})</span></li>
                 <li>College: <span>{{playerLookup[activePlayer].college}}</span></li>
-                <li>Owner: <span v-html="playerStatus.status"></span></li>
+                <li>Owner: <span v-if="playerStatus" v-html="playerStatus.status"></span></li>
               </ul>
               <div class="col-6">
                 <div class="row justify-center" :style="{'opacity': 1 - opacity}">
@@ -213,7 +214,8 @@ export default {
       statsLoaded: false,
       playerNews: [],
       playerStats: [],
-      player: '',
+      activePlayer: '',
+      lastPlayer: '',
       opacity: 0,
       headerShadow: false
     }
@@ -223,7 +225,6 @@ export default {
       players: 'players',
       leagueData: 'leagueData',
       activeLeague: 'activeLeague',
-      activePlayer: 'activePlayer',
       teamMap: 'teamMap',
       league: 'league',
       playerStatus: 'playerStatus',
@@ -323,19 +324,17 @@ export default {
     }
   },
   activated () {
+    this.activePlayer = this.$route.params.id
     this.dataLoaded = false
     this.statsLoaded = false
-    if (!this.activePlayer) {
-      this.$router.push('/')
-    }
-    if (this.activePlayer !== this.player) {
+    if (this.activePlayer !== this.lastPlayer) {
       this.fetchData()
     }
     else {
       this.dataLoaded = true
       this.statsLoaded = true
     }
-    this.player = this.activePlayer
+    this.lastPlayer = this.$route.params.id
     this.opacity = 0
     this.headerShadow = false
   },

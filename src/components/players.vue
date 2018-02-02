@@ -12,15 +12,15 @@
           icon="search"
           float-label="Filter by name"
         />
-        <q-select
-          multiple
-          chips
-          @focus="overlay = true"
-          v-model="positionFilter"
-          :options="selectOptions"
-          title="Positions"
-          float-label="Positions"
-        />
+        <div
+          @click="showDialog"
+          class="position-filter"
+        >
+          <q-chips-input 
+            v-model="positionFilter" 
+            float-label="Positions"
+          />
+        </div>
         <q-select
           v-model="statusFilter"
           float-label="Status"
@@ -55,7 +55,10 @@
             >
               <div class="row text-left col-pad name-row">
                 <q-item separator class="col-12">
-                  <q-btn round small outline color="primary" style="font-size: 14px; font-weight:400; margin-right: 20px;" class="q-item-avatar">+</q-btn>
+                  <q-btn v-if="faLookup[player.id].status !== 'locked'" round small outline color="primary" class="q-item-avatar action-btn">
+                    <q-icon name="add" color="primary" size="18px"></q-icon>
+                  </q-btn>
+                  <q-icon v-if="faLookup[player.id].status === 'locked'" class="q-item-avatar action-btn" name="lock_outline" color="primary" size="28px"></q-icon>
                   <q-item-side v-if="playerLookup[player.id].position !== 'Def'" :avatar="'https://sports.cbsimg.net/images/football/nfl/players/100x100/' + playerLookup[player.id].cbs_id + '.jpg'" />
                   <q-item-side v-if="playerLookup[player.id].position === 'Def'" :avatar="'./statics/' + teamMap[playerLookup[player.id].team] + '.svg'" />
                   <div class="q-item-main q-item-section team-players">
@@ -113,6 +116,11 @@ import {
   QSelect,
   QPullToRefresh,
   QSpinner,
+  QIcon,
+  QInput,
+  QField,
+  QChipsInput,
+  Dialog,
   LocalStorage
 } from 'quasar'
 import { mapGetters } from 'vuex'
@@ -137,8 +145,12 @@ export default {
     QSearch,
     QCollapsible,
     QSelect,
+    QInput,
+    QField,
+    QChipsInput,
     QPullToRefresh,
-    QSpinner
+    QSpinner,
+    QIcon
   },
   data () {
     return {
@@ -187,6 +199,9 @@ export default {
     myTeam () {
       var team = this.leagueData[this.activeLeague].teamId
       return team
+    },
+    positionFilterTransform () {
+      return this.positionFilter.map(item => item.toLowerCase())
     },
     playerLookup () {
       var array = this.players.player
@@ -254,8 +269,8 @@ export default {
       if (this.colSortKey) {
         list = this.order(list, this.colSortKey)
       }
-      if (this.positionFilter[0]) {
-        list = this.filter(list, 'position', this.positionFilter)
+      if (this.positionFilterTransform[0]) {
+        list = this.filter(list, 'position', this.positionFilterTransform)
       }
       if (this.statusFilter === 'fa') {
         list = this.filter(list, 'status', ['fa'])
@@ -282,7 +297,7 @@ export default {
       this.league.starters.position.forEach(el => {
         var obj = {}
         obj['label'] = el.name
-        obj['value'] = el.name.toLowerCase()
+        obj['value'] = el.name
         array.push(obj)
       })
       return array
@@ -295,8 +310,7 @@ export default {
     },
     goToPlayer (id) {
       this.selectedPlayer = id
-      this.$store.commit('SET_DATA', {type: 'activePlayer', data: id})
-      this.$router.push('/player')
+      this.$router.push('/player/' + id)
     },
     lookup (array, key) {
       if (!key) {
@@ -387,6 +401,29 @@ export default {
         .then((response) => {
           done()
         })
+    },
+    showDialog () {
+      Dialog.create({
+        title: 'Positions',
+        message: 'Filter player list by position.',
+        form: {
+          positions: {
+            type: 'checkbox',
+            model: this.positionFilter,
+            inline: false, // optional
+            items: this.selectOptions
+          }
+        },
+        buttons: [
+          'Cancel',
+          {
+            label: 'Ok',
+            handler: (data) => {
+              this.positionFilter = data.positions
+            }
+          }
+        ]
+      })
     },
     loadPlayersDetails () {
       var list = []
@@ -518,4 +555,6 @@ export default {
 }
 .players .q-collapsible .q-item-division
   padding 5px 16px
+.players .action-btn
+  margin-right 20px
 </style>

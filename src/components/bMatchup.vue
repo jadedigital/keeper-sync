@@ -165,6 +165,7 @@ export default {
       players: 'players',
       league: 'league',
       liveScoring: 'liveScoring',
+      matchupLiveScoring: 'matchupLiveScoring',
       projectedScores: 'projectedScores',
       fullNflSchedule: 'fullNflSchedule',
       pointsAllowed: 'pointsAllowed',
@@ -188,6 +189,14 @@ export default {
     projectedLookup () {
       var array = this.projectedScores.playerScore
       return this.lookup(array, 'id')
+    },
+    displayScoring () {
+      if (this.matchupLiveScoring) {
+        return this.matchupLiveScoring
+      }
+      else {
+        return this.liveScoring
+      }
     },
     matchupLookup () {
       var days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat']
@@ -219,7 +228,7 @@ export default {
     },
     allScoring () {
       var array = []
-      this.liveScoring.matchup.forEach((el) => {
+      this.displayScoring.matchup.forEach((el) => {
         el.franchise.forEach((el2) => {
           array.push(el2)
         })
@@ -439,13 +448,11 @@ export default {
       }
       return lookup
     },
-    goToTeam (team) {
-      this.$store.commit('SET_DATA', {type: 'displayTeam', data: team})
-      this.$router.push('/team')
+    goToTeam (id) {
+      this.$router.push('/team/' + id)
     },
     goToPlayer (id) {
-      this.$store.commit('SET_DATA', {type: 'activePlayer', data: id})
-      this.$router.push('/player')
+      this.$router.push('/player/' + id)
     },
     matchupPointsUtil (pos) {
       var array = []

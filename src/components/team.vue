@@ -6,8 +6,8 @@
       <q-tab slot="title" name="tab-2" label="Draft Picks" />
       <q-tab count="2" slot="title" name="tab-3" label="Pending Moves"/>
       <!-- Targets -->
-      <div v-if="!dataLoaded" style="height: calc(100vh - 112px);">  
-        <q-spinner color="secondary" size="40px" class="absolute-center" style="margin-left: -20px;"/>
+      <div v-if="!dataLoaded" style="height: calc(100vh - 112px);">
+        <b-spinner class="absolute-center"/>
       </div>
       <div v-if="dataLoaded" class="contain-main">
         <q-tab-pane class="no-pad no-border" name="tab-1">
@@ -63,12 +63,12 @@ import {
   QToolbar,
   QSearch,
   QIcon,
-  QSpinner,
   LocalStorage
 } from 'quasar'
 import { mapGetters } from 'vuex'
 import { callApi, loadData } from '../data'
 import bTeam from './bTeam.vue'
+import bSpinner from './bSpinner.vue'
 
 export default {
   name: 'team',
@@ -92,8 +92,8 @@ export default {
     QToolbar,
     QSearch,
     QIcon,
-    QSpinner,
-    bTeam
+    bTeam,
+    bSpinner
   },
   data () {
     return {
