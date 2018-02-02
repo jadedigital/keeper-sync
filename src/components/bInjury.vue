@@ -2,12 +2,12 @@
   <div v-if="injuryLookup[player]">
     <span v-if="!details">
       <q-chip color="tertiary">
-        {{map[injuryLookup[player].status]}}
+        {{injuryMap(injuryLookup[player].status)}}
       </q-chip>
     </span>
     <span v-if="details">
       <q-chip color="tertiary">
-        {{map[injuryLookup[player].status] + ' - ' + injuryLookup[player].details.trim()}}
+        {{injuryMap(injuryLookup[player].status) + ' - ' + injuryLookup[player].details.trim()}}
       </q-chip>
     </span>
   </div>
@@ -56,6 +56,21 @@ export default {
         lookup[array[i][key]] = array[i]
       }
       return lookup
+    },
+    injuryMap (injury) {
+      var output = ''
+      var map = {
+        'Questionable': 'Q',
+        'Suspended': 'SUS',
+        'Out': 'O'
+      }
+      if (injury.toLowerCase().startsWith('ir')) {
+        output = 'IR'
+      }
+      else {
+        output = map[injury]
+      }
+      return output
     }
   }
 }

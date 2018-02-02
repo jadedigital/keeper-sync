@@ -197,7 +197,33 @@ export function callApi (week, types) {
 }
 
 export function loadData (data) {
-  data.forEach(el => {
+  var dataArray = []
+  if (data) {
+    dataArray = data
+  }
+  else {
+    dataArray = [
+      'leagueData',
+      'activeLeague',
+      'rosters',
+      'players',
+      'leagueStandings',
+      'freeAgents',
+      'league',
+      'projectedScores',
+      'topAdds',
+      'topOwns',
+      'fullNflSchedule',
+      'liveScoring',
+      'pointsAllowed',
+      'playerScores',
+      'currentWeek',
+      'topStarters',
+      'topDrops',
+      'injuries'
+    ]
+  }
+  dataArray.forEach(el => {
     var timecheck = el + '_time'
     if (LocalStorage.has(timecheck)) {
       console.log('loading ' + el + ' data from cache')

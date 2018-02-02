@@ -117,7 +117,7 @@ export default {
   },
   activated () {
     this.thisTeam = this.$route.params.id
-    setTimeout(this.setTeam, 0)
+    setTimeout(this.setTeam, 700)
   },
   deactivated () {
     this.dataLoaded = false

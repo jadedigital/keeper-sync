@@ -31,7 +31,7 @@
                 <li>Age: <span>{{(new Date(Date.now()).getFullYear() - new Date(playerLookup[activePlayer].birthdate * 1000).getFullYear())}}</span></li>
                 <li>Exp: <span>{{new Date(Date.now()).getFullYear() - playerLookup[activePlayer].draft_year}}</span><span v-if="playerLookup[activePlayer].status === 'R'">({{playerLookup[activePlayer].status}})</span></li>
                 <li>College: <span>{{playerLookup[activePlayer].college}}</span></li>
-                <li>Owner: <span>{{playerStatus.status}}</span></li>
+                <li>Owner: <span v-html="playerStatus.status"></span></li>
               </ul>
               <div class="col-6">
                 <div class="row justify-center" :style="{'opacity': 1 - opacity}">
@@ -318,6 +318,7 @@ export default {
         this.playerStats = response.data
         this.statsLoaded = true
       })
+      console.log(this.request)
       callApi('', this.request)
     }
   },
