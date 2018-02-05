@@ -1,30 +1,43 @@
 <template>
-  <q-layout ref="childLayout" view="hHh lpr fff" class="team-layout">
-    <q-toolbar slot="header">
+  <q-layout 
+    @scroll="scrollHandler"
+    ref="childLayout"
+    view="hHh lpr fff"
+    :class="[headerShadow ? 'header-shadow' : 'no-header-shadow', 'team-layout']"
+  >
+    <q-toolbar :style="'background: rgba(61, 90, 254,' + opacity + ')'" slot="header">
       <q-btn flat>
         <q-icon @click="goBack" name="arrow_back" />
       </q-btn>
 
-      <q-toolbar-title>
-        {{teamLookup[thisTeam].name}}
+      <q-toolbar-title
+        :style="'color: rgba(255, 255, 255,' + opacity + ')'"
+      >
+        {{thisTeam ? teamLookup[thisTeam].name : ''}}
         <span slot="subtitle">
           {{league.name}}
         </span>
       </q-toolbar-title>
     </q-toolbar>
+    <q-card ref="teamHeader" class="compact-card bg-primary team-header">
+      <div class="card-main bg-primary">
+        <div class="row">
+          <div class="col-6">
+            <div class="row justify-center" :style="{'opacity': 1 - opacity}">
+              <img class="team-img" :src="teamLookup[thisTeam].icon ? teamLookup[thisTeam].icon : './statics/avatar.jpg'" alt="">
+            </div>
+          </div>
+          <div class="col-6"></div>
+        </div>
+        <q-item v-if="thisTeam">
+          <q-item-main class="text-white" :label="teamLookup[thisTeam].name" :sublabel="teamLookup[thisTeam].owner_name" />
+        </q-item>
+      </div>
+    </q-card>
     <q-pull-to-refresh :handler="refresher">
       <div class="contain-main">
-        <q-card class="compact-card bg-white">
-          <div class="card-main bg-white">
-            <q-item separator>
-              <q-item-side v-if="teamLookup[thisTeam].icon" :avatar="teamLookup[thisTeam].icon"/>
-              <q-item-side v-else :avatar="'./statics/avatar.jpg'"/>
-              <q-item-main :label="teamLookup[thisTeam].name" :sublabel="teamLookup[thisTeam].owner_name" />
-            </q-item>
-          </div>
-        </q-card>
         <div style="height: calc(100vh - 50px); background-color: #fff;"> 
-          <b-team v-if="dataLoaded"/>
+          <b-team v-if="dataLoaded && thisTeam" :thisTeam="thisTeam"/>
           <q-spinner 
             v-if="!dataLoaded" 
             color="secondary" 
@@ -42,28 +55,14 @@
 import {
   QLayout,
   QBtn,
-  QList,
-  QListHeader,
+  QToolbar,
+  QToolbarTitle,
+  QIcon,
+  QPullToRefresh,
+  QCard,
   QItem,
   QItemSide,
   QItemMain,
-  QItemSeparator,
-  QRouteTab,
-  QTabs,
-  QTab,
-  QTabPane,
-  QCard,
-  QPullToRefresh,
-  QCardTitle,
-  QCardSeparator,
-  QToolbar,
-  QToolbarTitle,
-  QSearch,
-  QIcon,
-  QModal,
-  QModalLayout,
-  QFab,
-  QFabAction,
   QSpinner
 } from 'quasar'
 import { mapGetters } from 'vuex'
@@ -75,28 +74,14 @@ export default {
   components: {
     QLayout,
     QBtn,
-    QList,
-    QListHeader,
+    QToolbar,
+    QToolbarTitle,
+    QIcon,
+    QPullToRefresh,
+    QCard,
     QItem,
     QItemSide,
     QItemMain,
-    QItemSeparator,
-    QRouteTab,
-    QTabs,
-    QTab,
-    QTabPane,
-    QPullToRefresh,
-    QCard,
-    QCardTitle,
-    QCardSeparator,
-    QToolbar,
-    QToolbarTitle,
-    QSearch,
-    QIcon,
-    QModal,
-    QModalLayout,
-    QFab,
-    QFabAction,
     QSpinner,
     bTeam
   },
@@ -104,11 +89,10 @@ export default {
     return {
       response: null,
       dataLoaded: false,
-      newWeek: '',
-      modalPlayer: '',
-      search: '',
-      data: false,
-      team: ''
+      thisTeam: '',
+      lastTeam: '',
+      opacity: 0,
+      headerShadow: false
     }
   },
   computed: {
@@ -120,10 +104,6 @@ export default {
       league: 'league',
       displayTeam: 'displayTeam'
     }),
-    thisTeam () {
-      var team = this.displayTeam
-      return team
-    },
     teamLookup () {
       var array = this.league.franchises.franchise
       return this.lookup(array, 'id')
@@ -136,9 +116,24 @@ export default {
     goPlayer (id) {
       this.$router.push('/player/' + id)
     },
-    goPlayerModal (id) {
-      this.$store.commit('SET_DATA', {type: 'modalPlayer', data: id})
-      this.$store.commit('TOGGLE_DATA', 'modalPlayerToggle')
+    scrollHandler (scroll) {
+      var height = this.$refs.teamHeader.clientHeight
+      if (scroll.position === 0) {
+        this.opacity = 0
+      }
+      else if (scroll.position > (height - 50)) {
+        this.opacity = 1
+      }
+      else {
+        this.opacity = scroll.position / (height - 50)
+      }
+
+      if (scroll.position > height - 2) {
+        this.headerShadow = true
+      }
+      else {
+        this.headerShadow = false
+      }
     },
     lookup (array, key) {
       var lookup = {}
@@ -150,23 +145,47 @@ export default {
     setTeam () {
       this.dataLoaded = true
     },
-    unsetTeam () {
-      this.dataLoaded = false
-    },
     refresher (done) {
       callApi()
       done()
     }
   },
   activated () {
-    this.dataLoaded = false
-    if (this.displayTeam !== this.team) {
-      setTimeout(this.setTeam, 500)
+    this.thisTeam = this.$route.params.id
+    if (this.thisTeam !== this.lastTeam) {
+      setTimeout(this.setTeam, 700)
     }
     else {
-      this.dataLoaded = true
+      this.setTeam()
     }
-    this.team = this.displayTeam
+    this.lastTeam = this.$route.params.id
+  },
+  deactivated () {
+    this.dataLoaded = false
   }
 }
 </script>
+
+<style lang="stylus">
+.team-layout .layout-page-container
+  padding-top 0!important
+.team-layout .team-header
+  padding-top 50px
+  z-index 1900
+  position relative
+.team-layout .team-header .q-item-label
+  font-size 26px
+.team-layout .team-header .q-item-sublabel
+  color #ccc
+.team-layout .injury
+  display inline
+.team-layout .team-player-name
+  display inline
+  overflow hidden 
+  -webkit-box-orient vertical
+.team-layout .team-header .team-img
+  height 80px
+  width 80px
+  border-radius 50%
+  border 2px solid #fff
+</style>

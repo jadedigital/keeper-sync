@@ -41,6 +41,7 @@ export default new Vuex.Store({
     leagueTab: '',
     matchupTeams: {teamA: '', teamB: ''},
     displayTeam: '',
+    chat: '',
     teamMap: {
       ARI: 'ARI',
       ATL: 'ATL',

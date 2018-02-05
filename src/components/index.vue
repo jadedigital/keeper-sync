@@ -1,6 +1,9 @@
 <template>
   <div>
-    <transition :name="transitionName">
+    <div class="bg-primary" v-if="!dataLoaded" style="height: 100vh;">
+      <b-spinner class="absolute-center"/>
+    </div>
+    <transition v-if="dataLoaded" :name="transitionName">
       <keep-alive>
         <router-view class="child-slide"></router-view>
       </keep-alive>
@@ -14,10 +17,15 @@
  */
 import { LocalStorage } from 'quasar'
 import { loadData } from '../data'
+import bSpinner from './bSpinner.vue'
 
 export default {
+  components: {
+    bSpinner
+  },
   data () {
     return {
+      dataLoaded: false,
       transitionName: '',
       routeMap: {
         user: 1,
@@ -26,34 +34,20 @@ export default {
         team: 4,
         player: 5,
         message: 6,
-        newmessage: 7
+        newmessage: 7,
+        settings: 10
       }
     }
   },
-  beforeRouteEnter (to, from, next) {
-    if (LocalStorage.has('leagueData')) {
-      var data = [
-        'leagueData',
-        'activeLeague',
-        'rosters',
-        'players',
-        'leagueStandings',
-        'freeAgents',
-        'league',
-        'projectedScores',
-        'topAdds',
-        'topOwns',
-        'fullNflSchedule',
-        'liveScoring',
-        'pointsAllowed',
-        'playerScores',
-        'currentWeek',
-        'topStarters',
-        'topDrops',
-        'injuries'
-      ]
-      loadData(data)
+  methods: {
+    fetchData () {
+      if (LocalStorage.has('leagueData')) {
+        loadData()
+      }
+      this.dataLoaded = true
     }
+  },
+  beforeRouteEnter (to, from, next) {
     next()
   },
   beforeRouteUpdate (to, from, next) {
@@ -61,6 +55,9 @@ export default {
     var toRoute = to.path.split('/')[1]
     this.transitionName = this.routeMap[toRoute] < this.routeMap[fromRoute] ? 'overlap-left' : 'overlap-right'
     next()
+  },
+  created () {
+    setTimeout(this.fetchData, 0)
   }
 }
 </script>

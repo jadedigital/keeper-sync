@@ -2,11 +2,13 @@
   <q-layout 
     @scroll="scrollHandler"
     ref="layout"
-    view="hHh Lpr lFf"
+    view="lHh Lpr lFf"
     :class="[headerShadow ? 'header-shadow' : 'no-header-shadow', 'main-layout']"
-    :left-class="{'bg-grey-2': true}"
   >
     <q-toolbar class="toolbar border-bottom" slot="header">
+      <q-btn flat @click="$refs.layout.toggleLeft()">
+        <q-icon name="menu" />
+      </q-btn>
       <q-toolbar-title>
         {{this.teamLookup[myTeam].name}}
         <span slot="subtitle">
@@ -16,13 +18,59 @@
       <q-btn flat @click="toggleModal">
         <q-icon name="search" />
       </q-btn>
-      <q-btn flat>
-        <q-icon name="chat" />
-      </q-btn>
-      <q-btn flat @click="toggleModal">
-        <q-icon name="settings" />
-      </q-btn>
     </q-toolbar>
+    <div slot="left">
+      <div class="panel-bg" :style="logoUrl">
+        <div class="bg-gradient-opacity">
+          <!-- <img class="my-team-img" :src="this.teamLookup[myTeam].icon ? this.teamLookup[myTeam].icon : './statics/avatar.jpg'" alt=""> -->
+          <div class="team-heading">
+            {{this.teamLookup[myTeam].name}}
+            <span>
+              {{this.league.name}}
+            </span>
+          </div>
+        </div>
+      </div>
+      <q-list no-border link>
+        <q-side-link item to="/user/team">
+          <q-item-side icon="list" />
+          <q-item-main label="My Team" />
+        </q-side-link>
+        <q-side-link item to="/user/league">
+          <q-item-side icon="mdi-shield" />
+          <q-item-main label="League" />
+        </q-side-link>
+        <q-side-link item to="/user/matchup">
+          <q-item-side icon="flag" />
+          <q-item-main label="Matchup" />
+        </q-side-link>
+        <q-side-link item to="/user/players">
+          <q-item-side icon="person" />
+          <q-item-main label="Players" />
+        </q-side-link>
+        <q-side-link item to="/user/chat">
+          <q-item-side icon="chat" />
+          <q-item-main label="Chat" />
+        </q-side-link>
+        <q-side-link item to="/user/draft">
+          <q-item-side icon="view_comfy" />
+          <q-item-main label="Draft" />
+        </q-side-link>
+        <q-side-link item to="/user/polls">
+          <q-item-side icon="mdi-poll" />
+          <q-item-main label="Polls" />
+        </q-side-link>
+        <q-item-separator/>
+        <q-side-link item to="/settings">
+          <q-item-side icon="settings" />
+          <q-item-main label="Settings"/>
+        </q-side-link>
+        <q-item @click="logout">
+          <q-item-side icon="undo" />
+          <q-item-main label="Logout"/>
+        </q-item>
+      </q-list>
+    </div>
     <q-modal class="search-modal" @open="$refs.search.focus()" v-model="modal">
       <q-search color="primary" v-model="playerSearch" placeholder="Search" stack-label="Search All Players" ref="search">
       </q-search>
@@ -44,14 +92,14 @@
     <q-tabs slot="footer" inverted class="bg-white main-nav">
       <!-- Tabs - notice slot="title" -->
       <q-route-tab to="team" exact slot="title" icon="list" label="My Team" />
-      <q-route-tab to="league" exact slot="title" icon="star" label="League" />
-      <div slot="title" class="main-avatar q-tab column flex-center relative-position active icon-and-label">
+      <q-route-tab to="league" exact slot="title" icon="mdi-trophy-variant" label="League" />
+      <!--  <div slot="title" class="main-avatar q-tab column flex-center relative-position active icon-and-label">
         <div :style="logoUrl" class="q-item-avatar"></div>
-      </div>
+      </div> -->
       <!-- <q-route-tab to="draft" exact slot="title" icon="view_comfy" label="Draft"/> -->
-      <!-- <q-route-tab to="chat" exact slot="title" icon="chat" label="Chat"/> -->
-      <q-route-tab to="matchup" exact slot="title" icon="flag" label="Matchup"/>
-      <q-route-tab to="players" exact slot="title" icon="person" label="Players" />
+      <q-route-tab to="matchup" exact slot="title" icon="mdi-shield-half-full" label="Matchup"/>
+      <q-route-tab to="players" exact slot="title" icon="person" label="Players"/>
+      <q-route-tab to="chat" exact slot="title" icon="chat" label="Chat"/> 
     </q-tabs>
     <q-fixed-position v-if="leagueTab === 'messages' && $route.name === 'league'" corner="bottom-right" :offset="[18, 18]">
       <q-btn 
@@ -95,7 +143,9 @@ import {
   QTransition,
   QPopover,
   QFab,
+  QSideLink,
   QFabAction,
+  Dialog,
   LocalStorage
 } from 'quasar'
 import { mapGetters } from 'vuex'
@@ -126,6 +176,7 @@ export default {
     QTransition,
     QPopover,
     QFab,
+    QSideLink,
     QFabAction
   },
   data () {
@@ -232,9 +283,25 @@ export default {
       })
     },
     logout () {
-      this.$refs.popover.close()
-      LocalStorage.clear()
-      this.$router.push('/login')
+      Dialog.create({
+        title: 'Logout',
+        message: 'Are you sure?',
+        buttons: [
+          {
+            label: 'Cancel',
+            handler () {
+              console.log('canceled...')
+            }
+          },
+          {
+            label: 'Logout',
+            handler: () => {
+              LocalStorage.clear()
+              this.$router.push('/login')
+            }
+          }
+        ]
+      })
     }
   }
 }
@@ -248,6 +315,27 @@ export default {
   border none
 .border-bottom
   border-bottom solid 1px rgba(0,0,0,0.1)
+.panel-bg
+  height 180px
+.panel-bg .bg-gradient-opacity
+  height 100%
+  background linear-gradient(0deg, rgba(61, 90, 254, 0.9) 20%, rgba(61, 90, 254, 0.1) 100%);
+  z-index 2
+.panel-bg .team-heading
+  color #ffffff
+  padding-top 130px
+  padding-left 10px
+.panel-bg .team-heading span
+  display inline-block
+  color #cccccc
+.panel-bg .my-team-img
+  border-radius 50%
+  border 2px solid
+  background #fff
+  height 60px
+  width 60px
+  margin-top 120px
+  margin-left 10px
 .card-main
   overflow auto
 .logo-container

@@ -119,11 +119,13 @@ export default {
           return getLeagueData()
         })
         .then((response) => {
-          this.lastWeek = response.league.endWeek
+          this.lastWeek = parseFloat(response.league.endWeek)
           return getWeek()
         })
         .then((response) => {
+          console.log('week = ' + response)
           var week = Math.min(response, this.lastWeek)
+          console.log('last week = ' + week)
           LocalStorage.set('currentWeek', week)
           var time = Date.now()
           LocalStorage.set('currentWeek_time', time)
@@ -151,7 +153,7 @@ export default {
   height: 100vh;
   overflow: hidden;
 .bg-login
-  background linear-gradient(321deg, rgba(63, 81, 181, 0.8) 15%, rgba(3, 169, 244, 0.8) 100%);
+  background linear-gradient(321deg, rgba(61, 90, 254, 0.8) 15%, rgba(3, 169, 244, 0.8) 100%);
   z-index 3
 .row.login
   height 100vh

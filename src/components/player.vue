@@ -269,6 +269,7 @@ export default {
       var request = [
         {
           type: 'playerStatus',
+          value: 'playerStatus',
           params: this.playerStatusParams,
           timeOut: 0
         }

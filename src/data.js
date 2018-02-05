@@ -1,6 +1,7 @@
 import axios from 'axios'
 import store from './store'
 import { LocalStorage, Toast } from 'quasar'
+import { arrayCheck } from './utils'
 
 export function callApi (week, types) {
   let data = LocalStorage.get.item('leagueData')
@@ -102,61 +103,73 @@ export function callApi (week, types) {
     requests = [
       {
         type: 'rosters',
+        value: 'rosters',
         params: rosterParams,
         timeOut: 3600000
       },
       {
         type: 'players',
+        value: 'players',
         params: playerParams,
         timeOut: 3600000
       },
       {
         type: 'leagueStandings',
+        value: 'leagueStandings',
         params: standingsParams,
         timeOut: 3600000
       },
       {
         type: 'freeAgents',
+        value: 'freeAgents',
         params: freeAgentsParams,
         timeOut: 3600000
       },
       {
         type: 'league',
+        value: 'league',
         params: leagueParams,
         timeOut: 3600000
       },
       {
         type: 'projectedScores',
+        value: 'projectedScores',
         params: projectedScoresParams,
         timeOut: 3600000
       },
       {
         type: 'topAdds',
+        value: 'topAdds',
         params: topAddsParams,
         timeOut: 3600000
       },
       {
         type: 'topOwns',
+        value: 'topOwns',
         params: topOwnsParams,
         timeOut: 3600000
       },
       {
         type: 'fullNflSchedule',
+        value: 'fullNflSchedule',
         params: nflScheduleParams,
         timeOut: 3600000
       },
       {
         type: 'liveScoring',
+        value: 'liveScoring',
         params: liveScoringParams,
         timeOut: 3600000
       },
       {
         type: 'pointsAllowed',
+        value: 'pointsAllowed',
         params: pointsAllowedParams,
         timeOut: 3600000
       },
       {
         type: 'injuries',
+        value: 'injuries',
         params: injuriesParams,
         timeOut: 3600000
       }
@@ -176,10 +189,10 @@ export function callApi (week, types) {
       })
         .then((response) => {
           console.log(el)
-          console.log(el.params.TYPE)
+          console.log(el.value)
           var responseData = JSON.parse(response.data)
-          LocalStorage.set(el.type, responseData[el.params.TYPE])
-          store.commit('SET_DATA', {type: el.type, data: responseData[el.params.TYPE]})
+          LocalStorage.set(el.type, responseData[el.value])
+          store.commit('SET_DATA', {type: el.type, data: responseData[el.value]})
           var key = el.type + '_time'
           var time = Date.now()
           LocalStorage.set(key, time)
@@ -253,7 +266,8 @@ export function getWeek () {
       var responseData = JSON.parse(response.data)
       var timeLeft = 0
       var week = ''
-      responseData.nflSchedule.matchup.forEach(el => {
+      var schedule = arrayCheck(responseData.nflSchedule.matchup)
+      schedule.forEach(el => {
         timeLeft += parseFloat(el.gameSecondsRemaining)
       })
       if (timeLeft > 0) {
@@ -340,6 +354,32 @@ export function getPlayerStats (player) {
     .catch((error) => {
       if (error) {
         Toast.create("Can't fetch stats. Please try again later")
+        return error
+      }
+    })
+}
+
+export function getChats (host, league, cookie) {
+  var queryParams = {
+    host: host,
+    league: league,
+    cookie: cookie
+  }
+  var url = 'https://keepersync.com/mfl/chat'
+
+  return axios.get(url, {
+    params: queryParams
+  })
+    .then((response) => {
+      var responseData = response.data
+      console.log(responseData)
+      LocalStorage.set('chat', responseData['messages'])
+      store.commit('SET_DATA', {type: 'chat', data: responseData['messages']})
+      return response
+    })
+    .catch((error) => {
+      if (error) {
+        Toast.create("Can't fetch chat messages. Please try again later")
         return error
       }
     })

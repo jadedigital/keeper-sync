@@ -152,6 +152,7 @@ export default {
       var request = [
         {
           type: 'messageBoardThread',
+          value: 'messageBoardThread',
           params: messageBoardThreadParams,
           timeOut: 0
         }

@@ -254,6 +254,7 @@ export default {
       var request = [
         {
           type: 'matchupLiveScoring',
+          value: 'liveScoring',
           params: matchupLiveScoringParams,
           timeOut: 0
         }

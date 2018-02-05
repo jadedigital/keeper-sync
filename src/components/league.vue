@@ -361,11 +361,13 @@ export default {
       var request = [
         {
           type: 'transactions',
+          value: 'transactions',
           params: transactionsParams,
           timeOut: 3600000
         },
         {
           type: 'messageBoard',
+          value: 'messageBoard',
           params: messageBoardParams,
           timeOut: 3600000
         }

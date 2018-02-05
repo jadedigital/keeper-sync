@@ -12,14 +12,22 @@
           icon="search"
           float-label="Filter by name"
         />
-        <div
+        <div 
+          class="q-if row no-wrap items-center relative-position q-input q-search q-if-has-label text-primary"
           @click="showDialog"
-          class="position-filter"
         >
-          <q-chips-input 
-            v-model="positionFilter" 
-            float-label="Positions"
-          />
+          <div class="q-if-inner col row no-wrap items-center relative-position">
+            <span :class="positionFilter[0] ? 'q-if-label-above' : ''" class="q-if-label ellipsis full-width absolute self-start">Positions</span>
+            <q-chip 
+              closable
+              color="primary" 
+              v-for="(chip, key) in positionFilter" 
+              :key="key"
+              @close="removeChip(chip)"
+            >
+              {{chip}}
+            </q-chip>
+          </div>
         </div>
         <q-select
           v-model="statusFilter"
@@ -55,10 +63,10 @@
             >
               <div class="row text-left col-pad name-row">
                 <q-item separator class="col-12">
-                  <q-btn v-if="faLookup[player.id].status !== 'locked'" round small outline color="primary" class="q-item-avatar action-btn">
+                  <q-btn v-if="faLookup[player.id] && faLookup[player.id].status !== 'locked'" round small outline color="primary" class="q-item-avatar action-btn">
                     <q-icon name="add" color="primary" size="18px"></q-icon>
                   </q-btn>
-                  <q-icon v-if="faLookup[player.id].status === 'locked'" class="q-item-avatar action-btn" name="lock_outline" color="primary" size="28px"></q-icon>
+                  <q-icon v-if="!faLookup[player.id] || faLookup[player.id].status === 'locked'" class="q-item-avatar action-btn" name="lock_outline" color="primary" size="28px"></q-icon>
                   <q-item-side v-if="playerLookup[player.id].position !== 'Def'" :avatar="'https://sports.cbsimg.net/images/football/nfl/players/100x100/' + playerLookup[player.id].cbs_id + '.jpg'" />
                   <q-item-side v-if="playerLookup[player.id].position === 'Def'" :avatar="'./statics/' + teamMap[playerLookup[player.id].team] + '.svg'" />
                   <div class="q-item-main q-item-section team-players">
@@ -119,7 +127,7 @@ import {
   QIcon,
   QInput,
   QField,
-  QChipsInput,
+  QChip,
   Dialog,
   LocalStorage
 } from 'quasar'
@@ -147,7 +155,7 @@ export default {
     QSelect,
     QInput,
     QField,
-    QChipsInput,
+    QChip,
     QPullToRefresh,
     QSpinner,
     QIcon
@@ -425,6 +433,11 @@ export default {
         ]
       })
     },
+    removeChip (chip) {
+      var array = this.positionFilter
+      var index = array.indexOf(chip)
+      array.splice(index, 1)
+    },
     loadPlayersDetails () {
       var list = []
       var playerArray = this.players.player
@@ -471,16 +484,19 @@ export default {
       var request = [
         {
           type: 'playerScores',
+          value: 'playerScores',
           params: playerScoresParams,
           timeOut: 3600000
         },
         {
           type: 'topDrops',
+          value: 'topDrops',
           params: topDropsParams,
           timeOut: 3600000
         },
         {
           type: 'topStarters',
+          value: 'topStarters',
           params: topStartersParams,
           timeOut: 3600000
         }

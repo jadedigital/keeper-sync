@@ -4,7 +4,7 @@
       <!-- Tabs - notice slot="title" -->
       <q-tab default slot="title" name="tab-1" label="Roster" />
       <q-tab slot="title" name="tab-2" label="Draft Picks" />
-      <q-tab count="2" slot="title" name="tab-3" label="Pending Moves"/>
+      <q-tab slot="title" name="tab-3" label="Pending Moves"/>
       <!-- Targets -->
       <div v-if="!dataLoaded" style="height: calc(100vh - 112px);">
         <b-spinner class="absolute-center"/>
@@ -62,8 +62,7 @@ import {
   QCardSeparator,
   QToolbar,
   QSearch,
-  QIcon,
-  LocalStorage
+  QIcon
 } from 'quasar'
 import { mapGetters } from 'vuex'
 import { callApi, loadData } from '../data'
@@ -195,33 +194,30 @@ export default {
       done()
     },
     fetchData () {
-      if (LocalStorage.has('futureDraftPicks')) {
-        var data = [
-          'futureDraftPicks'
-        ]
-        loadData(data)
-        this.dataLoaded = true
+      var data = [
+        'futureDraftPicks'
+      ]
+      loadData(data)
+
+      var futureDraftPicksParams = {
+        cookie: this.leagueData[this.activeLeague].cookie,
+        host: this.leagueData[this.activeLeague].host,
+        TYPE: 'futureDraftPicks',
+        L: this.activeLeague,
+        JSON: 1
       }
-      else {
-        var futureDraftPicksParams = {
-          cookie: this.leagueData[this.activeLeague].cookie,
-          host: this.leagueData[this.activeLeague].host,
-          TYPE: 'futureDraftPicks',
-          L: this.activeLeague,
-          JSON: 1
+      var request = [
+        {
+          type: 'futureDraftPicks',
+          value: 'futureDraftPicks',
+          params: futureDraftPicksParams,
+          timeOut: 3600000
         }
-        var request = [
-          {
-            type: 'futureDraftPicks',
-            params: futureDraftPicksParams,
-            timeOut: 3600000
-          }
-        ]
-        callApi('', request)
-          .then((response) => {
-            this.dataLoaded = true
-          })
-      }
+      ]
+      callApi('', request)
+        .then((response) => {
+          this.dataLoaded = true
+        })
     },
     setTeam () {
       this.dataLoaded = true
@@ -254,12 +250,6 @@ export default {
 .team .injury
   display inline
 .team .team-player-name
-  display inline
-  overflow hidden 
-  -webkit-box-orient vertical
-.team-layout .injury
-  display inline
-.team-layout .team-player-name
   display inline
   overflow hidden 
   -webkit-box-orient vertical

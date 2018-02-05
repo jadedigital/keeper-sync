@@ -68,6 +68,11 @@ const router = new VueRouter({
               path: 'players',
               component: load('players'),
               meta: { requiresAuth: true }
+            },
+            {
+              path: 'chat',
+              component: load('chat'),
+              meta: { requiresAuth: true }
             }
           ]
         },
@@ -75,8 +80,8 @@ const router = new VueRouter({
         { path: '/login', component: load('login') },
         {
           path: 'team/:id',
-          component: load('teamOtherID'),
-          name: 'teamOtherID',
+          component: load('teamOther'),
+          name: 'teamOther',
           meta: { requiresAuth: true }
         },
         {
@@ -101,6 +106,12 @@ const router = new VueRouter({
           path: 'matchup',
           component: load('matchupOther'),
           name: 'matchupOther',
+          meta: { requiresAuth: true }
+        },
+        {
+          path: 'settings',
+          component: load('settings'),
+          name: 'settings',
           meta: { requiresAuth: true }
         }
       ]
