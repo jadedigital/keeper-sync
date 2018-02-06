@@ -50,7 +50,7 @@
                     <q-item separator class="col-12">
                       <div class="rank">{{team.rank}}</div>
                       <q-item-side v-if="teamLookup[team.id].icon" :avatar="teamLookup[team.id].icon"/>
-                      <q-item-side v-else :avatar="'./statics/avatar.jpg'"/>
+                      <q-btn v-else round small style="font-size: 14px; font-weight:400; height: 38px; width: 38px;" class="q-btn-outline bg-white text-primary q-item-avatar q-item-section">{{ teamLookup[team.id].owner_name ? teamLookup[team.id].owner_name[0] : teamLookup[team.id].name[0] }}</q-btn>
                       <q-item-main :label="teamLookup[team.id].name" :sublabel="teamLookup[team.id].owner_name" />
                     </q-item>
                   </div>

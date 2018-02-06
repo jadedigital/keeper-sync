@@ -3,7 +3,7 @@
     @scroll="scrollHandler"
     ref="layout"
     view="lHh Lpr lFf"
-    :class="[headerShadow ? 'header-shadow' : 'no-header-shadow', 'main-layout']"
+    :class="[(headerShadow || $route.name === 'chat' || $route.name === 'players') ? 'header-shadow' : 'no-header-shadow', 'main-layout']"
   >
     <q-toolbar class="toolbar border-bottom" slot="header">
       <q-btn flat @click="$refs.layout.toggleLeft()">
@@ -33,23 +33,23 @@
       </div>
       <q-list no-border link>
         <q-side-link item to="/user/team">
-          <q-item-side icon="list" />
+          <q-item-side icon="mdi-football-helmet" />
           <q-item-main label="My Team" />
         </q-side-link>
         <q-side-link item to="/user/league">
-          <q-item-side icon="mdi-shield" />
+          <q-item-side icon="mdi-trophy-variant" />
           <q-item-main label="League" />
         </q-side-link>
         <q-side-link item to="/user/matchup">
-          <q-item-side icon="flag" />
+          <q-item-side icon="mdi-shield-half-full" />
           <q-item-main label="Matchup" />
         </q-side-link>
         <q-side-link item to="/user/players">
-          <q-item-side icon="person" />
+          <q-item-side icon="mdi-account-multiple" />
           <q-item-main label="Players" />
         </q-side-link>
         <q-side-link item to="/user/chat">
-          <q-item-side icon="chat" />
+          <q-item-side icon="mdi-forum" />
           <q-item-main label="Chat" />
         </q-side-link>
         <q-side-link item to="/user/draft">
@@ -89,17 +89,17 @@
       </keep-alive>
     </transition>
 
-    <q-tabs slot="footer" inverted class="bg-white main-nav">
+    <q-tabs slot="footer" inverted class="bg-white main-nav desktop-hide">
       <!-- Tabs - notice slot="title" -->
-      <q-route-tab to="team" exact slot="title" icon="list" label="My Team" />
+      <q-route-tab to="team" exact slot="title" icon="mdi-football-helmet" label="My Team" />
       <q-route-tab to="league" exact slot="title" icon="mdi-trophy-variant" label="League" />
       <!--  <div slot="title" class="main-avatar q-tab column flex-center relative-position active icon-and-label">
         <div :style="logoUrl" class="q-item-avatar"></div>
       </div> -->
       <!-- <q-route-tab to="draft" exact slot="title" icon="view_comfy" label="Draft"/> -->
       <q-route-tab to="matchup" exact slot="title" icon="mdi-shield-half-full" label="Matchup"/>
-      <q-route-tab to="players" exact slot="title" icon="person" label="Players"/>
-      <q-route-tab to="chat" exact slot="title" icon="chat" label="Chat"/> 
+      <q-route-tab to="players" exact slot="title" icon="mdi-account-multiple" label="Players"/>
+      <q-route-tab to="chat" exact slot="title" icon="mdi-forum" label="Chat"/> 
     </q-tabs>
     <q-fixed-position v-if="leagueTab === 'messages' && $route.name === 'league'" corner="bottom-right" :offset="[18, 18]">
       <q-btn 
@@ -465,6 +465,8 @@ export default {
   font-weight 300
 .secondary-tabs .q-tabs-head
   box-shadow 0 1px 5px rgba(0,0,0,.2), 0 2px 2px rgba(0,0,0,.14), 0 3px 1px -2px rgba(0,0,0,.12)
+.secondary-tabs .q-tabs-scroller
+  width 100%
 .secondary-tabs .q-tab
   min-height 50px
   font-size 12px

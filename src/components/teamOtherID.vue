@@ -117,6 +117,8 @@ export default {
     }
   },
   activated () {
+    this.opacity = 0
+    this.headerShadow = false
     this.thisTeam = this.$route.params.id
     if (this.thisTeam !== this.lastTeam) {
       setTimeout(this.setTeam, 700)

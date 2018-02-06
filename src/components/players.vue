@@ -5,7 +5,6 @@
         icon="filter_list"
         label="Filter Players"
         sublabel="by name, position, status"
-        class="shadow-2"
       >
         <q-search
           v-model="query"

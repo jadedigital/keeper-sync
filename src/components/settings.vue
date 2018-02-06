@@ -8,6 +8,24 @@
         Settings
       </q-toolbar-title>
     </q-toolbar>
+    <q-list no-border link separator sparse>
+      <q-item>
+        <q-item-side color="primary" icon="mdi-settings" />
+        <q-item-main label="General" />
+      </q-item>
+      <q-item>
+        <q-item-side color="primary" icon="mdi-football-helmet" />
+        <q-item-main label="Team customization" />
+      </q-item>
+      <q-item>
+        <q-item-side color="primary" icon="mdi-bell" />
+        <q-item-main label="Notifications" />
+      </q-item>
+      <q-item>
+        <q-item-side color="primary" icon="mdi-palette" />
+        <q-item-main label="Theme customization" />
+      </q-item>
+    </q-list>
   </q-layout>
 </template>
 
@@ -17,6 +35,10 @@ import {
   QToolbar,
   QBtn,
   QIcon,
+  QList,
+  QItem,
+  QItemSide,
+  QItemMain,
   QToolbarTitle
 } from 'quasar'
 
@@ -27,6 +49,10 @@ export default {
     QToolbar,
     QBtn,
     QIcon,
+    QList,
+    QItem,
+    QItemSide,
+    QItemMain,
     QToolbarTitle
   },
   data () {

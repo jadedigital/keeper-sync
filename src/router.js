@@ -67,11 +67,13 @@ const router = new VueRouter({
             {
               path: 'players',
               component: load('players'),
+              name: 'players',
               meta: { requiresAuth: true }
             },
             {
               path: 'chat',
               component: load('chat'),
+              name: 'chat',
               meta: { requiresAuth: true }
             }
           ]

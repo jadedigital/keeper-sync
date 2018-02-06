@@ -4,7 +4,7 @@
       <q-btn flat>
         <q-icon @click="$router.go(-1)" name="arrow_back" />
       </q-btn>
-      <q-toolbar-title>
+      <q-toolbar-title v-if="dataLoaded">
         {{teamLookup[activeThread].name}}
       </q-toolbar-title>
     </q-toolbar>
@@ -21,6 +21,7 @@
         :name="teamLookup[msg.franchise_id].name"
         :avatar="teamLookup[msg.franchise_id].icon ? teamLookup[msg.franchise_id].icon : './statics/avatar.jpg'"
         :text="[msg.message]"
+        :stamp="msg.timestamp"
         :sent="msg.franchise_id === myTeam"
         :bg-color="msg.franchise_id === myTeam ? 'secondary' : 'grey-3'"
       />
@@ -52,7 +53,9 @@ import {
   QSpinner,
   QBtn,
   QInput,
-  QIcon
+  QIcon,
+  date,
+  format
 } from 'quasar'
 import { mapGetters } from 'vuex'
 import { getChats } from '../data'
@@ -100,36 +103,40 @@ export default {
       }
       return obj
     },
-    chatList () {
-      var chatList = {}
+    thread () {
       var chatArray = []
-      var commish = {
-        id: '0000',
-        name: 'Commissioner'
-      }
-      const franchiseArray = [...this.league.franchises.franchise]
-      franchiseArray.unshift(commish)
-      franchiseArray.forEach(el => {
-        this.chat.message.forEach(el2 => {
-          if (el2._attributes.to && (el2._attributes.franchise_id === el.id || el2._attributes.to === el.id)) {
-            chatArray.push(el2._attributes)
+      const { pad } = format
+      let timeStamp = Date.now()
+      var today = date.formatDate(timeStamp, 'MMM DD')
+
+      if (this.activeThread === '1000') {
+        this.chat.message.forEach(el => {
+          if (!el._attributes.to) {
+            if (today === el._attributes.posted.split(' ')[1] + ' ' + pad(el._attributes.posted.split(' ')[2], 2)) {
+              el._attributes['timestamp'] = el._attributes.posted.split(' ')[3].split(':')[0] + ':' + el._attributes.posted.split(' ')[3].split(':')[1] + ' ' + el._attributes.posted.split(' ')[4].split('.').join('')
+            }
+            else {
+              el._attributes['timestamp'] = el._attributes.posted.split(' ')[1] + ' ' + el._attributes.posted.split(' ')[2]
+            }
+            chatArray.push(el._attributes)
           }
         })
-        chatList[el.id] = chatArray
-        chatArray = []
-      })
+      }
+      else {
+        this.chat.message.forEach(el => {
+          if (el._attributes.to && (el._attributes.franchise_id === this.activeThread || el._attributes.to === this.activeThread)) {
+            if (today === el._attributes.posted.split(' ')[1] + ' ' + pad(el._attributes.posted.split(' ')[2], 2)) {
+              el._attributes['timestamp'] = el._attributes.posted.split(' ')[3].split(':')[0] + ':' + el._attributes.posted.split(' ')[3].split(':')[1] + ' ' + el._attributes.posted.split(' ')[4].split('.').join('')
+            }
+            else {
+              el._attributes['timestamp'] = el._attributes.posted.split(' ')[1] + ' ' + el._attributes.posted.split(' ')[2]
+            }
+            chatArray.push(el._attributes)
+          }
+        })
+      }
 
-      this.chat.message.forEach(el => {
-        if (!el._attributes.to) {
-          chatArray.push(el._attributes)
-        }
-      })
-      chatList['1000'] = chatArray
-
-      return chatList
-    },
-    thread () {
-      return this.chatList[this.activeThread]
+      return chatArray.reverse()
     }
   },
   methods: {

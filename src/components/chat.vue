@@ -1,20 +1,54 @@
 <template>
   <q-pull-to-refresh :handler="refresher" class="chat-layout">
-    <q-list highlight v-if="dataLoaded">
-      <q-item 
-        v-for="chat in franchiseList" 
-        :key="chat.id"
-        @click="goToThread(chat.id)"
-      >
-        <q-item-side :avatar="chat.icon ? chat.icon : './statics/avatar.jpg'" />
-        <q-item-main :label="chat.name" :sublabel="chatList[chat.id][0] ? chatList[chat.id][0].message : ''" />
-        <q-item-side right>
-          <q-item-tile>
-            {{chat.timestamp}}
-          </q-item-tile>
-        </q-item-side>
-      </q-item>
-    </q-list>
+    <div class="contain-main bg-white">
+      <div v-if="!dataLoaded" style="height: calc(100vh - 112px);">  
+        <q-spinner color="secondary" size="40px" class="absolute-center" style="margin-left: -20px;"/>
+      </div>
+      <q-list highlight v-if="dataLoaded" class="no-padding">
+        <q-card class="compact-card bg-white">
+          <q-item 
+            @click="goToThread('1000')"
+          >
+            <div class="q-item-side q-item-side-left q-item-section">
+              <div :style="logoUrl" class="q-item-avatar"></div>
+            </div>
+            <q-item-main 
+              class="ellipses"
+              label="League Chat"
+              :sublabel="leagueChat[0] ? (leagueChat[0].franchise_id === myTeam ? 'You' : teamLookup[leagueChat[0].franchise_id].owner_name.split(' ')[0]) + ': ' + leagueChat[0].message : ''" 
+              :sublabel-lines="1"
+              />
+            <q-item-side right>
+              <q-item-tile class="text-dark">
+                {{leagueChat[0] ? leagueChat[0].timestamp : ''}}
+              </q-item-tile>
+            </q-item-side>
+          </q-item>
+          <q-card-title>
+            Other Chats
+          </q-card-title>
+          <q-item 
+            v-for="chat in franchiseList" 
+            :key="chat.id"
+            @click="goToThread(chat.id)"
+          >
+            <q-item-side v-if="chat.icon" :avatar="chat.icon" />
+            <q-btn v-else round small style="font-size: 14px; font-weight:400; height: 38px; width: 38px;" class="q-btn-outline bg-white text-primary q-item-avatar q-item-section">{{ chat.owner_name ? chat.owner_name[0] : chat.name[0] }}</q-btn>
+            <q-item-main 
+              class="ellipses"
+              :label="chat.name"
+              :sublabel="chatList[chat.id][0] ? (chatList[chat.id][0].franchise_id === myTeam ? 'You' : teamLookup[chatList[chat.id][0].franchise_id].owner_name.split(' ')[0]) + ': ' + chatList[chat.id][0].message : ''" 
+              :sublabel-lines="1"
+              />
+            <q-item-side right>
+              <q-item-tile class="text-dark">
+                {{chat.timestamp}}
+              </q-item-tile>
+            </q-item-side>
+          </q-item>
+        </q-card>
+      </q-list>
+    </div>
   </q-pull-to-refresh>
 </template>
 
@@ -39,13 +73,13 @@ import {
   QToolbar,
   QSearch,
   QIcon,
+  QSpinner,
   date,
-  format
+  format,
+  LocalStorage
 } from 'quasar'
 import { mapGetters } from 'vuex'
 import { getChats } from '../data'
-import bTeam from './bTeam.vue'
-import bSpinner from './bSpinner.vue'
 
 export default {
   name: 'chat',
@@ -69,8 +103,7 @@ export default {
     QToolbar,
     QSearch,
     QIcon,
-    bTeam,
-    bSpinner
+    QSpinner
   },
   data () {
     return {
@@ -111,7 +144,15 @@ export default {
     },
     teamLookup () {
       var array = this.league.franchises.franchise
-      return this.lookup(array, 'id')
+      var obj = this.lookup(array, 'id')
+      obj['0000'] = {
+        name: 'Commissioner',
+        owner_name: 'Commish'
+      }
+      obj['1000'] = {
+        name: 'League Chat'
+      }
+      return obj
     },
     chatList () {
       var chatList = {}
@@ -132,14 +173,25 @@ export default {
         chatArray = []
       })
 
+      return chatList
+    },
+    leagueChat () {
+      const { pad } = format
+      let timeStamp = Date.now()
+      var today = date.formatDate(timeStamp, 'MMM DD')
+      var chatArray = []
       this.chat.message.forEach(el => {
         if (!el._attributes.to) {
           chatArray.push(el._attributes)
         }
       })
-      chatList['1000'] = chatArray
-
-      return chatList
+      if (today === chatArray[0].posted.split(' ')[1] + ' ' + pad(chatArray[0].posted.split(' ')[2], 2)) {
+        chatArray[0]['timestamp'] = chatArray[0].posted.split(' ')[3].split(':')[0] + ':' + chatArray[0].posted.split(' ')[3].split(':')[1] + ' ' + chatArray[0].posted.split(' ')[4].split('.').join('')
+      }
+      else {
+        chatArray[0]['timestamp'] = chatArray[0].posted.split(' ')[1] + ' ' + chatArray[0].posted.split(' ')[2]
+      }
+      return chatArray
     },
     franchiseList () {
       const { pad } = format
@@ -150,13 +202,8 @@ export default {
         id: '0000',
         name: 'Commissioner'
       }
-      var league = {
-        id: '1000',
-        name: 'League Chat'
-      }
       const franchiseArray = [...this.league.franchises.franchise]
       franchiseArray.unshift(commish)
-      franchiseArray.unshift(league)
       franchiseArray.splice(franchiseArray.findIndex(this.matchesMyTeam), 1)
       franchiseArray.forEach(el => {
         if (this.chatList[el.id][0]) {
@@ -173,9 +220,15 @@ export default {
           el['latest'] = 0
         }
       })
-      franchiseArray.splice(franchiseArray.findIndex(this.matchesNoMsg), 1)
       var franchiseArraySorted = this.order(franchiseArray, 'latest')
       return franchiseArraySorted
+    },
+    logoUrl () {
+      var style = {
+        background: 'url(' + this.league.leagueLogo + ') center no-repeat',
+        backgroundSize: 'cover'
+      }
+      return style
     }
   },
   methods: {
@@ -188,9 +241,6 @@ export default {
     },
     matchesMyTeam (el) {
       return el.id === this.myTeam
-    },
-    matchesNoMsg (el) {
-      return el.latest === 0
     },
     order (list, key) {
       return list.sort((a, b) => {
@@ -220,11 +270,13 @@ export default {
         })
     },
     setTeam () {
+      let cacheData = LocalStorage.get.item('chat')
+      this.$store.commit('SET_DATA', {type: 'chat', data: cacheData})
       this.dataLoaded = true
     }
   },
   created () {
-    setTimeout(this.fetchData, 500)
+    setTimeout(this.setTeam, 500)
   }
 }
 </script>
@@ -232,5 +284,10 @@ export default {
 <style lang="stylus">
 .chat-layout .q-list
   border none
+.chat-layout .q-item-side-right
+  font-size 12px
+  min-width 52px
+.chat-layout .q-item-sublabel
+  font-size 14px
 </style>
 
