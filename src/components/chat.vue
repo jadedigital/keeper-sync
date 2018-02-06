@@ -1,15 +1,16 @@
 <template>
   <q-pull-to-refresh :handler="refresher" class="chat-layout">
-    <q-list highlight>
+    <q-list highlight v-if="dataLoaded">
       <q-item 
         v-for="chat in franchiseList" 
         :key="chat.id"
+        @click="goToThread(chat.id)"
       >
         <q-item-side :avatar="chat.icon ? chat.icon : './statics/avatar.jpg'" />
         <q-item-main :label="chat.name" :sublabel="chatList[chat.id][0] ? chatList[chat.id][0].message : ''" />
         <q-item-side right>
           <q-item-tile>
-            {{chatList[chat.id][0] ? chatList[chat.id][0].posted.substring(0, 5) : ''}}
+            {{chat.timestamp}}
           </q-item-tile>
         </q-item-side>
       </q-item>
@@ -37,7 +38,9 @@ import {
   QCardSeparator,
   QToolbar,
   QSearch,
-  QIcon
+  QIcon,
+  date,
+  format
 } from 'quasar'
 import { mapGetters } from 'vuex'
 import { getChats } from '../data'
@@ -74,7 +77,25 @@ export default {
       response: null,
       dataLoaded: false,
       newWeek: '',
-      search: ''
+      search: '',
+      monthMap: {
+        Jan: '01',
+        Feb: '02',
+        Mar: '03',
+        Apr: '04',
+        May: '05',
+        Jun: '06',
+        Jul: '07',
+        Aug: '08',
+        Sep: '09',
+        Oct: '10',
+        Nov: '11',
+        Dec: '12'
+      },
+      timeMap: {
+        'a.m.': '1',
+        'p.m.': '2'
+      }
     }
   },
   computed: {
@@ -91,21 +112,6 @@ export default {
     teamLookup () {
       var array = this.league.franchises.franchise
       return this.lookup(array, 'id')
-    },
-    franchiseList () {
-      var commish = {
-        id: '0000',
-        name: 'Commissioner'
-      }
-      var league = {
-        id: '1000',
-        name: 'League Chat'
-      }
-      const franchiseArray = [...this.league.franchises.franchise]
-      franchiseArray.unshift(commish)
-      franchiseArray.unshift(league)
-      franchiseArray.splice(franchiseArray.findIndex(this.matchesEl), 1)
-      return franchiseArray
     },
     chatList () {
       var chatList = {}
@@ -134,6 +140,42 @@ export default {
       chatList['1000'] = chatArray
 
       return chatList
+    },
+    franchiseList () {
+      const { pad } = format
+      let timeStamp = Date.now()
+      var today = date.formatDate(timeStamp, 'MMM DD')
+
+      var commish = {
+        id: '0000',
+        name: 'Commissioner'
+      }
+      var league = {
+        id: '1000',
+        name: 'League Chat'
+      }
+      const franchiseArray = [...this.league.franchises.franchise]
+      franchiseArray.unshift(commish)
+      franchiseArray.unshift(league)
+      franchiseArray.splice(franchiseArray.findIndex(this.matchesMyTeam), 1)
+      franchiseArray.forEach(el => {
+        if (this.chatList[el.id][0]) {
+          el['latest'] = parseInt(this.chatList[el.id][0].posted.split(' ')[6] + this.monthMap[this.chatList[el.id][0].posted.split(' ')[1]] + pad(this.chatList[el.id][0].posted.split(' ')[2], 2) + this.timeMap[this.chatList[el.id][0].posted.split(' ')[4]] + pad(this.chatList[el.id][0].posted.split(' ')[3].split(':')[0], 2) + this.chatList[el.id][0].posted.split(' ')[3].split(':')[1] + this.chatList[el.id][0].posted.split(' ')[3].split(':')[2])
+
+          if (today === this.chatList[el.id][0].posted.split(' ')[1] + ' ' + pad(this.chatList[el.id][0].posted.split(' ')[2], 2)) {
+            el['timestamp'] = this.chatList[el.id][0].posted.split(' ')[3].split(':')[0] + ':' + this.chatList[el.id][0].posted.split(' ')[3].split(':')[1] + ' ' + this.chatList[el.id][0].posted.split(' ')[4].split('.').join('')
+          }
+          else {
+            el['timestamp'] = this.chatList[el.id][0].posted.split(' ')[1] + ' ' + this.chatList[el.id][0].posted.split(' ')[2]
+          }
+        }
+        else {
+          el['latest'] = 0
+        }
+      })
+      franchiseArray.splice(franchiseArray.findIndex(this.matchesNoMsg), 1)
+      var franchiseArraySorted = this.order(franchiseArray, 'latest')
+      return franchiseArraySorted
     }
   },
   methods: {
@@ -144,8 +186,20 @@ export default {
       }
       return lookup
     },
-    matchesEl (el) {
+    matchesMyTeam (el) {
       return el.id === this.myTeam
+    },
+    matchesNoMsg (el) {
+      return el.latest === 0
+    },
+    order (list, key) {
+      return list.sort((a, b) => {
+        var x = parseFloat(a[key]); var y = parseFloat(b[key])
+        return ((x < y) ? 1 : ((x > y) ? -1 : 0))
+      })
+    },
+    goToThread (id) {
+      this.$router.push('/thread/' + id)
     },
     refresher (done) {
       var host = this.leagueData[this.activeLeague].host
@@ -174,3 +228,9 @@ export default {
   }
 }
 </script>
+
+<style lang="stylus">
+.chat-layout .q-list
+  border none
+</style>
+

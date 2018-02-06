@@ -473,12 +473,14 @@ export default {
         cookie: this.leagueData[this.activeLeague].cookie,
         host: this.leagueData[this.activeLeague].host,
         TYPE: 'topDrops',
+        W: Math.min(this.league.endWeek, this.currentWeek),
         JSON: 1
       }
       var topStartersParams = {
         cookie: this.leagueData[this.activeLeague].cookie,
         host: this.leagueData[this.activeLeague].host,
         TYPE: 'topStarters',
+        W: Math.min(this.league.endWeek, this.currentWeek),
         JSON: 1
       }
       var request = [

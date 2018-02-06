@@ -91,6 +91,12 @@ const router = new VueRouter({
           meta: { requiresAuth: true }
         },
         {
+          path: 'thread/:id',
+          component: load('thread'),
+          name: 'thread',
+          meta: { requiresAuth: true }
+        },
+        {
           path: 'message',
           component: load('message'),
           name: 'message',

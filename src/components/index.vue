@@ -33,8 +33,9 @@ export default {
         matchup: 3,
         team: 4,
         player: 5,
-        message: 6,
-        newmessage: 7,
+        thread: 6,
+        message: 7,
+        newmessage: 8,
         settings: 10
       }
     }

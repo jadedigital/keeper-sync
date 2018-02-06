@@ -109,6 +109,14 @@
         @click="$router.push('/newmessage')"
       />
     </q-fixed-position>
+    <q-fixed-position v-if="$route.name === 'chat'" corner="bottom-right" :offset="[18, 18]">
+      <q-btn 
+        round
+        icon="edit"
+        class="bg-tertiary shadow-5 text-white"
+        @click="$router.push('/newmessage')"
+      />
+    </q-fixed-position>
     <div 
       :class="overlay ? 'overlay' : ''"
       @click="overlay = false"
@@ -189,7 +197,8 @@ export default {
         league: 2,
         draft: 3,
         matchup: 3,
-        players: 4
+        players: 4,
+        chat: 5
       },
       transitionName: '',
       headerShadow: false,
