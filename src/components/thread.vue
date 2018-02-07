@@ -15,6 +15,13 @@
       :handler="refresher"
       v-if="dataLoaded"
     >
+      <div v-if="!thread[0]" style="height: calc(100vh - 50px)">
+        <div class="absolute-center text-center light-paragraph">
+          Send<br>
+          <span class="text-primary text-italic">{{teamLookup[activeThread].name}}</span><br>
+          a message
+        </div>
+      </div>
       <q-chat-message
         v-for="msg in thread"
         :key="msg.id"
@@ -23,7 +30,8 @@
         :text="[msg.message]"
         :stamp="msg.timestamp"
         :sent="msg.franchise_id === myTeam"
-        :bg-color="msg.franchise_id === myTeam ? 'secondary' : 'grey-3'"
+        :bg-color="msg.franchise_id === myTeam ? 'primary' : 'grey-3'"
+        :text-color="msg.franchise_id === myTeam ? 'white' : 'dark'"
       />
     </q-pull-to-refresh>
     <q-input 

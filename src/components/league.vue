@@ -1,6 +1,9 @@
 <template>
   <q-pull-to-refresh :handler="refresher" class="league">
-    <q-tabs inverted class="secondary-tabs">
+    <div v-if="!dataLoaded" style="height: calc(100vh - 112px)">
+      <q-spinner color="secondary" size="40px" class="absolute-center" style="margin-left: -20px;"/>
+    </div>
+    <q-tabs v-if="dataLoaded" inverted class="secondary-tabs">
       <!-- Tabs - notice slot="title" -->
       <q-tab 
         default
@@ -144,6 +147,7 @@ import {
   QIcon,
   QCardTitle,
   QCardSeparator,
+  QSpinner,
   LocalStorage
 } from 'quasar'
 import { mapGetters } from 'vuex'
@@ -169,7 +173,8 @@ export default {
     QFixedPosition,
     QIcon,
     QCardTitle,
-    QCardSeparator
+    QCardSeparator,
+    QSpinner
   },
   data () {
     return {

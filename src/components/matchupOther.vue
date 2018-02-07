@@ -8,7 +8,10 @@
         Matchup
       </q-toolbar-title>
     </q-toolbar>
-    <q-pull-to-refresh :handler="refresher" class="matchup">
+    <div v-if="!dataLoaded" style="height: calc(100vh - 50px)">
+      <q-spinner color="secondary" size="40px" class="absolute-center" style="margin-left: -20px;"/>
+    </div>
+    <q-pull-to-refresh v-if="dataLoaded" :handler="refresher" class="matchup">
       <b-matchup/>
     </q-pull-to-refresh>
   </q-layout>
@@ -21,7 +24,8 @@ import {
   QBtn,
   QIcon,
   QToolbarTitle,
-  QPullToRefresh
+  QPullToRefresh,
+  QSpinner
 } from 'quasar'
 import bMatchup from './bMatchup.vue'
 
@@ -34,17 +38,27 @@ export default {
     QIcon,
     QToolbarTitle,
     QPullToRefresh,
+    QSpinner,
     bMatchup
   },
   data () {
     return {
-      response: null
+      dataLoaded: false
     }
   },
   methods: {
     refresher (done) {
       done()
+    },
+    loadData () {
+      this.dataLoaded = true
     }
+  },
+  activated () {
+    setTimeout(this.loadData, 500)
+  },
+  deactivated () {
+    this.dataLoaded = false
   }
 }
 </script>

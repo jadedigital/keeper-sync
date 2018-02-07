@@ -1,7 +1,7 @@
 <template>
   <div>
-    <div class="bg-primary" v-if="!dataLoaded" style="height: 100vh;">
-      <b-spinner class="absolute-center"/>
+    <div v-if="!dataLoaded" class="bg-primary" style="height: 100vh;">  
+      <q-spinner color="white" size="40px" class="absolute-center" style="margin-left: -20px;"/>
     </div>
     <transition v-if="dataLoaded" :name="transitionName">
       <keep-alive>
@@ -15,13 +15,12 @@
 /*
  * Root component
  */
-import { LocalStorage } from 'quasar'
+import { QSpinner, LocalStorage } from 'quasar'
 import { loadData } from '../data'
-import bSpinner from './bSpinner.vue'
 
 export default {
   components: {
-    bSpinner
+    QSpinner
   },
   data () {
     return {
@@ -58,7 +57,7 @@ export default {
     next()
   },
   created () {
-    setTimeout(this.fetchData, 0)
+    setTimeout(this.fetchData, 2000)
   }
 }
 </script>

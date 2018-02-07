@@ -27,7 +27,7 @@
         </q-card-title>
         <q-card-separator />
         <div class="card-main bg-white">
-          <q-item separator v-for="player in bench" :key="player.id" @click="goToPlayer(player.id)">
+          <q-item link separator v-for="player in bench" :key="player.id" @click="goToPlayer(player.id)">
             <q-btn @click.stop="showAS(playerLookup[player.id].name)" round small style="font-size: 12px; font-weight:400" :class="[ parseFloat(scoringLookup[player.id].gameSecondsRemaining) < 3600 ? 'q-btn-flat text-primary' : 'q-btn-outline bg-white text-primary', 'q-item-avatar']">BN</q-btn>
             <q-item-side class="player-avatar" :avatar="playerLookup[player.id].position === 'Def' ? './statics/' + teamMap[playerLookup[player.id].team] + '.svg' : playerLookup[player.id].cbs_id ? 'https://sports.cbsimg.net/images/football/nfl/players/60x80/' + playerLookup[player.id].cbs_id + '.jpg' : './statics/avatar.jpg'" />
             <div class="q-item-main q-item-section team-players">
@@ -47,8 +47,8 @@
         </q-card-title>
         <q-card-separator />
         <div class="card-main bg-white">
-          <q-item separator v-for="player in injuredReserve" :key="player.id" @click="goToPlayer(player.id)">
-            <q-btn round small outline color="primary" style="font-size: 14px; font-weight:400" class="q-item-avatar">IR</q-btn>
+          <q-item link separator v-for="player in injuredReserve" :key="player.id" @click="goToPlayer(player.id)">
+            <q-btn round small style="font-size: 14px; font-weight:400" class="q-item-avatar q-btn-flat text-primary">IR</q-btn>
             <q-item-side class="player-avatar" :avatar="playerLookup[player.id].position === 'Def' ? './statics/' + teamMap[playerLookup[player.id].team] + '.svg' : playerLookup[player.id].cbs_id ? 'https://sports.cbsimg.net/images/football/nfl/players/60x80/' + playerLookup[player.id].cbs_id + '.jpg' : './statics/avatar.jpg'" />
             <div class="q-item-main q-item-section team-players">
               <div class="q-item-label team-player-name">{{playerLookup[player.id].name.split(', ').slice(1).join(' ').charAt(0)}} . {{playerLookup[player.id].name.split(', ').slice(0, -1).join(' ')}} <b-injury class="injury" :player="player.id"></b-injury><small> {{playerLookup[player.id].team}}  -  {{playerLookup[player.id].position}}</small></div>
@@ -64,8 +64,8 @@
         </q-card-title>
         <q-card-separator />
         <div class="card-main bg-white">
-          <q-item separator v-for="player in taxiSquad" :key="player.id" @click="goToPlayer(player.id)">
-            <q-btn round small outline color="primary" style="font-size: 14px; font-weight:400" class="q-item-avatar">TS</q-btn>
+          <q-item link separator v-for="player in taxiSquad" :key="player.id" @click="goToPlayer(player.id)">
+            <q-btn round small style="font-size: 14px; font-weight:400" class="q-item-avatar q-btn-flat text-primary">TS</q-btn>
             <q-item-side class="player-avatar" :avatar="playerLookup[player.id].position === 'Def' ? './statics/' + teamMap[playerLookup[player.id].team] + '.svg' : playerLookup[player.id].cbs_id ? 'https://sports.cbsimg.net/images/football/nfl/players/60x80/' + playerLookup[player.id].cbs_id + '.jpg' : './statics/avatar.jpg'" />
             <div class="q-item-main q-item-section team-players">
               <div class="q-item-label team-player-name">{{playerLookup[player.id].name.split(', ').slice(1).join(' ').charAt(0)}} . {{playerLookup[player.id].name.split(', ').slice(0, -1).join(' ')}} <b-injury class="injury" :player="player.id"></b-injury><small> {{playerLookup[player.id].team}}  -  {{playerLookup[player.id].position}}</small></div>

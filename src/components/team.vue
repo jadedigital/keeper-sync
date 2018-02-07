@@ -1,15 +1,15 @@
 <template>
   <q-pull-to-refresh :handler="refresher" class="team">
-    <q-tabs inverted class="secondary-tabs">
+    <div v-if="!dataLoaded" style="height: calc(100vh - 112px)">
+      <q-spinner color="secondary" size="40px" class="absolute-center" style="margin-left: -20px;"/>
+    </div>
+    <q-tabs v-if="dataLoaded" inverted class="secondary-tabs">
       <!-- Tabs - notice slot="title" -->
       <q-tab default slot="title" name="tab-1" label="Roster" />
       <q-tab slot="title" name="tab-2" label="Draft Picks" />
       <q-tab slot="title" name="tab-3" label="Pending Moves"/>
       <!-- Targets -->
-      <div v-if="!dataLoaded" style="height: calc(100vh - 112px);">
-        <b-spinner class="absolute-center"/>
-      </div>
-      <div v-if="dataLoaded" class="contain-main">
+      <div class="contain-main">
         <q-tab-pane class="no-pad no-border" name="tab-1">
           <b-team :thisTeam="myTeam"/>
         </q-tab-pane>
@@ -62,12 +62,12 @@ import {
   QCardSeparator,
   QToolbar,
   QSearch,
-  QIcon
+  QIcon,
+  QSpinner
 } from 'quasar'
 import { mapGetters } from 'vuex'
 import { callApi, loadData } from '../data'
 import bTeam from './bTeam.vue'
-import bSpinner from './bSpinner.vue'
 
 export default {
   name: 'team',
@@ -92,7 +92,7 @@ export default {
     QSearch,
     QIcon,
     bTeam,
-    bSpinner
+    QSpinner
   },
   data () {
     return {

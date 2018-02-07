@@ -1,12 +1,19 @@
 <template>
   <q-pull-to-refresh :handler="refresher" class="chat-layout">
-    <div class="contain-main bg-white">
-      <div v-if="!dataLoaded" style="height: calc(100vh - 112px);">  
-        <q-spinner color="secondary" size="40px" class="absolute-center" style="margin-left: -20px;"/>
+    <div v-if="!dataLoaded" style="height: calc(100vh - 112px)">
+      <q-spinner color="secondary" size="40px" class="absolute-center" style="margin-left: -20px;"/>
+    </div>
+    <div v-if="error" style="height: calc(100vh - 112px)">
+      <div class="absolute-center text-center light-paragraph">
+        Can't fetch data.<br>
+        Try again later.
       </div>
-      <q-list highlight v-if="dataLoaded" class="no-padding">
+    </div>
+    <div v-if="dataLoaded && !error" class="contain-main bg-white">
+      <q-list link class="no-padding">
         <q-card class="compact-card bg-white">
           <q-item 
+            link
             @click="goToThread('1000')"
           >
             <div class="q-item-side q-item-side-left q-item-section">
@@ -28,6 +35,7 @@
             Other Chats
           </q-card-title>
           <q-item 
+            link
             v-for="chat in franchiseList" 
             :key="chat.id"
             @click="goToThread(chat.id)"
@@ -109,6 +117,7 @@ export default {
     return {
       response: null,
       dataLoaded: false,
+      error: false,
       newWeek: '',
       search: '',
       monthMap: {
@@ -257,7 +266,16 @@ export default {
       var league = this.activeLeague
       getChats(host, league, cookie)
         .then((response) => {
+          this.dataLoaded = true
+          this.error = false
           done()
+        })
+        .catch((error) => {
+          if (error) {
+            this.dataLoaded = true
+            this.error = true
+            done()
+          }
         })
     },
     fetchData () {
@@ -267,6 +285,13 @@ export default {
       getChats(host, league, cookie)
         .then((response) => {
           this.dataLoaded = true
+          this.error = false
+        })
+        .catch((error) => {
+          if (error) {
+            this.dataLoaded = true
+            this.error = true
+          }
         })
     },
     setTeam () {
@@ -276,7 +301,7 @@ export default {
     }
   },
   created () {
-    setTimeout(this.setTeam, 500)
+    setTimeout(this.fetchData, 500)
   }
 }
 </script>

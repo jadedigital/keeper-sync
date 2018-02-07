@@ -109,14 +109,6 @@
         @click="$router.push('/newmessage')"
       />
     </q-fixed-position>
-    <q-fixed-position v-if="$route.name === 'chat'" corner="bottom-right" :offset="[18, 18]">
-      <q-btn 
-        round
-        icon="edit"
-        class="bg-tertiary shadow-5 text-white"
-        @click="$router.push('/newmessage')"
-      />
-    </q-fixed-position>
     <div 
       :class="overlay ? 'overlay' : ''"
       @click="overlay = false"
@@ -205,9 +197,6 @@ export default {
       overlay: false
     }
   },
-  beforeRouteEnter (to, from, next) {
-    next()
-  },
   beforeRouteUpdate (to, from, next) {
     const toRoute = this.routeOrder[to.path.split('/')[2]]
     const fromRoute = this.routeOrder[from.path.split('/')[2]]
@@ -220,8 +209,6 @@ export default {
       leagueData: 'leagueData',
       league: 'league',
       players: 'players',
-      dummyToolbar: 'dummyToolbar',
-      teamMap: 'teamMap',
       leagueTab: 'leagueTab'
     }),
     myTeam () {
@@ -496,6 +483,8 @@ export default {
   box-shadow none
 .header-shadow .layout-header
   box-shadow 0 1px 5px rgba(0,0,0,.2), 0 2px 2px rgba(0,0,0,.14), 0 3px 1px -2px rgba(0,0,0,.12)
+.layout-footer
+  box-shadow 0 -1px 5px rgba(0,0,0,.2), 0 -2px 2px rgba(0,0,0,.14), 0 -3px 1px -2px rgba(0,0,0,.12)
 .league .msg-board
   height calc(100vh - 162px)
 .matchup .all-matchups .q-list

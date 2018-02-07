@@ -32,7 +32,7 @@
                 <li>Age: <span>{{(new Date(Date.now()).getFullYear() - new Date(playerLookup[activePlayer].birthdate * 1000).getFullYear())}}</span></li>
                 <li>Exp: <span>{{new Date(Date.now()).getFullYear() - playerLookup[activePlayer].draft_year}}</span><span v-if="playerLookup[activePlayer].status === 'R'">({{playerLookup[activePlayer].status}})</span></li>
                 <li>College: <span>{{playerLookup[activePlayer].college}}</span></li>
-                <li>Owner: <span v-if="playerStatus" v-html="playerStatus.status"></span></li>
+                <li>Owner: <span v-if="statusLoaded" v-html="playerStatus.status"></span></li>
               </ul>
               <div class="col-6">
                 <div class="row justify-center" :style="{'opacity': 1 - opacity}">
@@ -212,6 +212,7 @@ export default {
     return {
       dataLoaded: false,
       statsLoaded: false,
+      statusLoaded: false,
       playerNews: [],
       playerStats: [],
       activePlayer: '',
@@ -320,8 +321,9 @@ export default {
         this.playerStats = response.data
         this.statsLoaded = true
       })
-      console.log(this.request)
-      callApi('', this.request)
+      callApi('', this.request).then((response) => {
+        this.statusLoaded = true
+      })
     }
   },
   activated () {
@@ -329,11 +331,12 @@ export default {
     this.dataLoaded = false
     this.statsLoaded = false
     if (this.activePlayer !== this.lastPlayer) {
-      this.fetchData()
+      setTimeout(this.fetchData, 500)
     }
     else {
       this.dataLoaded = true
       this.statsLoaded = true
+      this.statusLoaded = true
     }
     this.lastPlayer = this.$route.params.id
     this.opacity = 0
@@ -342,6 +345,7 @@ export default {
   deactivated () {
     this.dataLoaded = false
     this.statsLoaded = false
+    this.statusLoaded = false
   }
 }
 </script>

@@ -379,8 +379,7 @@ export function getChats (host, league, cookie) {
     })
     .catch((error) => {
       if (error) {
-        Toast.create("Can't fetch chat messages. Please try again later")
-        return error
+        throw error
       }
     })
 }

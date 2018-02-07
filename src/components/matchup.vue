@@ -1,6 +1,9 @@
 <template>
   <q-pull-to-refresh :handler="refresher" class="matchup">
-    <q-tabs inverted class="secondary-tabs">
+    <div v-if="!dataLoaded" style="height: calc(100vh - 112px)">
+      <q-spinner color="secondary" size="40px" class="absolute-center" style="margin-left: -20px;"/>
+    </div>
+    <q-tabs v-if="dataLoaded" inverted class="secondary-tabs">
       <!-- Tabs - notice slot="title" -->
       <q-tab default slot="title" name="tab-1" label="My Matchup" />
       <q-tab slot="title" name="tab-2" label="All Matchups"/>
@@ -14,46 +17,44 @@
           @change="changeWeek(weekSelect)"
         />
         <q-tab-pane class="no-pad no-border" name="tab-1">
-          <div v-if="!dataLoaded" style="height: calc(100vh - 112px);">  
-            <q-spinner color="secondary" size="40px" class="absolute-center" style="margin-left: -20px;"/>
-          </div>
           <div v-if="byeWeek">
             Bye Week
           </div>
-          <b-matchup v-if="dataLoaded && !byeWeek"/>
+          <b-matchup v-if="!byeWeek"/>
         </q-tab-pane>
         <q-tab-pane class="no-pad no-border all-matchups" name="tab-2">
-          <div v-if="!dataLoaded" style="height: calc(100vh - 112px);">  
-            <q-spinner color="secondary" size="40px" class="absolute-center" style="margin-left: -20px;"/>
-          </div>
-          <div v-if="dataLoaded">
+          <div>
             <q-list
               v-for="(match, key) in displayScoring.matchup"
               :key="key"
-              @click="goToMatchup(match.franchise)"
+              @click="goToMatchup(match.franchise, key)"
             >
-              <q-item 
-                v-for="(team, key2) in match.franchise"
-                :key="key2"
-              >
-                <q-item-side :avatar="teamLookup[team.id].icon ? teamLookup[team.id].icon : './statics/avatar.jpg'" />
-                <q-item-main 
-                  :label="teamLookup[team.id].name"
-                  :sublabel="standingsLookup[team.id].h2hw + '-' + standingsLookup[team.id].h2hl + '-' + standingsLookup[team.id].h2ht"
-                />
-                <q-item-side right>
-                  <q-item-tile :class="winners[team.id] === true ? 'strong text-dark' : 'text-dark'">
-                    {{team.score}}
-                  </q-item-tile>
-                </q-item-side>
-              </q-item>
+              <div :class="{'bg-grey-4': selectedMatchup === key}">
+                <q-item 
+                  v-for="(team, key2) in match.franchise"
+                  :key="key2"
+                >
+                  <q-item-side :avatar="teamLookup[team.id].icon ? teamLookup[team.id].icon : './statics/avatar.jpg'" />
+                  <q-item-main 
+                    :label="teamLookup[team.id].name"
+                    :sublabel="standingsLookup[team.id].h2hw + '-' + standingsLookup[team.id].h2hl + '-' + standingsLookup[team.id].h2ht"
+                  />
+                  <q-item-side right>
+                    <q-item-tile :class="winners[team.id] === true ? 'strong text-dark' : 'text-dark'">
+                      {{team.score}}
+                    </q-item-tile>
+                  </q-item-side>
+                </q-item>
+              </div>
             </q-list>
             <div v-if="displayScoring.franchise" class="separator-title text-center border-bottom uppercase">Bye Week</div>
             <q-list class="bye">
-              <q-item 
+              <q-item
+                link
                 v-for="(match, key) in displayScoring.franchise"
                 :key="key"
                 class="border-bottom"
+                @click="goToTeam(match.id)"
               >
                 <q-item-side :avatar="teamLookup[match.id].icon ? teamLookup[match.id].icon : './statics/avatar.jpg'" />
                 <q-item-main :label="teamLookup[match.id].name" />
@@ -142,7 +143,8 @@ export default {
       modalPlayer: '',
       search: '',
       weekSelect: '',
-      byeWeek: false
+      byeWeek: false,
+      selectedMatchup: ''
     }
   },
   computed: {
@@ -237,9 +239,6 @@ export default {
       }
       return lookup
     },
-    test (value) {
-      console.log(value)
-    },
     changeWeek (week) {
       this.dataLoaded = false
       var matchupLiveScoringParams = {
@@ -264,7 +263,11 @@ export default {
           this.setTeams()
         })
     },
-    goToMatchup (match) {
+    goToTeam (team) {
+      this.$router.push('/team/' + team)
+    },
+    goToMatchup (match, key) {
+      this.selectedMatchup = key
       var obj = {}
       match.forEach(el => {
         obj['teamA'] ? obj['teamB'] = el.id : obj['teamA'] = el.id
@@ -282,6 +285,7 @@ export default {
     setTimeout(this.setTeams, 500)
   },
   activated () {
+    this.selectedMatchup = ''
     setTimeout(this.setTeams, 500)
   }
 }
@@ -355,6 +359,11 @@ export default {
   font-size 14px
   font-weight 500
   text-transform uppercase
+  margin-bottom 0
 .matchup .q-select .q-input-target
   padding-left 24px
+.matchup .all-matchups .q-list
+  padding 0
+.matchup .all-matchups .q-list
+  padding 0
 </style>

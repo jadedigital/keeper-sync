@@ -1,7 +1,11 @@
 <template>
   <div>
     <div class="row items-center border-bottom matchup-header">
-      <div class="col-5" @click="goToTeam(teamA)">
+      <div 
+        class="col-5 team" 
+        @click="goToTeam(teamA)"
+        :class="{'bg-grey-4': selectedTeam === teamA}"
+      >
         <div class="row items-center">
           <div class="col-12">
             <div class="team-name pull-right">
@@ -21,7 +25,11 @@
       </div>
       <div class="col-2 matchup">
       </div>
-      <div class="col-5 matchup" @click="goToTeam(teamB)">
+      <div 
+        class="col-5 team"
+        @click="goToTeam(teamB)"
+        :class="{'bg-grey-4': selectedTeam === teamB}"
+      >
         <div class="row items-center">
           <div class="col-12">
             <div class="team-name">
@@ -47,7 +55,11 @@
     </div>
     <div v-for="player in combinedStarters" :key="player.id">
       <div class="row">
-        <div class="col-5 matchup" @click="goToPlayer(player.id)">
+        <div 
+          class="col-5 matchup" 
+          @click="goToPlayer(player.id)"
+          :class="{'bg-grey-4': selectedPlayer === player.id}"
+        >
           <div class="matchup-list">
             <div class="list-item border-bottom">
               <div class="row">
@@ -72,7 +84,11 @@
             </div>
           </div>
         </div>
-        <div class="col-5 matchup" @click="goToPlayer(player.opp)">
+        <div 
+          class="col-5 matchup"
+          @click="goToPlayer(player.opp)"
+          :class="{'bg-grey-4': selectedPlayer === player.opp}"
+        >
           <div class="matchup-list">
             <div class="list-item border-bottom">
               <div class="row">
@@ -150,11 +166,9 @@ export default {
   name: 'matchup',
   data () {
     return {
-      response: null,
       dataLoaded: true,
-      newWeek: '',
-      modalPlayer: '',
-      search: ''
+      selectedTeam: '',
+      selectedPlayer: ''
     }
   },
   computed: {
@@ -449,9 +463,11 @@ export default {
       return lookup
     },
     goToTeam (id) {
+      this.selectedTeam = id
       this.$router.push('/team/' + id)
     },
     goToPlayer (id) {
+      this.selectedPlayer = id
       this.$router.push('/player/' + id)
     },
     matchupPointsUtil (pos) {
@@ -495,6 +511,17 @@ export default {
       }
       return value
     }
+  },
+  activated () {
+    this.selectedTeam = ''
+    this.selectedPlayer = ''
   }
 }
 </script>
+
+<style lang="stylus">
+.matchup-header .team
+  height 100%
+  padding 20px 0
+</style>
+

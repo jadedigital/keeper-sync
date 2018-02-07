@@ -1,10 +1,14 @@
 <template>
   <q-pull-to-refresh :handler="refresher">
-    <div class="contain-main players">
+    <div v-if="!dataLoaded" style="height: calc(100vh - 112px)">
+      <q-spinner color="secondary" size="40px" class="absolute-center" style="margin-left: -20px;"/>
+    </div>
+    <div v-if="dataLoaded" class="contain-main players">
       <q-collapsible 
         icon="filter_list"
         label="Filter Players"
         sublabel="by name, position, status"
+        class="border-bottom"
       >
         <q-search
           v-model="query"
@@ -42,8 +46,7 @@
           {{statusFilter === 'fa' ? 'Free Agents' : 'All Players'}}
         </q-card-title>
         <q-card-separator />
-        <q-spinner v-if="!dataLoaded" color="secondary" size="40px" class="players-spinner"/>
-        <div v-if="dataLoaded" class="card-main bg-white relative-position no-overflow">
+        <div class="card-main bg-white relative-position no-overflow">
           <div class="q-table">
             <div class="row header-row border-bottom">
               <div @click="sort('projected')"  nowrap class="text-center col-2" :class="{'text-red': colSortKey === 'projected'}">Proj</div>
