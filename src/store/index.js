@@ -42,6 +42,7 @@ export default new Vuex.Store({
     matchupTeams: {teamA: '', teamB: ''},
     displayTeam: '',
     chat: '',
+    draftResults: '',
     teamMap: {
       ARI: 'ARI',
       ATL: 'ATL',

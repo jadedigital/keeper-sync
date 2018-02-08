@@ -33,6 +33,7 @@ export const matchupTeams = state => state.matchupTeams
 export const displayTeam = state => state.displayTeam
 export const playerStatus = state => state.playerStatus
 export const chat = state => state.chat
+export const draftResults = state => state.draftResults
 export const endWeek = state => {
   return state.league.endWeek
 }
