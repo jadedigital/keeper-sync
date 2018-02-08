@@ -1,25 +1,51 @@
 <template>
-  <div>
-    draft
-  </div>
+  <q-pull-to-refresh :handler="refresher" class="team">
+    <div v-if="!dataLoaded" style="height: calc(100vh - 112px)">
+      <q-spinner color="secondary" size="40px" class="absolute-center" style="margin-left: -20px;"/>
+    </div>
+    <q-tabs v-if="dataLoaded" inverted class="secondary-tabs">
+      <!-- Tabs - notice slot="title" -->
+      <q-tab default slot="title" name="tab-1" label="Draft Results" />
+      <q-tab slot="title" name="tab-2" label="Player List" />
+      <!-- Targets -->
+      <div class="contain-main">
+        <q-tab-pane class="no-pad no-border" name="tab-1">
+          <b-draft/>
+        </q-tab-pane>
+      </div>
+    </q-tabs>
+  </q-pull-to-refresh>
 </template>
 
 
 <script>
 import {
-  QBtn
+  QBtn,
+  QPullToRefresh,
+  QSpinner,
+  QTabs,
+  QTab,
+  QTabPane
 } from 'quasar'
 import { mapGetters } from 'vuex'
 import { callApi, loadData } from '../data'
+import bDraft from './bDraft.vue'
 
 export default {
-  name: 'chat',
+  name: 'draft',
   components: {
-    QBtn
+    QBtn,
+    QPullToRefresh,
+    QSpinner,
+    QTabs,
+    QTab,
+    QTabPane,
+    bDraft
   },
   data () {
     return {
-      dataLoaded: false
+      dataLoaded: false,
+      error: false
     }
   },
   computed: {
@@ -44,22 +70,8 @@ export default {
         name: 'League Chat'
       }
       return obj
-    }
-  },
-  methods: {
-    lookup (array, key) {
-      var lookup = {}
-      for (var i = 0, len = array.length; i < len; i++) {
-        lookup[array[i][key]] = array[i]
-      }
-      return lookup
     },
-    fetchData () {
-      var data = [
-        'draftResults'
-      ]
-      loadData(data)
-
+    request () {
       var draftResultsParams = {
         cookie: this.leagueData[this.activeLeague].cookie,
         host: this.leagueData[this.activeLeague].host,
@@ -75,7 +87,44 @@ export default {
           timeOut: 0
         }
       ]
-      callApi('', request)
+      return request
+    }
+  },
+  methods: {
+    lookup (array, key) {
+      var lookup = {}
+      for (var i = 0, len = array.length; i < len; i++) {
+        lookup[array[i][key]] = array[i]
+      }
+      return lookup
+    },
+    refresher (done) {
+      var data = [
+        'draftResults'
+      ]
+      loadData(data)
+
+      callApi('', this.request)
+        .then((response) => {
+          this.dataLoaded = true
+          this.error = false
+          done()
+        })
+        .catch((error) => {
+          if (error) {
+            this.dataLoaded = true
+            this.error = true
+            done()
+          }
+        })
+    },
+    fetchData () {
+      var data = [
+        'draftResults'
+      ]
+      loadData(data)
+
+      callApi('', this.request)
         .then((response) => {
           this.dataLoaded = true
         })
@@ -86,6 +135,9 @@ export default {
   },
   activated () {
     setTimeout(this.fetchData, 500)
+  },
+  deactivated () {
+    this.dataLoaded = false
   }
 }
 </script>

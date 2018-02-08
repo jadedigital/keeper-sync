@@ -27,12 +27,12 @@
           <div class="bg-gradient-opacity">
             <div class="player-info text-white row reverse items-center">
               <ul class="col-6 player-info-list" :style="{'opacity': 1 - opacity}">
-                <li>Team: <span>{{playerLookup[activePlayer].team}} #{{playerLookup[activePlayer].jersey}}</span></li>
-                <li>HT/WT: <span>{{parseInt(playerLookup[activePlayer].height / 12)}}'{{playerLookup[activePlayer].height % 12}}"/{{playerLookup[activePlayer].weight}}lbs</span></li>
-                <li>Age: <span>{{(new Date(Date.now()).getFullYear() - new Date(playerLookup[activePlayer].birthdate * 1000).getFullYear())}}</span></li>
-                <li>Exp: <span>{{new Date(Date.now()).getFullYear() - playerLookup[activePlayer].draft_year}}</span><span v-if="playerLookup[activePlayer].status === 'R'">({{playerLookup[activePlayer].status}})</span></li>
-                <li>College: <span>{{playerLookup[activePlayer].college}}</span></li>
-                <li>Owner: <span v-if="statusLoaded" v-html="playerStatus.status"></span></li>
+                <li class="ellipsis">Team: <span>{{playerLookup[activePlayer].team}} #{{playerLookup[activePlayer].jersey}}</span></li>
+                <li class="ellipsis">HT/WT: <span>{{parseInt(playerLookup[activePlayer].height / 12)}}'{{playerLookup[activePlayer].height % 12}}"/{{playerLookup[activePlayer].weight}}lbs</span></li>
+                <li class="ellipsis">Age: <span>{{(new Date(Date.now()).getFullYear() - new Date(playerLookup[activePlayer].birthdate * 1000).getFullYear())}}</span></li>
+                <li class="ellipsis">Exp: <span>{{new Date(Date.now()).getFullYear() - playerLookup[activePlayer].draft_year}}</span><span v-if="playerLookup[activePlayer].status === 'R'">({{playerLookup[activePlayer].status}})</span></li>
+                <li class="ellipsis">College: <span>{{playerLookup[activePlayer].college}}</span></li>
+                <li class="ellipsis">Owner: <span v-if="statusLoaded" v-html="playerStatus.status"></span></li>
               </ul>
               <div class="col-6">
                 <div class="row justify-center" :style="{'opacity': 1 - opacity}">
