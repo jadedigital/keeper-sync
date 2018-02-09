@@ -9,7 +9,7 @@
       </q-toolbar-title>
     </q-toolbar>
     <q-list no-border link separator sparse>
-      <q-item>
+      <q-item @click="$router.push('/settings/general')">
         <q-item-side color="primary" icon="mdi-settings" />
         <q-item-main label="General" />
       </q-item>

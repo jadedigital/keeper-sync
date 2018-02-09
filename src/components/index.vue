@@ -44,6 +44,10 @@ export default {
       if (LocalStorage.has('leagueData')) {
         loadData()
       }
+      if (LocalStorage.has('settings')) {
+        var settings = LocalStorage.get.item('settings')
+        this.$store.commit('SET_DATA', {type: 'settings', data: settings})
+      }
       this.dataLoaded = true
     }
   },

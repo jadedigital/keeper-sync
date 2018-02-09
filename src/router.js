@@ -121,6 +121,12 @@ const router = new VueRouter({
           component: load('settings'),
           name: 'settings',
           meta: { requiresAuth: true }
+        },
+        {
+          path: 'settings/general',
+          name: 'settingsGeneral',
+          component: load('settingsGeneral'),
+          meta: { requiresAuth: true }
         }
       ]
     },

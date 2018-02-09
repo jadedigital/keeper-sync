@@ -168,7 +168,6 @@ export default {
     this.timer = setInterval(this.fetchData, 5000)
   },
   deactivated () {
-    console.log('deactivated')
     clearInterval(this.timer)
   },
   beforeDestroy () {

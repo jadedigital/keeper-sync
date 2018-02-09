@@ -91,15 +91,16 @@
 
     <q-tabs slot="footer" inverted class="bg-white main-nav desktop-hide">
       <!-- Tabs - notice slot="title" -->
-      <q-route-tab to="team" exact slot="title" icon="mdi-football-helmet" label="My Team" />
-      <q-route-tab to="league" exact slot="title" icon="mdi-trophy-variant" label="League" />
+      <q-route-tab v-if="settings.navbar.includes('team')" to="team" exact slot="title" icon="mdi-football-helmet" label="My Team" />
+      <q-route-tab v-if="settings.navbar.includes('league')" to="league" exact slot="title" icon="mdi-trophy-variant" label="League" />
       <!--  <div slot="title" class="main-avatar q-tab column flex-center relative-position active icon-and-label">
         <div :style="logoUrl" class="q-item-avatar"></div>
       </div> -->
-      <!-- <q-route-tab to="draft" exact slot="title" icon="view_comfy" label="Draft"/> -->
-      <q-route-tab to="matchup" exact slot="title" icon="mdi-shield-half-full" label="Matchup"/>
-      <q-route-tab to="players" exact slot="title" icon="mdi-account-multiple" label="Players"/>
-      <q-route-tab to="chat" exact slot="title" icon="mdi-forum" label="Chat"/> 
+      <q-route-tab v-if="settings.navbar.includes('matchup')" to="matchup" exact slot="title" icon="mdi-shield-half-full" label="Matchup"/>
+      <q-route-tab v-if="settings.navbar.includes('players')" to="players" exact slot="title" icon="mdi-account-multiple" label="Players"/>
+      <q-route-tab v-if="settings.navbar.includes('chat')" to="chat" exact slot="title" icon="mdi-forum" label="Chat"/> 
+      <q-route-tab v-if="settings.navbar.includes('draft')" to="draft" exact slot="title" icon="view_comfy" label="Draft"/> 
+      <q-route-tab v-if="settings.navbar.includes('polls')" to="polls" exact slot="title" icon="mdi-poll" label="Polls"/> 
     </q-tabs>
     <q-fixed-position v-if="leagueTab === 'messages' && $route.name === 'league'" corner="bottom-right" :offset="[18, 18]">
       <q-btn 
@@ -209,7 +210,8 @@ export default {
       leagueData: 'leagueData',
       league: 'league',
       players: 'players',
-      leagueTab: 'leagueTab'
+      leagueTab: 'leagueTab',
+      settings: 'settings'
     }),
     myTeam () {
       var team = this.leagueData[this.activeLeague].teamId

@@ -43,6 +43,9 @@ export default new Vuex.Store({
     displayTeam: '',
     chat: '',
     draftResults: '',
+    settings: {
+      navbar: ['team', 'league', 'matchup', 'players', 'chat']
+    },
     teamMap: {
       ARI: 'ARI',
       ATL: 'ATL',

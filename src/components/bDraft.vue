@@ -1,5 +1,14 @@
 <template>
   <div class="draftboard">
+    <div class="row no-wrap">
+      <div 
+        class="team-row text-center bg-primary text-white"
+        v-for="(team, key) in teamCount"
+        :key="key"
+      >
+        {{team}}
+      </div>
+    </div>
     <div
       v-for="(round, key) in draftBoard"
       :key="key"
@@ -9,23 +18,23 @@
         class="pick"
         v-for="(pick, key2) in round"
         :key="key2"
-        :class="playerLookup[pick.player].position"
+        
       >
         <div
           class="player-wrap"
+          :class="playerLookup[pick.player].position"
         >
-          <div class="row position text-dark strong">
+          <div class="row position text-white">
             <span class="col-9">{{playerLookup[pick.player].position}} - {{playerLookup[pick.player].team}}</span>
             <span class="col-3 text-right">{{parseInt(pick.pick) + ((parseInt(pick.round) - 1) * teamCount)}}</span>
           </div>
-          <div class="name row text-dark light-paragraph ellipsis">{{playerLookup[pick.player].name.split(', ')[1]}}</div>
-          <div class="name row text-dark strong ellipsis">{{playerLookup[pick.player].name.split(', ')[0]}}</div>
         </div>
         <div
           class="franchise-wrap"
-          :class="playerLookup[pick.player].position"
         >
-          <div class="franchise row ellipsis text-white">{{teamLookup[pick.franchise].name}}</div>
+          <div class="name row text-dark light-paragraph ellipsis">{{playerLookup[pick.player].name.split(', ')[1]}}</div>
+          <div class="last-name row text-dark strong ellipsis">{{playerLookup[pick.player].name.split(', ')[0]}}</div>
+          <div class="franchise row ellipsis">{{teamLookup[pick.franchise].name}}</div>
         </div>
       </div>
     </div>
@@ -101,41 +110,45 @@ export default {
 @import '~variables'
 .draftboard
   overflow scroll
-  padding 2px
+  padding 4px
 .draftboard .player-wrap
-  padding 2px
+  background-color $blue-grey-14
+  padding 3px
+  border-top-left-radius 6px
+  border-top-right-radius 6px
 .draftboard .franchise-wrap
   border-bottom-left-radius 6px
   border-bottom-right-radius 6px
-  padding 2px
-  background-color $blue-grey-14
+  padding 3px
+  background-color $indigo-1
 .draftboard .pick
-  margin 1px
+  margin 2px
   border-radius 6px
   min-width 100px
   max-width 100px
-  background-color $blue-grey-11
 .draftboard .pick .position
   font-size 12px
-.draftboard .pick.QB
-  background-color $amber-11
-.draftboard .pick.WR
-  background-color $light-blue-11
-.draftboard .pick.RB
-  background-color $green-11
-.draftboard .pick.TE
-  background-color $red-11
-.draftboard .franchise-wrap.QB
+.draftboard .player-wrap.QB
   background-color $amber-14
-.draftboard .franchise-wrap.WR
+.draftboard .player-wrap.WR
   background-color $light-blue-14
-.draftboard .franchise-wrap.RB
+.draftboard .player-wrap.RB
   background-color $green-14
-.draftboard .franchise-wrap.TE
+.draftboard .player-wrap.TE
   background-color $red-14
 .draftboard .pick .name
-  font-size 16px
+  font-weight 500
+  font-size 14px
+.draftboard .pick .last-name
+  font-size 18px
 .draftboard .pick .franchise
+  padding-top 4px
   font-size 12px
+.draftboard .team-row
+  margin 2px
+  border-radius 6px
+  min-width 100px
+  max-width 100px
+  width 100px
 </style>
 
