@@ -1,5 +1,5 @@
 <template>
-  <q-pull-to-refresh :handler="refresher" class="team">
+  <q-pull-to-refresh :handler="refresher" class="draft">
     <div v-if="!dataLoaded" style="height: calc(100vh - 112px)">
       <q-spinner color="secondary" size="40px" class="absolute-center" style="margin-left: -20px;"/>
     </div>

@@ -1,5 +1,6 @@
 <template>
-  <q-layout 
+  <q-layout
+    :reveal="settings.toolbarHide"
     @scroll="scrollHandler"
     ref="layout"
     view="lHh Lpr lFf"

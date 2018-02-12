@@ -12,7 +12,7 @@
             <q-item-side class="player-avatar" :avatar="playerLookup[player.id].position === 'Def' ? './statics/' + teamMap[playerLookup[player.id].team] + '.svg' : playerLookup[player.id].cbs_id ? 'https://sports.cbsimg.net/images/football/nfl/players/60x80/' + playerLookup[player.id].cbs_id + '.jpg' : './statics/avatar.jpg'" />
             <div class="q-item-main q-item-section team-players">
               <div class="q-item-label team-player-name">{{playerLookup[player.id].name.split(', ').slice(1).join(' ').charAt(0)}} . {{playerLookup[player.id].name.split(', ').slice(0, -1).join(' ')}} <b-injury class="injury" :player="player.id"></b-injury><small> {{playerLookup[player.id].team}}  -  {{playerLookup[player.id].position}}</small></div>
-              <div v-if="!playerLookup[player.id].team.startsWith('FA')" class="q-item-sublabel" style="overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical;">{{matchupLookup[playerLookup[player.id].team].day}} {{matchupLookup[playerLookup[player.id].team].time}} - <span :class="matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rank < 11 ? 'text-positive' : matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rank < 21 ? 'text-warning' : 'text-negative'">{{matchupLookup[playerLookup[player.id].team].location}} {{matchupLookup[playerLookup[player.id].team].vs}} ({{matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rankPretty}})</span></div>
+              <b-versus class="q-item-sublabel" rank :player="player.id"></b-versus>
             </div>
             <div class="q-item-side q-item-side-right q-item-section">
               <div class="q-item-label" style="overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical;">{{scoringLookup[player.id].score}}</div>
@@ -32,7 +32,7 @@
             <q-item-side class="player-avatar" :avatar="playerLookup[player.id].position === 'Def' ? './statics/' + teamMap[playerLookup[player.id].team] + '.svg' : playerLookup[player.id].cbs_id ? 'https://sports.cbsimg.net/images/football/nfl/players/60x80/' + playerLookup[player.id].cbs_id + '.jpg' : './statics/avatar.jpg'" />
             <div class="q-item-main q-item-section team-players">
               <div class="q-item-label team-player-name">{{playerLookup[player.id].name.split(', ').slice(1).join(' ').charAt(0)}} . {{playerLookup[player.id].name.split(', ').slice(0, -1).join(' ')}} <b-injury class="injury" :player="player.id"></b-injury><small> {{playerLookup[player.id].team}}  -  {{playerLookup[player.id].position}}</small></div>
-              <div v-if="!playerLookup[player.id].team.startsWith('FA')" class="q-item-sublabel" style="overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical;">{{matchupLookup[playerLookup[player.id].team].day}} {{matchupLookup[playerLookup[player.id].team].time}} - <span :class="matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rank < 11 ? 'text-positive' : matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rank < 21 ? 'text-warning' : 'text-negative'">{{matchupLookup[playerLookup[player.id].team].location}} {{matchupLookup[playerLookup[player.id].team].vs}} ({{matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rankPretty}})</span></div>
+              <b-versus class="q-item-sublabel" rank :player="player.id"></b-versus>
             </div>
             <div class="q-item-side q-item-side-right q-item-section">
               <div class="q-item-label" style="overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical;">{{scoringLookup[player.id].score}}</div>
@@ -52,7 +52,7 @@
             <q-item-side class="player-avatar" :avatar="playerLookup[player.id].position === 'Def' ? './statics/' + teamMap[playerLookup[player.id].team] + '.svg' : playerLookup[player.id].cbs_id ? 'https://sports.cbsimg.net/images/football/nfl/players/60x80/' + playerLookup[player.id].cbs_id + '.jpg' : './statics/avatar.jpg'" />
             <div class="q-item-main q-item-section team-players">
               <div class="q-item-label team-player-name">{{playerLookup[player.id].name.split(', ').slice(1).join(' ').charAt(0)}} . {{playerLookup[player.id].name.split(', ').slice(0, -1).join(' ')}} <b-injury class="injury" :player="player.id"></b-injury><small> {{playerLookup[player.id].team}}  -  {{playerLookup[player.id].position}}</small></div>
-              <div v-if="!playerLookup[player.id].team.startsWith('FA')" class="q-item-sublabel" style="overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical;">{{matchupLookup[playerLookup[player.id].team].day}} {{matchupLookup[playerLookup[player.id].team].time}} - <span :class="matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rank < 11 ? 'text-positive' : matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rank < 21 ? 'text-warning' : 'text-negative'">{{matchupLookup[playerLookup[player.id].team].location}} {{matchupLookup[playerLookup[player.id].team].vs}} ({{matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rankPretty}})</span></div>
+              <b-versus class="q-item-sublabel" rank :player="player.id"></b-versus>
             </div>
             <q-item-side right>-</q-item-side>
           </q-item>
@@ -69,7 +69,7 @@
             <q-item-side class="player-avatar" :avatar="playerLookup[player.id].position === 'Def' ? './statics/' + teamMap[playerLookup[player.id].team] + '.svg' : playerLookup[player.id].cbs_id ? 'https://sports.cbsimg.net/images/football/nfl/players/60x80/' + playerLookup[player.id].cbs_id + '.jpg' : './statics/avatar.jpg'" />
             <div class="q-item-main q-item-section team-players">
               <div class="q-item-label team-player-name">{{playerLookup[player.id].name.split(', ').slice(1).join(' ').charAt(0)}} . {{playerLookup[player.id].name.split(', ').slice(0, -1).join(' ')}} <b-injury class="injury" :player="player.id"></b-injury><small> {{playerLookup[player.id].team}}  -  {{playerLookup[player.id].position}}</small></div>
-              <div v-if="!playerLookup[player.id].team.startsWith('FA')" class="q-item-sublabel" style="overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical;">{{matchupLookup[playerLookup[player.id].team].day}} {{matchupLookup[playerLookup[player.id].team].time}} - <span :class="matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rank < 11 ? 'text-positive' : matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rank < 21 ? 'text-warning' : 'text-negative'">{{matchupLookup[playerLookup[player.id].team].location}} {{matchupLookup[playerLookup[player.id].team].vs}} ({{matchupPoints[playerLookup[player.id].position][matchupLookup[playerLookup[player.id].team].vs].rankPretty}})</span></div>
+              <b-versus class="q-item-sublabel" rank :player="player.id"></b-versus>
             </div>
             <q-item-side right>-</q-item-side>
           </q-item>
@@ -93,6 +93,7 @@ import {
 } from 'quasar'
 import { mapGetters } from 'vuex'
 import bInjury from './bInjury.vue'
+import bVersus from './bVersus.vue'
 
 export default {
   name: 'BTeam',
@@ -104,7 +105,8 @@ export default {
     QCard,
     QCardTitle,
     QCardSeparator,
-    bInjury
+    bInjury,
+    bVersus
   },
   props: {
     thisTeam: String
@@ -123,9 +125,6 @@ export default {
       league: 'league',
       liveScoring: 'liveScoring',
       projectedScores: 'projectedScores',
-      fullNflSchedule: 'fullNflSchedule',
-      pointsAllowed: 'pointsAllowed',
-      currentWeek: 'currentWeek',
       teamMap: 'teamMap',
       displayTeam: 'displayTeam'
     }),
@@ -160,34 +159,6 @@ export default {
         obj[el.id] = {projection: newProjection}
       })
       return obj
-    },
-    matchupLookup () {
-      var days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat']
-      var obj = {}
-      var weekNumb = this.currentWeek - 1
-      this.fullNflSchedule.nflSchedule[weekNumb].matchup.forEach((el, i) => {
-        var date = new Date(el.kickoff * 1000)
-        obj[el.team[0].id] = {
-          vs: el.team[1].id,
-          day: days[date.getDay()],
-          time: ((date.getHours() === 0) ? '00' : date.getHours()) + ':' + ((date.getMinutes() === 0) ? '00' : date.getMinutes()),
-          location: ((el.team[0].isHome === '0') ? '@' : 'vs')
-        }
-        obj[el.team[1].id] = {
-          vs: el.team[0].id,
-          day: days[date.getDay()],
-          time: ((date.getHours() === 0) ? '00' : date.getHours()) + ':' + ((date.getMinutes() === 0) ? '00' : date.getMinutes()),
-          location: ((el.team[1].isHome === '0') ? '@' : 'vs')
-        }
-      })
-      return obj
-    },
-    matchupPoints () {
-      var object = {}
-      this.league.starters.position.forEach(el => {
-        object[el.name] = this.matchupPointsUtil(el.name)
-      })
-      return object
     },
     teamScoring () {
       var scoring = ''
@@ -356,53 +327,6 @@ export default {
         lookup[array[i][key]] = array[i]
       }
       return lookup
-    },
-    order (list, key) {
-      return list.sort((a, b) => {
-        var x = parseInt(a[key]); var y = parseInt(b[key])
-        return ((x < y) ? -1 : ((x > y) ? 1 : 0))
-      })
-    },
-    matchupPointsUtil (pos) {
-      var array = []
-      var object = {}
-      this.pointsAllowed.team.forEach(el => {
-        var lookup = this.lookup(el.position, 'name')
-        var obj = {
-          team: el.id,
-          points: lookup[pos].points
-        }
-        array.push(obj)
-        object[el.id] = {
-          points: lookup[pos].points
-        }
-      })
-      array.sort(function (a, b) {
-        if (a.points > b.points) return -1
-        if (a.points < b.points) return 1
-        return 0
-      })
-      array.forEach(el => {
-        object[el.team].rank = array.findIndex(x => x.team === el.team) + 1
-        object[el.team].rankPretty = this.pluralize(array.findIndex(x => x.team === el.team) + 1)
-      })
-      return object
-    },
-    pluralize: function (value) {
-      value = value.toString()
-      if (value.endsWith('1')) {
-        value = value.toString() + 'st'
-      }
-      else if (value.endsWith('2')) {
-        value = value.toString() + 'nd'
-      }
-      else if (value.endsWith('3')) {
-        value = value.toString() + 'rd'
-      }
-      else {
-        value = value.toString() + 'th'
-      }
-      return value
     },
     showAS (name) {
       var actions = []

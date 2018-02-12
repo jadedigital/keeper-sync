@@ -49,6 +49,7 @@
         <q-tabs inverted class="secondary-tabs">
           <q-tab default slot="title" name="tab-1" label="News" />
           <q-tab slot="title" name="tab-2" label="Game Log"/>
+          <div class="versus bg-grey-2"><span class="strong">Matchup: </span><b-versus v-if="activePlayer" class="b-versus" rank :player="activePlayer"></b-versus></div>
           <q-tab-pane class="no-pad no-border news" name="tab-1">
             <q-spinner 
               v-if="!dataLoaded" 
@@ -178,6 +179,7 @@ import {
 import { mapGetters } from 'vuex'
 import { getPlayerNews, getPlayerStats, callApi } from '../data'
 import bInjury from './bInjury.vue'
+import bVersus from './bVersus.vue'
 
 export default {
   name: 'player',
@@ -206,7 +208,8 @@ export default {
     QTransition,
     QSpinner,
     QItemTile,
-    bInjury
+    bInjury,
+    bVersus
   },
   data () {
     return {
@@ -351,6 +354,10 @@ export default {
 </script>
 
 <style lang="stylus">
+.fixed-fab .q-fab-icon
+  display flex!important
+.fixed-fab .q-fab-active-icon
+  display flex!important
 .player-layout .news .timestamp
   font-weight 300
 .player-layout .news .no-news
@@ -382,5 +389,9 @@ export default {
   bottom 0
   right 0
   margin 18px
+.player-layout .versus
+  padding 20px 16px
+.player-layout .b-versus
+  display inline
 </style>
 

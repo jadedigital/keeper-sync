@@ -36,7 +36,18 @@
             </q-item>
           </q-list>
         </q-tab-pane>
-        <q-tab-pane name="tab-3">Roster Alerts</q-tab-pane>
+        <q-tab-pane class="no-border no-padding" name="tab-3">
+          <q-list class="no-border no-padding no-margin">
+            <q-list-header class="text-center bg-grey-2 border-bottom">
+              Pending Waivers
+            </q-list-header>
+            <div class="no-pending light-paragraph text-italic text-center">No pending waiver requests </div>
+            <q-list-header class="text-center bg-grey-2 border-bottom">
+              Pending Trades
+            </q-list-header>
+            <div class="no-pending light-paragraph text-italic text-center">No pending trades </div>
+          </q-list>
+        </q-tab-pane>          
       </div>
     </q-tabs>
   </q-pull-to-refresh>
@@ -241,7 +252,7 @@ export default {
 .team .draft-picks .q-list
   margin 0
   padding 0
-.team .draft-picks .q-list-header
+.team .q-list-header
   font-size 14px
   font-weight 300
   padding 0
@@ -253,5 +264,7 @@ export default {
   display inline
   overflow hidden 
   -webkit-box-orient vertical
+.team .no-pending
+  padding 24px 0
 </style>
 

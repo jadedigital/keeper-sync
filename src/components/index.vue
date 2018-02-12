@@ -55,9 +55,18 @@ export default {
     next()
   },
   beforeRouteUpdate (to, from, next) {
-    var fromRoute = from.path.split('/')[1]
-    var toRoute = to.path.split('/')[1]
-    this.transitionName = this.routeMap[toRoute] < this.routeMap[fromRoute] ? 'overlap-left' : 'overlap-right'
+    var fromRoute = ''
+    var toRoute = ''
+    if (from.path.split('/')[1] === 'settings' && to.path.split('/')[1] === 'settings') {
+      fromRoute = from.path.split('/').length
+      toRoute = to.path.split('/').length
+      this.transitionName = toRoute < fromRoute ? 'overlap-left' : 'overlap-right'
+    }
+    else {
+      fromRoute = from.path.split('/')[1]
+      toRoute = to.path.split('/')[1]
+      this.transitionName = this.routeMap[toRoute] < this.routeMap[fromRoute] ? 'overlap-left' : 'overlap-right'
+    }
     next()
   },
   created () {
