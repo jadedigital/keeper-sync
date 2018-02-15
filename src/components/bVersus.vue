@@ -56,8 +56,9 @@ export default {
           vs: el.team[0].id,
           day: date.formatDate(kickoff, 'ddd'),
           time: date.formatDate(kickoff, 'h' + ':' + 'mm' + 'a'),
-          result: parseInt(el.team[1].score) > parseInt(el.team[0].score) ? 'W' : 'L',
-          location: ((el.team[1].isHome === '0') ? '@' : 'vs')
+          result: parseInt(el.team[1].score) > parseInt(el.team[0].score) ? ('W' + ' ' + el.team[1].score + '-' + el.team[0].score) : ('L'  + ' ' + el.team[1].score + '-' + el.team[0].score),
+          location: ((el.team[1].isHome === '0') ? '@' : 'vs'),
+          remaining: this.pluralize(4 - Math.floor(seconds / 900)) + ' ' + Math.floor((seconds % 900) / 60) + ':' + pad((seconds % 900) % 60, 2)
         }
       })
       return obj
