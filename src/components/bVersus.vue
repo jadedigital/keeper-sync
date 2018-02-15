@@ -13,7 +13,8 @@
 
 <script>
 import {
-  date
+  date,
+  format
 } from 'quasar'
 import { mapGetters } from 'vuex'
 
@@ -37,22 +38,25 @@ export default {
       return this.lookup(array, 'id')
     },
     matchupLookup () {
+      const { pad } = format
       var obj = {}
       var weekNumb = this.currentWeek - 1
       this.fullNflSchedule.nflSchedule[weekNumb].matchup.forEach((el, i) => {
         var kickoff = new Date(el.kickoff * 1000)
+        var seconds = parseInt(el.gameSecondsRemaining)
         obj[el.team[0].id] = {
           vs: el.team[1].id,
           day: date.formatDate(kickoff, 'ddd'),
           time: date.formatDate(kickoff, 'h' + ':' + 'mm' + 'a'),
-          result: el.team[0].score > el.team[1].score ?  'W' : 'L',
-          location: ((el.team[0].isHome === '0') ? '@' : 'vs')
+          result: parseInt(el.team[0].score) > parseInt(el.team[1].score) ? ('W' + ' ' + el.team[0].score + '-' + el.team[1].score) : ('L'  + ' ' + el.team[0].score + '-' + el.team[1].score),
+          location: ((el.team[0].isHome === '0') ? '@' : 'vs'),
+          remaining: this.pluralize(4 - Math.floor(seconds / 900)) + ' ' + Math.floor((seconds % 900) / 60) + ':' + pad((seconds % 900) % 60, 2)
         }
         obj[el.team[1].id] = {
           vs: el.team[0].id,
           day: date.formatDate(kickoff, 'ddd'),
           time: date.formatDate(kickoff, 'h' + ':' + 'mm' + 'a'),
-          result: el.team[1].score > el.team[0].score ?  'W' : 'L',
+          result: parseInt(el.team[1].score) > parseInt(el.team[0].score) ? 'W' : 'L',
           location: ((el.team[1].isHome === '0') ? '@' : 'vs')
         }
       })

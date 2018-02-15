@@ -49,7 +49,7 @@
         <q-tabs inverted class="secondary-tabs">
           <q-tab default slot="title" name="tab-1" label="News" />
           <q-tab slot="title" name="tab-2" label="Game Log"/>
-          <div class="versus bg-grey-2"><span class="strong">Matchup: </span><b-versus v-if="activePlayer" class="b-versus" rank :player="activePlayer"></b-versus></div>
+          <div class="versus"><span class="strong">Upcoming: </span><b-versus v-if="activePlayer" class="b-versus" rank :player="activePlayer"></b-versus></div>
           <q-tab-pane class="no-pad no-border news" name="tab-1">
             <q-spinner 
               v-if="!dataLoaded" 
